@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// MODELS based on db.sql
+
+model User {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  email     String   @unique @db.VarChar(255)
+  full_name String   @db.VarChar(255)
+  phone     String?  @db.VarChar(20)
+  password  String   @db.VarChar(255) // Store hashed password
+  role      Role     @default(user)
+  thumbnail String?  @db.VarChar(255)
+  verified  Boolean? @default(false)
+  posts     Post[] // Relation to Post model
+
+  @@map("users") // Map to the existing 'users' table name
+}
+
+enum Role {
+  admin
+  editor
+  user
+}
+
+model Category {
+  id          BigInt     @id @default(autoincrement()) @db.UnsignedBigInt
+  title       String     @db.VarChar(255)
+  slug        String     @unique @db.VarChar(255)
+  thumbnail   String?    @db.VarChar(255)
+  description String?    @db.Text
+  parent_id   BigInt?    @map("parent") @db.UnsignedBigInt
+  parent      Category?  @relation("SubCategories", fields: [parent_id], references: [id], onDelete: SetNull)
+  children    Category[] @relation("SubCategories")
+  posts       Post[] // Relation to Post model
+
+  @@map("categories")
+}
+
+model Stock {
+  id       BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
+  symbol   String  @unique @db.VarChar(20)
+  name     String  @db.VarChar(255)
+  exchange String? @db.VarChar(100)
+  industry String? @db.VarChar(100)
+  posts    Post[] // Relation to Post model
+
+  @@map("stocks")
+}
+
+model Post {
+  id          BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
+  title       String  @db.VarChar(255)
+  slug        String  @unique @db.VarChar(255)
+  description String? @db.Text
+  content     String? @db.LongText
+  thumbnail   String? @db.VarChar(255)
+  category_id BigInt  @db.UnsignedBigInt
+  stock_id    BigInt? @db.UnsignedBigInt
+  user_id     BigInt  @db.UnsignedBigInt
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  category Category @relation(fields: [category_id], references: [id])
+  stock    Stock?   @relation(fields: [stock_id], references: [id])
+  user     User     @relation(fields: [user_id], references: [id])
+
+  @@map("posts")
+}
