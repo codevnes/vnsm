@@ -1,4 +1,4 @@
-FROM node:18-alpine AS deps
+FROM node:20-alpine AS deps
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ COPY package.json package-lock.json* ./
 RUN npm ci
 
 # Bước build
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -33,6 +33,9 @@ COPY --from=deps /app/node_modules ./node_modules
 # Sao chép mã nguồn dự án
 COPY . .
 
+# Đảm bảo cài đặt critters cho tối ưu hóa CSS
+RUN npm install --no-save critters
+
 # Tạo môi trường production
 RUN echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" > .env.production
 RUN echo "NEXT_DISABLE_ESLINT=1" >> .env.production
@@ -50,6 +53,7 @@ RUN if [ -f next.config.ts ] && [ ! -f next.config.js ]; then \
     echo "  images: { domains: ['localhost', 'api.${NEXT_PUBLIC_API_URL}'] }," >> next.config.js && \
     echo "  experimental: {" >> next.config.js && \
     echo "    serverComponentsExternalPackages: []," >> next.config.js && \
+    echo "    optimizeCss: true," >> next.config.js && \
     echo "  }," >> next.config.js && \
     echo "};" >> next.config.js && \
     echo "module.exports = nextConfig;" >> next.config.js; \
@@ -66,7 +70,7 @@ RUN npm config set engine-strict false
 RUN NODE_ENV=production NEXT_DISABLE_ESLINT=1 npm run build -- --no-lint --no-type-check || npm run build -- --no-lint || npm run build
 
 # Bước production image
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 

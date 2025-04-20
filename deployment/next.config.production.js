@@ -22,7 +22,7 @@ const nextConfig = {
   experimental: {
     // Thêm cấu hình này để tránh lỗi với useSearchParams và Client Components
     serverComponentsExternalPackages: [],
-    // Tối ưu hóa cho Static Pages
+    // Tối ưu hóa CSS cho Static Pages (Node.js v20 hỗ trợ critters)
     optimizeCss: true,
     // Tối ưu hóa CSR
     optimizeServerReact: true,
