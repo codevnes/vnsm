@@ -468,7 +468,7 @@ export const bulkImportQIndicesBySymbol = async (req: Request, res: Response): P
         
         // Parse CSV
         const parser = parse({
-            columns: header => header.map((h: string) => h.toLowerCase().trim().replace('_', '').replace('-', '')),
+            columns: (header: string[]) => header.map((h: string) => h.toLowerCase().trim().replace('_', '').replace('-', '')),
             skip_empty_lines: true,
             trim: true
         });

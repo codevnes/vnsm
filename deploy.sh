@@ -133,9 +133,9 @@ create_docker_compose() {
 
 networks:
   traefik-network:
-    name: traefik-network
+    external: true
   backend-network:
-    name: backend-network
+    external: true
 
 volumes:
   mysql_data:
@@ -436,64 +436,69 @@ deploy_application() {
   # Xử lý mạng Docker
   print_message "Kiểm tra và chuẩn bị mạng Docker..."
   
-  # Kiểm tra và xử lý mạng traefik-network
-  if docker network inspect traefik-network &>/dev/null; then
-    # Kiểm tra xem mạng có nhãn đúng không
-    if ! docker network inspect traefik-network | grep -q '"com.docker.compose.network": "traefik-network"'; then
-      print_warning "Mạng traefik-network tồn tại nhưng không có nhãn đúng. Đang xóa và tạo lại..."
-      # Tìm và ngắt kết nối các container đang sử dụng mạng này
-      for container_id in $(docker network inspect traefik-network -f '{{range .Containers}}{{.Name}} {{end}}'); do
-        docker network disconnect -f traefik-network "$container_id" || true
-      done
-      # Xóa mạng cũ
-      docker network rm traefik-network || true
-      # Tạo mạng mới
-      docker network create traefik-network
-    else
-      print_message "Mạng traefik-network đã tồn tại và có cấu hình đúng."
-    fi
-  else
-    print_message "Tạo mạng traefik-network..."
+  # Xử lý mạng traefik-network
+  if ! docker network inspect traefik-network &>/dev/null; then
+    print_message "Tạo mạng traefik-network mới..."
     docker network create traefik-network
+  else
+    print_message "Mạng traefik-network đã tồn tại, sẽ sử dụng mạng hiện có..."
   fi
   
-  # Kiểm tra và xử lý mạng backend-network
-  if docker network inspect backend-network &>/dev/null; then
-    # Kiểm tra xem mạng có nhãn đúng không
-    if ! docker network inspect backend-network | grep -q '"com.docker.compose.network": "backend-network"'; then
-      print_warning "Mạng backend-network tồn tại nhưng không có nhãn đúng. Đang xóa và tạo lại..."
-      # Tìm và ngắt kết nối các container đang sử dụng mạng này
-      for container_id in $(docker network inspect backend-network -f '{{range .Containers}}{{.Name}} {{end}}'); do
-        docker network disconnect -f backend-network "$container_id" || true
-      done
-      # Xóa mạng cũ
-      docker network rm backend-network || true
-      # Tạo mạng mới
-      docker network create backend-network
-    else
-      print_message "Mạng backend-network đã tồn tại và có cấu hình đúng."
-    fi
-  else
-    print_message "Tạo mạng backend-network..."
+  # Xử lý mạng backend-network
+  if ! docker network inspect backend-network &>/dev/null; then
+    print_message "Tạo mạng backend-network mới..."
     docker network create backend-network
+  else
+    print_message "Mạng backend-network đã tồn tại, sẽ sử dụng mạng hiện có..."
   fi
   
   print_message "Đang pull các image cần thiết..."
   docker-compose pull
   
+  # Kiểm tra và dừng các container đang chạy có thể xung đột
+  print_message "Kiểm tra các container đang chạy..."
+  
+  # Kiểm tra các container có thể xung đột
+  for service in traefik mysql phpmyadmin; do
+    running_containers=$(docker ps --filter "name=$service" --format "{{.Names}}")
+    if [ -n "$running_containers" ]; then
+      print_warning "Phát hiện container $service đang chạy. Đang dừng..."
+      for container in $running_containers; do
+        docker stop $container
+        docker rm $container
+      done
+    fi
+  done
+  
   print_message "Đang build và khởi động các container..."
+  
+  # Build trước để tránh lỗi khi khởi động
+  print_message "Đang build các container..."
+  docker-compose build
+  
   # Khởi động các container với retry
-  for i in {1..3}; do
-    docker-compose up -d --build && break || {
+  print_message "Đang khởi động các container..."
+  for i in {1..5}; do
+    # Sử dụng --no-build vì đã build ở trên
+    docker-compose up -d --no-build && break || {
       print_warning "Lần thử $i thất bại. Đang thử lại..."
-      docker-compose down
-      sleep 5
+      # Hiển thị logs để debug
+      docker-compose logs
+      # Dừng các container nhưng không xóa mạng
+      docker-compose down --remove-orphans
+      print_message "Đợi 10 giây trước khi thử lại..."
+      sleep 10
     }
   done
   
   # Kiểm tra xem các container đã chạy chưa
-  if [ $(docker-compose ps -q | wc -l) -lt 4 ]; then
-    print_warning "Một số container không khởi động được. Đang kiểm tra logs..."
+  running_containers=$(docker-compose ps -q | wc -l)
+  expected_containers=4  # traefik, mysql, phpmyadmin, backend, frontend
+  
+  if [ $running_containers -lt $expected_containers ]; then
+    print_warning "Một số container không khởi động được ($running_containers/$expected_containers). Đang kiểm tra logs..."
+    docker-compose ps
+    print_message "Logs của các container:"
     docker-compose logs
     print_warning "Vui lòng kiểm tra logs trên để xác định lỗi."
   else
@@ -566,20 +571,44 @@ cleanup() {
     docker-compose down -v
   fi
   
-  # Xóa các mạng
+  # Tìm và dừng tất cả các container liên quan đến dự án
+  for container in $(docker ps -a --filter "name=vnsm" -q); do
+    print_message "Dừng và xóa container $container..."
+    docker stop $container 2>/dev/null || true
+    docker rm $container 2>/dev/null || true
+  done
+  
+  # Xử lý mạng traefik-network - chỉ ngắt kết nối các container, không xóa mạng
   if docker network inspect traefik-network &>/dev/null; then
-    print_message "Xóa mạng traefik-network..."
-    docker network rm traefik-network || true
+    print_message "Ngắt kết nối các container khỏi mạng traefik-network..."
+    # Ngắt kết nối tất cả các container khỏi mạng
+    for container in $(docker network inspect traefik-network -f '{{range .Containers}}{{.Name}} {{end}}' 2>/dev/null); do
+      print_message "Ngắt kết nối container $container khỏi mạng traefik-network..."
+      docker network disconnect -f traefik-network $container 2>/dev/null || true
+    done
+    # Không xóa mạng vì nó được đánh dấu là external trong docker-compose.yml
+    print_message "Giữ lại mạng traefik-network vì nó được đánh dấu là external"
   fi
   
+  # Xử lý mạng backend-network - chỉ ngắt kết nối các container, không xóa mạng
   if docker network inspect backend-network &>/dev/null; then
-    print_message "Xóa mạng backend-network..."
-    docker network rm backend-network || true
+    print_message "Ngắt kết nối các container khỏi mạng backend-network..."
+    # Ngắt kết nối tất cả các container khỏi mạng
+    for container in $(docker network inspect backend-network -f '{{range .Containers}}{{.Name}} {{end}}' 2>/dev/null); do
+      print_message "Ngắt kết nối container $container khỏi mạng backend-network..."
+      docker network disconnect -f backend-network $container 2>/dev/null || true
+    done
+    # Không xóa mạng vì nó được đánh dấu là external trong docker-compose.yml
+    print_message "Giữ lại mạng backend-network vì nó được đánh dấu là external"
   fi
   
   # Xóa các volume không sử dụng
   print_message "Xóa các volume không sử dụng..."
   docker volume prune -f
+  
+  # Xóa các image dangling
+  print_message "Xóa các image không sử dụng..."
+  docker image prune -f
   
   print_message "Môi trường đã được dọn dẹp!"
 }
