@@ -27,7 +27,11 @@ chmod +x deploy.sh
 ### 3. Chạy script triển khai
 
 ```bash
+# Triển khai mới
 ./deploy.sh
+
+# Hoặc triển khai lại từ đầu (xóa tất cả container, mạng và volume hiện có)
+./deploy.sh redeploy
 ```
 
 ### 4. Nhập thông tin cấu hình
@@ -141,16 +145,51 @@ docker-compose down
 
 ## Xử lý sự cố
 
+Script triển khai cung cấp nhiều lệnh để giúp bạn xử lý sự cố:
+
 ### Kiểm tra trạng thái các container
 
 ```bash
-docker-compose ps
+./deploy.sh status
 ```
 
 ### Kiểm tra logs
 
 ```bash
-docker-compose logs -f
+# Xem logs của tất cả các container
+./deploy.sh logs
+
+# Xem logs của một container cụ thể
+./deploy.sh logs backend
+./deploy.sh logs frontend
+./deploy.sh logs traefik
+
+# Theo dõi logs theo thời gian thực
+./deploy.sh follow
+./deploy.sh follow backend
+```
+
+### Khởi động lại các container
+
+```bash
+# Khởi động lại tất cả các container
+./deploy.sh restart
+
+# Khởi động lại một container cụ thể
+./deploy.sh restart backend
+./deploy.sh restart frontend
+```
+
+### Dọn dẹp và triển khai lại
+
+Nếu bạn gặp vấn đề không thể giải quyết, bạn có thể dọn dẹp môi trường và triển khai lại từ đầu:
+
+```bash
+# Chỉ dọn dẹp môi trường
+./deploy.sh cleanup
+
+# Dọn dẹp và triển khai lại
+./deploy.sh redeploy
 ```
 
 ### Kiểm tra cấu hình Traefik
@@ -159,11 +198,15 @@ docker-compose logs -f
 docker-compose exec traefik traefik healthcheck
 ```
 
-### Khởi động lại một container cụ thể
+### Xử lý lỗi mạng Docker
+
+Nếu bạn gặp lỗi liên quan đến mạng Docker, hãy thử dọn dẹp và triển khai lại:
 
 ```bash
-docker-compose restart <container-name>
+./deploy.sh redeploy
 ```
+
+Lệnh này sẽ xóa tất cả các container, mạng và volume hiện có, sau đó triển khai lại từ đầu.
 
 ## Bảo mật
 

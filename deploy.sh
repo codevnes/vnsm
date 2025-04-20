@@ -128,7 +128,8 @@ create_docker_compose() {
   print_message "Tạo file docker-compose.yml..."
   
   cat > docker-compose.yml << EOL
-version: '3.8'
+# Cấu hình Docker Compose cho VNSM
+# Lưu ý: Không sử dụng thuộc tính 'version' vì nó đã lỗi thời trong Docker Compose v2+
 
 networks:
   traefik-network:
@@ -432,9 +433,50 @@ deploy_application() {
     exit 1
   fi
   
-  # Tạo mạng nếu chưa tồn tại
-  docker network inspect traefik-network > /dev/null 2>&1 || docker network create traefik-network
-  docker network inspect backend-network > /dev/null 2>&1 || docker network create backend-network
+  # Xử lý mạng Docker
+  print_message "Kiểm tra và chuẩn bị mạng Docker..."
+  
+  # Kiểm tra và xử lý mạng traefik-network
+  if docker network inspect traefik-network &>/dev/null; then
+    # Kiểm tra xem mạng có nhãn đúng không
+    if ! docker network inspect traefik-network | grep -q '"com.docker.compose.network": "traefik-network"'; then
+      print_warning "Mạng traefik-network tồn tại nhưng không có nhãn đúng. Đang xóa và tạo lại..."
+      # Tìm và ngắt kết nối các container đang sử dụng mạng này
+      for container_id in $(docker network inspect traefik-network -f '{{range .Containers}}{{.Name}} {{end}}'); do
+        docker network disconnect -f traefik-network "$container_id" || true
+      done
+      # Xóa mạng cũ
+      docker network rm traefik-network || true
+      # Tạo mạng mới
+      docker network create traefik-network
+    else
+      print_message "Mạng traefik-network đã tồn tại và có cấu hình đúng."
+    fi
+  else
+    print_message "Tạo mạng traefik-network..."
+    docker network create traefik-network
+  fi
+  
+  # Kiểm tra và xử lý mạng backend-network
+  if docker network inspect backend-network &>/dev/null; then
+    # Kiểm tra xem mạng có nhãn đúng không
+    if ! docker network inspect backend-network | grep -q '"com.docker.compose.network": "backend-network"'; then
+      print_warning "Mạng backend-network tồn tại nhưng không có nhãn đúng. Đang xóa và tạo lại..."
+      # Tìm và ngắt kết nối các container đang sử dụng mạng này
+      for container_id in $(docker network inspect backend-network -f '{{range .Containers}}{{.Name}} {{end}}'); do
+        docker network disconnect -f backend-network "$container_id" || true
+      done
+      # Xóa mạng cũ
+      docker network rm backend-network || true
+      # Tạo mạng mới
+      docker network create backend-network
+    else
+      print_message "Mạng backend-network đã tồn tại và có cấu hình đúng."
+    fi
+  else
+    print_message "Tạo mạng backend-network..."
+    docker network create backend-network
+  fi
   
   print_message "Đang pull các image cần thiết..."
   docker-compose pull
@@ -514,16 +556,46 @@ follow_logs() {
   docker-compose logs -f "$service"
 }
 
+# Dọn dẹp môi trường
+cleanup() {
+  print_message "Bắt đầu dọn dẹp môi trường..."
+  
+  # Dừng và xóa tất cả các container
+  if docker-compose ps -q &>/dev/null; then
+    print_message "Dừng và xóa các container hiện tại..."
+    docker-compose down -v
+  fi
+  
+  # Xóa các mạng
+  if docker network inspect traefik-network &>/dev/null; then
+    print_message "Xóa mạng traefik-network..."
+    docker network rm traefik-network || true
+  fi
+  
+  if docker network inspect backend-network &>/dev/null; then
+    print_message "Xóa mạng backend-network..."
+    docker network rm backend-network || true
+  fi
+  
+  # Xóa các volume không sử dụng
+  print_message "Xóa các volume không sử dụng..."
+  docker volume prune -f
+  
+  print_message "Môi trường đã được dọn dẹp!"
+}
+
 # Hiển thị trợ giúp
 show_help() {
   echo "Cách sử dụng: $0 [OPTION]"
   echo ""
   echo "Các tùy chọn:"
   echo "  deploy              Triển khai ứng dụng (mặc định)"
+  echo "  redeploy            Dọn dẹp môi trường và triển khai lại từ đầu"
   echo "  logs [SERVICE]      Hiển thị logs của tất cả hoặc một dịch vụ cụ thể"
   echo "  follow [SERVICE]    Theo dõi logs theo thời gian thực"
   echo "  restart [SERVICE]   Khởi động lại tất cả hoặc một dịch vụ cụ thể"
   echo "  status              Hiển thị trạng thái của các dịch vụ"
+  echo "  cleanup             Dọn dẹp môi trường (xóa container, mạng, volume)"
   echo "  help                Hiển thị trợ giúp này"
   echo ""
   echo "Ví dụ:"
@@ -579,6 +651,38 @@ main() {
       ;;
     status)
       show_status
+      ;;
+    cleanup)
+      cleanup
+      ;;
+    redeploy)
+      print_message "=== Bắt đầu quá trình triển khai lại VNSM ==="
+      
+      # Dọn dẹp môi trường trước
+      cleanup
+      
+      # Kiểm tra các yêu cầu cần thiết
+      check_requirements
+      
+      # Lấy thông tin cấu hình
+      get_config
+      
+      # Tạo thư mục cần thiết
+      create_directories
+      
+      # Tạo các file cấu hình
+      create_docker_compose
+      create_backend_dockerfile
+      create_frontend_dockerfile
+      create_traefik_config
+      
+      # Triển khai ứng dụng
+      deploy_application
+      
+      print_message "=== Quá trình triển khai lại VNSM hoàn tất ==="
+      print_message "Để kiểm tra logs, sử dụng: $0 logs [SERVICE]"
+      print_message "Để theo dõi logs theo thời gian thực, sử dụng: $0 follow [SERVICE]"
+      print_message "Để xem trạng thái các dịch vụ, sử dụng: $0 status"
       ;;
     help)
       show_help
