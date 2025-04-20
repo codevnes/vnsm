@@ -12,7 +12,7 @@ BACKUP_PATH="/backup/${BACKUP_NAME}"
 
 # Perform the backup
 echo "Creating backup: ${BACKUP_PATH}"
-pg_dump -U $DB_USER -d $DB_NAME | gzip > $BACKUP_PATH
+mysqldump -u root -p"$MYSQL_ROOT_PASSWORD" --all-databases | gzip > $BACKUP_PATH
 if [ $? -eq 0 ]; then
   echo "Database backup created successfully: $BACKUP_NAME"
 else

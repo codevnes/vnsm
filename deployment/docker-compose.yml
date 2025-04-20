@@ -26,16 +26,18 @@ services:
       - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_USER}:${TRAEFIK_PASSWORD}"
 
   db:
-    image: postgres:14-alpine
+    image: mysql:8.0
     container_name: vnsm-db
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
       TZ: "Asia/Ho_Chi_Minh"
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
       - ./backup:/backup
     networks:
       - backend
@@ -52,7 +54,7 @@ services:
       - db
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      DATABASE_URL: mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}
       PORT: 3001
       JWT_SECRET: ${JWT_SECRET}
       CORS_ORIGIN: https://${DOMAIN}
@@ -116,4 +118,4 @@ networks:
     internal: true
 
 volumes:
-  postgres_data: 
+  mysql_data: 

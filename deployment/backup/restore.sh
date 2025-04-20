@@ -32,7 +32,7 @@ fi
 
 # Restore the database
 echo "Restoring database..."
-gunzip -c $BACKUP_FILE | psql -U $DB_USER -d $DB_NAME
+gunzip -c $BACKUP_FILE | mysql -u root -p"$MYSQL_ROOT_PASSWORD"
 
 if [ $? -eq 0 ]; then
   echo "Database restored successfully from $BACKUP_FILE"
