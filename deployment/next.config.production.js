@@ -18,8 +18,14 @@ const nextConfig = {
     ],
     unoptimized: false,
   },
-  // Tối ưu hóa build
+  // Tối ưu hóa build và Server Components
   experimental: {
+    // Thêm cấu hình này để tránh lỗi với useSearchParams và Client Components
+    serverComponentsExternalPackages: [],
+    // Tối ưu hóa cho Static Pages
+    optimizeCss: true,
+    // Tối ưu hóa CSR
+    optimizeServerReact: true,
     // Tăng hiệu suất build
     turbotrace: {
       logLevel: 'error',

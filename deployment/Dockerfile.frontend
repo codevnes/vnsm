@@ -48,6 +48,9 @@ RUN if [ -f next.config.ts ] && [ ! -f next.config.js ]; then \
     echo "  eslint: { ignoreDuringBuilds: true }," >> next.config.js && \
     echo "  typescript: { ignoreBuildErrors: true }," >> next.config.js && \
     echo "  images: { domains: ['localhost', 'api.${NEXT_PUBLIC_API_URL}'] }," >> next.config.js && \
+    echo "  experimental: {" >> next.config.js && \
+    echo "    serverComponentsExternalPackages: []," >> next.config.js && \
+    echo "  }," >> next.config.js && \
     echo "};" >> next.config.js && \
     echo "module.exports = nextConfig;" >> next.config.js; \
     fi

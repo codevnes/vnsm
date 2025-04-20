@@ -30,6 +30,48 @@ echo "✅ Đã sao chép file .dockerignore"
 cp "$SCRIPT_DIR/eslintrc-production.js" "$FRONTEND_DIR/.eslintrc.js"
 echo "✅ Đã sao chép file cấu hình ESLint cho production"
 
+# Tạo file .eslintignore nếu chưa có
+if [ ! -f ".eslintignore" ]; then
+  cat > .eslintignore << EOF
+# Build files
+.next/
+out/
+dist/
+build/
+
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# Cache
+.cache/
+.eslintcache
+
+# Environment files
+.env*
+!.env.example
+
+# Source maps
+*.map
+
+# Coverage directory
+coverage/
+
+# Other
+.DS_Store
+*.pem
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+EOF
+  echo "✅ Đã tạo file .eslintignore"
+else
+  echo "✅ File .eslintignore đã tồn tại"
+fi
+
 # Kiểm tra cấu hình Next.js (hỗ trợ cả .ts và .js)
 if [ -f "next.config.ts" ]; then
   echo "Phát hiện next.config.ts, tạo next.config.js cho production..."
