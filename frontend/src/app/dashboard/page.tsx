@@ -1,9 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from "@/components/ui/button";
+import React from 'react';
 import {
     Card,
     CardContent,
@@ -11,49 +8,13 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { LogOut } from 'lucide-react'; // Icon for logout
 
 export default function DashboardPage() {
-    const { isAuthenticated, loading, logout } = useAuth();
-    const router = useRouter();
+    // Authentication is now checked at the layout level
+    // No need for authentication checks in individual pages
 
-    useEffect(() => {
-        // Only redirect if loading is complete and user is definitely not authenticated
-        if (!loading && !isAuthenticated) {
-            router.push('/login');
-        }
-    }, [isAuthenticated, loading, router]);
-
-    const handleLogout = () => {
-        logout(); // Use the logout function from context
-        router.push('/login'); // Redirect to login page
-    };
-
-    // Show loading state while checking authentication
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                Loading...
-            </div>
-        );
-    }
-
-    // If not loading and not authenticated, we're redirecting, so render nothing
-    if (!isAuthenticated) {
-        return null;
-    }
-
-    // Render dashboard content if authenticated
     return (
         <div className="flex flex-col min-h-screen">
-            {/* Header */}
-            <header className="sticky top-0 z-10 flex items-center justify-between h-16 px-4 border-b bg-background md:px-6">
-                <h1 className="text-lg font-semibold">Dashboard</h1>
-                <Button variant="outline" size="icon" onClick={handleLogout}>
-                    <LogOut className="w-4 h-4" />
-                    <span className="sr-only">Logout</span>
-                </Button>
-            </header>
 
             {/* Main Content Area */}
             <main className="flex-1 p-4 md:p-6 lg:p-8">
@@ -102,11 +63,6 @@ export default function DashboardPage() {
                     {/* Add more cards/widgets as needed */}
                 </div>
             </main>
-
-            {/* Footer (Optional) */}
-            <footer className="p-4 mt-auto text-center text-muted-foreground text-sm border-t">
-                Your App Name &copy; {new Date().getFullYear()}
-            </footer>
         </div>
     );
-} 
+}

@@ -48,6 +48,45 @@ export const stockService = {
     },
 
     /**
+     * Fetches a single stock by symbol
+     */
+    getStockBySymbol: async (symbol: string, token: string | null = null): Promise<any> => {
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+        };
+        return fetchAPI(`${API_URL}/stocks/symbol/${symbol}`, {
+            method: 'GET',
+            headers,
+        });
+    },
+
+    /**
+     * Search stocks by keyword (searches in both symbol and name)
+     */
+    searchStocks: async (keyword: string, page: number = 1, limit: number = 10, sortBy: string = 'symbol', sortOrder: string = 'asc', token: string | null = null): Promise<StockListResponse> => {
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+        };
+
+        // Build query parameters
+        const params = new URLSearchParams();
+        params.append('keyword', keyword);
+        params.append('page', page.toString());
+        params.append('limit', limit.toString());
+        params.append('sortBy', sortBy);
+        params.append('sortOrder', sortOrder);
+
+        const queryString = params.toString();
+
+        return fetchAPI<StockListResponse>(`${API_URL}/stocks/search?${queryString}`, {
+            method: 'GET',
+            headers,
+        });
+    },
+
+    /**
      * Fetches a paginated list of stocks.
      */
     fetchStocks: (page: number, limit: number, token: string | null, filters: StockFilters = {}): Promise<StockListResponse> => {
@@ -142,4 +181,6 @@ export const fetchStocksAPI = stockService.fetchStocks;
 export const createStockAPI = stockService.createStock;
 export const updateStockAPI = stockService.updateStock;
 export const deleteStockAPI = stockService.deleteStock;
-export const bulkImportStocksAPI = stockService.bulkImportStocks; 
+export const bulkImportStocksAPI = stockService.bulkImportStocks;
+export const getStockBySymbolAPI = stockService.getStockBySymbol;
+export const searchStocksAPI = stockService.searchStocks; 

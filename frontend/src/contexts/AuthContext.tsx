@@ -66,32 +66,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Fetch user data if token exists
   useEffect(() => {
     const fetchUserData = async () => {
+      console.log('Fetching user data, token exists:', !!token);
       if (!token) {
+        console.log('No token, clearing user state');
         setUserState(null);
         setLoading(false);
         return;
       }
-      
+
       try {
         // Extract user from token for fallback
         const userFromToken = getUserFromToken(token);
-        
+        console.log('User from token:', userFromToken ? `ID: ${userFromToken.id}, Role: ${userFromToken.role}` : 'Failed to decode');
+
         // Try to fetch user from API, use token data as fallback
         try {
           // Call your API endpoint to get user data
+          console.log('Making request to /auth/me endpoint');
           const response = await api.get('/auth/me');
           if (response.data) {
             console.log('User data fetched from API:', response.data);
             setUserState(response.data);
           }
         } catch (error: any) {
-          console.error('Failed to fetch user from API:', error);
-          // If API request failed but we have token data, use that
+          console.error('Failed to fetch user from API:', error.response?.status, error.response?.data);
+          
+          // If we have token data, use it as fallback regardless of error type
           if (userFromToken) {
             console.log('Using user data from token instead');
-            setUserState(userFromToken);
+            setUserState({
+              ...userFromToken,
+              // Add a flag to indicate this is from token, not API
+              _source: 'token' 
+            });
           } else {
-            // If both API and token fail, logout
+            // If token decoding failed, logout
+            console.log('Token decoding failed, logging out');
             setTokenState(null);
             Cookies.remove(AUTH_COOKIE_NAME, { path: '/' });
             localStorage.removeItem('authToken');
@@ -116,6 +126,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Try to load token from localStorage on initial client render
     try {
       const storedToken = localStorage.getItem('authToken') || Cookies.get(AUTH_COOKIE_NAME);
+      console.log('Initial auth check, token found:', !!storedToken);
       if (storedToken) {
         setTokenState(storedToken);
       } else {
@@ -156,14 +167,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const isAuthenticated = !!token && !!user;
 
   return (
-    <AuthContext.Provider value={{ 
-      token, 
-      setToken, 
-      user, 
-      setUser, 
-      isAuthenticated, 
+    <AuthContext.Provider value={{
+      token,
+      setToken,
+      user,
+      setUser,
+      isAuthenticated,
       loading,
-      logout 
+      logout
     }}>
       {children}
     </AuthContext.Provider>
@@ -176,4 +187,4 @@ export const useAuth = (): AuthContextType => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}; 
+};

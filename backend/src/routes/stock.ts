@@ -5,7 +5,9 @@ import {
     deleteStock,
     getStockById,
     getAllStocks,
-    bulkImportStocks
+    bulkImportStocks,
+    getStockBySymbol,
+    searchStocks
 } from '../controllers/stockController';
 import { validateStockData } from '../middleware/validationMiddleware';
 import { uploadCsvMulter } from '../config/multerConfig';
@@ -267,6 +269,59 @@ router.delete(
  */
 router.get('/', getAllStocks);
 
+/**
+ * @swagger
+ * /api/stocks/search:
+ *   get:
+ *     summary: Search stocks by keyword (searches in both symbol and name)
+ *     tags: [Stocks]
+ *     parameters:
+ *       - in: query
+ *         name: keyword
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Search keyword to find in stock symbol or name (case-insensitive)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 10
+ *         description: Maximum number of stocks to return
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [symbol, name, exchange, industry]
+ *           default: symbol
+ *         description: Field to sort by
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: asc
+ *         description: Sort order
+ *     responses:
+ *       200:
+ *         description: A list of matching stocks with pagination info
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/StockListResponse'
+ *       500:
+ *         description: Server error
+ */
+router.get('/search', searchStocks);
+
 // GET /api/stocks/:id
 /**
  * @swagger
@@ -295,6 +350,34 @@ router.get('/', getAllStocks);
  *         description: Server error
  */
 router.get('/:id', getStockById);
+
+// GET /api/stocks/symbol/:symbol
+/**
+ * @swagger
+ * /api/stocks/symbol/{symbol}:
+ *   get:
+ *     summary: Get a specific stock by symbol
+ *     tags: [Stocks]
+ *     parameters:
+ *       - in: path
+ *         name: symbol
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Symbol of the stock to retrieve (case-insensitive)
+ *     responses:
+ *       200:
+ *         description: Stock details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Stock'
+ *       404:
+ *         description: Stock not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/symbol/:symbol', getStockBySymbol);
 
 // --- NEW Bulk Import Route ---
 /**

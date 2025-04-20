@@ -6578,6 +6578,10 @@ export namespace Prisma {
     open: Decimal | null
     low: Decimal | null
     high: Decimal | null
+    close: Decimal | null
+    trend_q: Decimal | null
+    fq: Decimal | null
+    qv1: number | null
     band_down: Decimal | null
     band_up: Decimal | null
   }
@@ -6588,6 +6592,10 @@ export namespace Prisma {
     open: Decimal | null
     low: Decimal | null
     high: Decimal | null
+    close: Decimal | null
+    trend_q: Decimal | null
+    fq: Decimal | null
+    qv1: bigint | null
     band_down: Decimal | null
     band_up: Decimal | null
   }
@@ -6599,9 +6607,10 @@ export namespace Prisma {
     open: Decimal | null
     low: Decimal | null
     high: Decimal | null
-    trend_q: string | null
-    fq: string | null
-    qv1: string | null
+    close: Decimal | null
+    trend_q: Decimal | null
+    fq: Decimal | null
+    qv1: bigint | null
     band_down: Decimal | null
     band_up: Decimal | null
   }
@@ -6613,9 +6622,10 @@ export namespace Prisma {
     open: Decimal | null
     low: Decimal | null
     high: Decimal | null
-    trend_q: string | null
-    fq: string | null
-    qv1: string | null
+    close: Decimal | null
+    trend_q: Decimal | null
+    fq: Decimal | null
+    qv1: bigint | null
     band_down: Decimal | null
     band_up: Decimal | null
   }
@@ -6627,6 +6637,7 @@ export namespace Prisma {
     open: number
     low: number
     high: number
+    close: number
     trend_q: number
     fq: number
     qv1: number
@@ -6642,6 +6653,10 @@ export namespace Prisma {
     open?: true
     low?: true
     high?: true
+    close?: true
+    trend_q?: true
+    fq?: true
+    qv1?: true
     band_down?: true
     band_up?: true
   }
@@ -6652,6 +6667,10 @@ export namespace Prisma {
     open?: true
     low?: true
     high?: true
+    close?: true
+    trend_q?: true
+    fq?: true
+    qv1?: true
     band_down?: true
     band_up?: true
   }
@@ -6663,6 +6682,7 @@ export namespace Prisma {
     open?: true
     low?: true
     high?: true
+    close?: true
     trend_q?: true
     fq?: true
     qv1?: true
@@ -6677,6 +6697,7 @@ export namespace Prisma {
     open?: true
     low?: true
     high?: true
+    close?: true
     trend_q?: true
     fq?: true
     qv1?: true
@@ -6691,6 +6712,7 @@ export namespace Prisma {
     open?: true
     low?: true
     high?: true
+    close?: true
     trend_q?: true
     fq?: true
     qv1?: true
@@ -6792,9 +6814,10 @@ export namespace Prisma {
     open: Decimal | null
     low: Decimal | null
     high: Decimal | null
-    trend_q: string | null
-    fq: string | null
-    qv1: string | null
+    close: Decimal | null
+    trend_q: Decimal | null
+    fq: Decimal | null
+    qv1: bigint | null
     band_down: Decimal | null
     band_up: Decimal | null
     _count: StockQIndexCountAggregateOutputType | null
@@ -6825,6 +6848,7 @@ export namespace Prisma {
     open?: boolean
     low?: boolean
     high?: boolean
+    close?: boolean
     trend_q?: boolean
     fq?: boolean
     qv1?: boolean
@@ -6842,6 +6866,7 @@ export namespace Prisma {
     open?: boolean
     low?: boolean
     high?: boolean
+    close?: boolean
     trend_q?: boolean
     fq?: boolean
     qv1?: boolean
@@ -6849,7 +6874,7 @@ export namespace Prisma {
     band_up?: boolean
   }
 
-  export type StockQIndexOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "stock_id" | "date" | "open" | "low" | "high" | "trend_q" | "fq" | "qv1" | "band_down" | "band_up", ExtArgs["result"]["stockQIndex"]>
+  export type StockQIndexOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "stock_id" | "date" | "open" | "low" | "high" | "close" | "trend_q" | "fq" | "qv1" | "band_down" | "band_up", ExtArgs["result"]["stockQIndex"]>
   export type StockQIndexInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     stock?: boolean | StockDefaultArgs<ExtArgs>
   }
@@ -6866,9 +6891,10 @@ export namespace Prisma {
       open: Prisma.Decimal | null
       low: Prisma.Decimal | null
       high: Prisma.Decimal | null
-      trend_q: string | null
-      fq: string | null
-      qv1: string | null
+      close: Prisma.Decimal | null
+      trend_q: Prisma.Decimal | null
+      fq: Prisma.Decimal | null
+      qv1: bigint | null
       band_down: Prisma.Decimal | null
       band_up: Prisma.Decimal | null
     }, ExtArgs["result"]["stockQIndex"]>
@@ -7247,9 +7273,10 @@ export namespace Prisma {
     readonly open: FieldRef<"StockQIndex", 'Decimal'>
     readonly low: FieldRef<"StockQIndex", 'Decimal'>
     readonly high: FieldRef<"StockQIndex", 'Decimal'>
-    readonly trend_q: FieldRef<"StockQIndex", 'String'>
-    readonly fq: FieldRef<"StockQIndex", 'String'>
-    readonly qv1: FieldRef<"StockQIndex", 'String'>
+    readonly close: FieldRef<"StockQIndex", 'Decimal'>
+    readonly trend_q: FieldRef<"StockQIndex", 'Decimal'>
+    readonly fq: FieldRef<"StockQIndex", 'Decimal'>
+    readonly qv1: FieldRef<"StockQIndex", 'BigInt'>
     readonly band_down: FieldRef<"StockQIndex", 'Decimal'>
     readonly band_up: FieldRef<"StockQIndex", 'Decimal'>
   }
@@ -7705,6 +7732,7 @@ export namespace Prisma {
     open: 'open',
     low: 'low',
     high: 'high',
+    close: 'close',
     trend_q: 'trend_q',
     fq: 'fq',
     qv1: 'qv1',
@@ -7783,15 +7811,6 @@ export namespace Prisma {
   };
 
   export type ImageOrderByRelevanceFieldEnum = (typeof ImageOrderByRelevanceFieldEnum)[keyof typeof ImageOrderByRelevanceFieldEnum]
-
-
-  export const StockQIndexOrderByRelevanceFieldEnum: {
-    trend_q: 'trend_q',
-    fq: 'fq',
-    qv1: 'qv1'
-  };
-
-  export type StockQIndexOrderByRelevanceFieldEnum = (typeof StockQIndexOrderByRelevanceFieldEnum)[keyof typeof StockQIndexOrderByRelevanceFieldEnum]
 
 
   /**
@@ -8250,9 +8269,10 @@ export namespace Prisma {
     open?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     low?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     high?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
-    trend_q?: StringNullableFilter<"StockQIndex"> | string | null
-    fq?: StringNullableFilter<"StockQIndex"> | string | null
-    qv1?: StringNullableFilter<"StockQIndex"> | string | null
+    close?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    trend_q?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    fq?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    qv1?: BigIntNullableFilter<"StockQIndex"> | bigint | number | null
     band_down?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     band_up?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     stock?: XOR<StockScalarRelationFilter, StockWhereInput>
@@ -8265,17 +8285,18 @@ export namespace Prisma {
     open?: SortOrderInput | SortOrder
     low?: SortOrderInput | SortOrder
     high?: SortOrderInput | SortOrder
+    close?: SortOrderInput | SortOrder
     trend_q?: SortOrderInput | SortOrder
     fq?: SortOrderInput | SortOrder
     qv1?: SortOrderInput | SortOrder
     band_down?: SortOrderInput | SortOrder
     band_up?: SortOrderInput | SortOrder
     stock?: StockOrderByWithRelationInput
-    _relevance?: StockQIndexOrderByRelevanceInput
   }
 
   export type StockQIndexWhereUniqueInput = Prisma.AtLeast<{
     id?: bigint | number
+    stock_id_date?: StockQIndexStock_idDateCompoundUniqueInput
     AND?: StockQIndexWhereInput | StockQIndexWhereInput[]
     OR?: StockQIndexWhereInput[]
     NOT?: StockQIndexWhereInput | StockQIndexWhereInput[]
@@ -8284,13 +8305,14 @@ export namespace Prisma {
     open?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     low?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     high?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
-    trend_q?: StringNullableFilter<"StockQIndex"> | string | null
-    fq?: StringNullableFilter<"StockQIndex"> | string | null
-    qv1?: StringNullableFilter<"StockQIndex"> | string | null
+    close?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    trend_q?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    fq?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    qv1?: BigIntNullableFilter<"StockQIndex"> | bigint | number | null
     band_down?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     band_up?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     stock?: XOR<StockScalarRelationFilter, StockWhereInput>
-  }, "id">
+  }, "id" | "stock_id_date">
 
   export type StockQIndexOrderByWithAggregationInput = {
     id?: SortOrder
@@ -8299,6 +8321,7 @@ export namespace Prisma {
     open?: SortOrderInput | SortOrder
     low?: SortOrderInput | SortOrder
     high?: SortOrderInput | SortOrder
+    close?: SortOrderInput | SortOrder
     trend_q?: SortOrderInput | SortOrder
     fq?: SortOrderInput | SortOrder
     qv1?: SortOrderInput | SortOrder
@@ -8321,9 +8344,10 @@ export namespace Prisma {
     open?: DecimalNullableWithAggregatesFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     low?: DecimalNullableWithAggregatesFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     high?: DecimalNullableWithAggregatesFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
-    trend_q?: StringNullableWithAggregatesFilter<"StockQIndex"> | string | null
-    fq?: StringNullableWithAggregatesFilter<"StockQIndex"> | string | null
-    qv1?: StringNullableWithAggregatesFilter<"StockQIndex"> | string | null
+    close?: DecimalNullableWithAggregatesFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    trend_q?: DecimalNullableWithAggregatesFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    fq?: DecimalNullableWithAggregatesFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    qv1?: BigIntNullableWithAggregatesFilter<"StockQIndex"> | bigint | number | null
     band_down?: DecimalNullableWithAggregatesFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     band_up?: DecimalNullableWithAggregatesFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
   }
@@ -8739,9 +8763,10 @@ export namespace Prisma {
     open?: Decimal | DecimalJsLike | number | string | null
     low?: Decimal | DecimalJsLike | number | string | null
     high?: Decimal | DecimalJsLike | number | string | null
-    trend_q?: string | null
-    fq?: string | null
-    qv1?: string | null
+    close?: Decimal | DecimalJsLike | number | string | null
+    trend_q?: Decimal | DecimalJsLike | number | string | null
+    fq?: Decimal | DecimalJsLike | number | string | null
+    qv1?: bigint | number | null
     band_down?: Decimal | DecimalJsLike | number | string | null
     band_up?: Decimal | DecimalJsLike | number | string | null
     stock: StockCreateNestedOneWithoutQindexesInput
@@ -8754,9 +8779,10 @@ export namespace Prisma {
     open?: Decimal | DecimalJsLike | number | string | null
     low?: Decimal | DecimalJsLike | number | string | null
     high?: Decimal | DecimalJsLike | number | string | null
-    trend_q?: string | null
-    fq?: string | null
-    qv1?: string | null
+    close?: Decimal | DecimalJsLike | number | string | null
+    trend_q?: Decimal | DecimalJsLike | number | string | null
+    fq?: Decimal | DecimalJsLike | number | string | null
+    qv1?: bigint | number | null
     band_down?: Decimal | DecimalJsLike | number | string | null
     band_up?: Decimal | DecimalJsLike | number | string | null
   }
@@ -8767,9 +8793,10 @@ export namespace Prisma {
     open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
-    fq?: NullableStringFieldUpdateOperationsInput | string | null
-    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fq?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    qv1?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     stock?: StockUpdateOneRequiredWithoutQindexesNestedInput
@@ -8782,9 +8809,10 @@ export namespace Prisma {
     open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
-    fq?: NullableStringFieldUpdateOperationsInput | string | null
-    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fq?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    qv1?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
@@ -8796,9 +8824,10 @@ export namespace Prisma {
     open?: Decimal | DecimalJsLike | number | string | null
     low?: Decimal | DecimalJsLike | number | string | null
     high?: Decimal | DecimalJsLike | number | string | null
-    trend_q?: string | null
-    fq?: string | null
-    qv1?: string | null
+    close?: Decimal | DecimalJsLike | number | string | null
+    trend_q?: Decimal | DecimalJsLike | number | string | null
+    fq?: Decimal | DecimalJsLike | number | string | null
+    qv1?: bigint | number | null
     band_down?: Decimal | DecimalJsLike | number | string | null
     band_up?: Decimal | DecimalJsLike | number | string | null
   }
@@ -8809,9 +8838,10 @@ export namespace Prisma {
     open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
-    fq?: NullableStringFieldUpdateOperationsInput | string | null
-    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fq?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    qv1?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
@@ -8823,9 +8853,10 @@ export namespace Prisma {
     open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
-    fq?: NullableStringFieldUpdateOperationsInput | string | null
-    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fq?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    qv1?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
@@ -9382,10 +9413,9 @@ export namespace Prisma {
     isNot?: StockWhereInput
   }
 
-  export type StockQIndexOrderByRelevanceInput = {
-    fields: StockQIndexOrderByRelevanceFieldEnum | StockQIndexOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
+  export type StockQIndexStock_idDateCompoundUniqueInput = {
+    stock_id: bigint | number
+    date: Date | string
   }
 
   export type StockQIndexCountOrderByAggregateInput = {
@@ -9395,6 +9425,7 @@ export namespace Prisma {
     open?: SortOrder
     low?: SortOrder
     high?: SortOrder
+    close?: SortOrder
     trend_q?: SortOrder
     fq?: SortOrder
     qv1?: SortOrder
@@ -9408,6 +9439,10 @@ export namespace Prisma {
     open?: SortOrder
     low?: SortOrder
     high?: SortOrder
+    close?: SortOrder
+    trend_q?: SortOrder
+    fq?: SortOrder
+    qv1?: SortOrder
     band_down?: SortOrder
     band_up?: SortOrder
   }
@@ -9419,6 +9454,7 @@ export namespace Prisma {
     open?: SortOrder
     low?: SortOrder
     high?: SortOrder
+    close?: SortOrder
     trend_q?: SortOrder
     fq?: SortOrder
     qv1?: SortOrder
@@ -9433,6 +9469,7 @@ export namespace Prisma {
     open?: SortOrder
     low?: SortOrder
     high?: SortOrder
+    close?: SortOrder
     trend_q?: SortOrder
     fq?: SortOrder
     qv1?: SortOrder
@@ -9446,6 +9483,10 @@ export namespace Prisma {
     open?: SortOrder
     low?: SortOrder
     high?: SortOrder
+    close?: SortOrder
+    trend_q?: SortOrder
+    fq?: SortOrder
+    qv1?: SortOrder
     band_down?: SortOrder
     band_up?: SortOrder
   }
@@ -10365,9 +10406,10 @@ export namespace Prisma {
     open?: Decimal | DecimalJsLike | number | string | null
     low?: Decimal | DecimalJsLike | number | string | null
     high?: Decimal | DecimalJsLike | number | string | null
-    trend_q?: string | null
-    fq?: string | null
-    qv1?: string | null
+    close?: Decimal | DecimalJsLike | number | string | null
+    trend_q?: Decimal | DecimalJsLike | number | string | null
+    fq?: Decimal | DecimalJsLike | number | string | null
+    qv1?: bigint | number | null
     band_down?: Decimal | DecimalJsLike | number | string | null
     band_up?: Decimal | DecimalJsLike | number | string | null
   }
@@ -10378,9 +10420,10 @@ export namespace Prisma {
     open?: Decimal | DecimalJsLike | number | string | null
     low?: Decimal | DecimalJsLike | number | string | null
     high?: Decimal | DecimalJsLike | number | string | null
-    trend_q?: string | null
-    fq?: string | null
-    qv1?: string | null
+    close?: Decimal | DecimalJsLike | number | string | null
+    trend_q?: Decimal | DecimalJsLike | number | string | null
+    fq?: Decimal | DecimalJsLike | number | string | null
+    qv1?: bigint | number | null
     band_down?: Decimal | DecimalJsLike | number | string | null
     band_up?: Decimal | DecimalJsLike | number | string | null
   }
@@ -10437,9 +10480,10 @@ export namespace Prisma {
     open?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     low?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     high?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
-    trend_q?: StringNullableFilter<"StockQIndex"> | string | null
-    fq?: StringNullableFilter<"StockQIndex"> | string | null
-    qv1?: StringNullableFilter<"StockQIndex"> | string | null
+    close?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    trend_q?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    fq?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    qv1?: BigIntNullableFilter<"StockQIndex"> | bigint | number | null
     band_down?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
     band_up?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
   }
@@ -10823,9 +10867,10 @@ export namespace Prisma {
     open?: Decimal | DecimalJsLike | number | string | null
     low?: Decimal | DecimalJsLike | number | string | null
     high?: Decimal | DecimalJsLike | number | string | null
-    trend_q?: string | null
-    fq?: string | null
-    qv1?: string | null
+    close?: Decimal | DecimalJsLike | number | string | null
+    trend_q?: Decimal | DecimalJsLike | number | string | null
+    fq?: Decimal | DecimalJsLike | number | string | null
+    qv1?: bigint | number | null
     band_down?: Decimal | DecimalJsLike | number | string | null
     band_up?: Decimal | DecimalJsLike | number | string | null
   }
@@ -10875,9 +10920,10 @@ export namespace Prisma {
     open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
-    fq?: NullableStringFieldUpdateOperationsInput | string | null
-    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fq?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    qv1?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
@@ -10888,9 +10934,10 @@ export namespace Prisma {
     open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
-    fq?: NullableStringFieldUpdateOperationsInput | string | null
-    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fq?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    qv1?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
@@ -10901,9 +10948,10 @@ export namespace Prisma {
     open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
-    fq?: NullableStringFieldUpdateOperationsInput | string | null
-    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fq?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    qv1?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }

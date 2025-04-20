@@ -9,6 +9,11 @@ import { Home, Image as ImageIcon, Settings, CandlestickChart, BarChart2, Folder
 // Define navigation items
 const sidebarNavItems = [
     {
+        title: "Home",
+        href: "/",
+        icon: Home,
+    },
+    {
         title: "Overview",
         href: "/dashboard",
         icon: Home,
@@ -76,4 +81,4 @@ export function SidebarNav({ className, ...props }: SidebarNavProps) {
             ))}
         </nav>
     );
-} 
+}

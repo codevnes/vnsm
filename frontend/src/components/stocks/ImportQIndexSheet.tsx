@@ -82,7 +82,7 @@ export const ImportQIndexSheet: React.FC<ImportQIndexSheetProps> = ({
         <SheetHeader>
           <SheetTitle>Import Q-Indices for {stock?.symbol}</SheetTitle>
           <SheetDescription>
-            Upload a CSV file with Q-Index data. The file should contain columns for date, open, high, low, trend_q, fq, qv1, band_down, and band_up.
+            Upload a CSV file with Q-Index data. The file should contain columns for date, open, high, low, close, trend_q, fq, qv1, band_down, and band_up.
           </SheetDescription>
         </SheetHeader>
 
@@ -99,7 +99,7 @@ export const ImportQIndexSheet: React.FC<ImportQIndexSheetProps> = ({
           <div className="bg-green-100 text-green-800 text-sm p-3 rounded-md flex items-center gap-2 mt-4">
             <Check className="h-4 w-4" />
             <p>
-              Successfully imported {importResult.imported} records. 
+              Successfully imported {importResult.imported} records.
               {importResult.failed > 0 && ` Failed to import ${importResult.failed} records.`}
             </p>
           </div>
@@ -176,8 +176,8 @@ export const ImportQIndexSheet: React.FC<ImportQIndexSheetProps> = ({
 
           {/* Sample Template Link */}
           <div className="mt-2 text-center">
-            <a 
-              href="#" 
+            <a
+              href="#"
               className="text-xs text-primary hover:underline"
               onClick={(e) => {
                 e.preventDefault();
@@ -192,4 +192,4 @@ export const ImportQIndexSheet: React.FC<ImportQIndexSheetProps> = ({
       </SheetContent>
     </Sheet>
   );
-}; 
+};

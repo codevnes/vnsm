@@ -1,21 +1,18 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import React from 'react';
+import { useParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { 
-  AlertCircle, 
-  Upload, 
-  PlusCircle, 
-  Loader2, 
-  ArrowLeft 
+import {
+  Upload,
+  PlusCircle,
+  LoaderCircle,
+  ArrowLeft
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { 
+import {
   Table,
   TableHeader,
   TableRow,
@@ -31,11 +28,10 @@ import { ImportQIndexSheet } from '@/components/stocks/ImportQIndexSheet';
 import { DatePickerInput } from '@/components/ui/datepicker';
 
 export default function StockQIndicesPage() {
-    const { isAuthenticated, loading } = useAuth();
-    const router = useRouter();
+    // Authentication is now checked at the layout level
     const params = useParams();
     const stockId = params.id as string;
-    
+
     // Use the custom hook for QIndices management
     const {
         stock,
@@ -43,7 +39,7 @@ export default function StockQIndicesPage() {
         pagination,
         filters,
         isLoading,
-        
+
         // Form Dialog
         isFormOpen,
         editingQIndex,
@@ -52,7 +48,7 @@ export default function StockQIndicesPage() {
         openFormDialog,
         closeFormDialog,
         handleFormSubmit,
-        
+
         // Delete Dialog
         deletingQIndex,
         isDeleting,
@@ -60,7 +56,7 @@ export default function StockQIndicesPage() {
         openDeleteDialog,
         closeDeleteDialog,
         handleDeleteConfirm,
-        
+
         // Import Sheet
         isImportOpen,
         isImporting,
@@ -69,35 +65,20 @@ export default function StockQIndicesPage() {
         openImportSheet,
         closeImportSheet,
         handleImportSubmit,
-        
+
         // Pagination & Filtering
         goToPage,
         updateFilters,
     } = useQIndicesManagement({ stockId });
 
-    // Authentication Check
-    useEffect(() => {
-        if (!loading && !isAuthenticated) {
-            router.push('/login');
-        }
-    }, [isAuthenticated, loading, router]);
-
     // Handle date filter changes
     const handleDateFilterChange = (field: 'from' | 'to', date: Date | null) => {
         const formattedDate = date ? format(date, 'yyyy-MM-dd') : undefined;
-        updateFilters({ 
+        updateFilters({
             ...(field === 'from' ? { date_from: formattedDate } : {}),
             ...(field === 'to' ? { date_to: formattedDate } : {})
         });
     };
-
-    if (loading || !isAuthenticated) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                {loading ? <Loader2 className="w-8 h-8 animate-spin" /> : "Redirecting..."}
-            </div>
-        );
-    }
 
     return (
         <div className="p-4 md:p-6 lg:p-8 space-y-6">
@@ -117,9 +98,9 @@ export default function StockQIndicesPage() {
                     )}
                 </div>
             </div>
-            
+
             <Separator />
-            
+
             {/* Filters and actions row */}
             <div className="flex flex-col sm:flex-row justify-between gap-4">
                 <div className="flex flex-col sm:flex-row gap-2">
@@ -142,7 +123,7 @@ export default function StockQIndicesPage() {
                         />
                     </div>
                 </div>
-                
+
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={openImportSheet} disabled={!stock || isLoading}>
                         <Upload className="w-4 h-4 mr-2" />
@@ -164,6 +145,7 @@ export default function StockQIndicesPage() {
                             <TableHead>Open</TableHead>
                             <TableHead>High</TableHead>
                             <TableHead>Low</TableHead>
+                            <TableHead>Close</TableHead>
                             <TableHead>Trend Q</TableHead>
                             <TableHead>FQ</TableHead>
                             <TableHead>QV1</TableHead>
@@ -175,13 +157,13 @@ export default function StockQIndicesPage() {
                     <TableBody>
                         {isLoading ? (
                             <TableRow>
-                                <TableCell colSpan={10} className="h-24 text-center">
-                                    <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                                <TableCell colSpan={11} className="h-24 text-center">
+                                    <LoaderCircle className="h-6 w-6 animate-spin mx-auto" />
                                 </TableCell>
                             </TableRow>
                         ) : qIndices.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={10} className="h-24 text-center">
+                                <TableCell colSpan={11} className="h-24 text-center">
                                     No Q-indices found for this stock.
                                 </TableCell>
                             </TableRow>
@@ -192,6 +174,7 @@ export default function StockQIndicesPage() {
                                     <TableCell>{qIndex.open || '-'}</TableCell>
                                     <TableCell>{qIndex.high || '-'}</TableCell>
                                     <TableCell>{qIndex.low || '-'}</TableCell>
+                                    <TableCell>{qIndex.close || '-'}</TableCell>
                                     <TableCell>{qIndex.trend_q || '-'}</TableCell>
                                     <TableCell>{qIndex.fq || '-'}</TableCell>
                                     <TableCell>{qIndex.qv1 || '-'}</TableCell>
@@ -286,4 +269,4 @@ export default function StockQIndicesPage() {
             )}
         </div>
     );
-} 
+}

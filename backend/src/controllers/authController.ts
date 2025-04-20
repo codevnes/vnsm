@@ -112,15 +112,41 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
             return;
         }
 
-        const { userId } = req.user;
+        const { userId, email, role } = req.user;
+        console.log('getCurrentUser: userId from token =', userId);
         
         // Get user details from database (excluding password)
-        const user = await getUserById(userId);
+        let user = await getUserById(userId);
+        
+        // If user not found but we have valid token data, create a placeholder user
         if (!user) {
-            res.status(404).json({ message: 'User not found' });
-            return;
+            console.log(`User with ID ${userId} not found in database. Creating placeholder from token.`);
+            
+            try {
+                // Create a temporary random password (won't be used for login)
+                const tempPassword = Math.random().toString(36).slice(-10);
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(tempPassword, salt);
+                
+                // Create user with data from token
+                const newUser = await createUser({
+                    email,
+                    password: hashedPassword,
+                    full_name: email.split('@')[0], // Use part of email as name
+                    role: role as any, // Cast role from token
+                });
+                
+                console.log(`Created placeholder user with ID: ${newUser.id}`);
+                user = newUser;
+            } catch (createError) {
+                console.error('Error creating placeholder user:', createError);
+                res.status(404).json({ message: 'User not found and could not be created' });
+                return;
+            }
+        } else {
+            console.log('User found, returning data for ID:', user.id);
         }
-
+        
         // Return user data
         res.status(200).json(user);
     } catch (error) {

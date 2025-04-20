@@ -1,7 +1,10 @@
+'use client'; // Convert to Client Component
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
-import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
-import Link from "next/link";
+import { LoaderCircle } from 'lucide-react';
 
 // Optional: Add metadata for dashboard sections if needed
 // export const metadata = { ... }
@@ -10,17 +13,43 @@ interface DashboardLayoutProps {
     children: React.ReactNode;
 }
 
-// This remains a Server Component
 export default function DashboardLayout({
     children,
 }: DashboardLayoutProps) {
+    const { isAuthenticated, loading } = useAuth();
+    const router = useRouter();
 
-    // TODO: Add real logout functionality (likely via useAuth hook)
-    const handleLogout = () => {
-        console.log("Logout clicked - implement me!");
-        // Example: clear auth token, redirect
-    };
+    // Check authentication at the layout level
+    useEffect(() => {
+        // Log authentication state for debugging
+        console.log('Dashboard layout auth state:', { isAuthenticated, loading });
 
+        if (!loading && !isAuthenticated) {
+            // Get the current path to redirect back after login
+            const currentPath = window.location.pathname;
+            console.log('Redirecting to login with path:', currentPath);
+
+            // Redirect to login with the current path as the redirect parameter
+            router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+        }
+    }, [isAuthenticated, loading, router]);
+
+    // Show loading state while checking authentication
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <LoaderCircle className="w-8 h-8 animate-spin mr-2" />
+                <span>Loading...</span>
+            </div>
+        );
+    }
+
+    // If not authenticated and not loading, we're redirecting, so render nothing
+    if (!isAuthenticated) {
+        return null;
+    }
+
+    // Render dashboard layout if authenticated
     return (
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
             {/* Render the Client Component Sidebar */}
@@ -32,7 +61,7 @@ export default function DashboardLayout({
                 <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
                     {/* Mobile Sidebar Toggle (Needs state management if implemented) */}
                     {/* <Sheet> ... </Sheet> */}
-                    
+
                     <div className="flex-1">
                         {/* Can add Breadcrumbs or search here */}
                     </div>
@@ -53,4 +82,4 @@ export default function DashboardLayout({
             </div>
         </div>
     );
-} 
+}

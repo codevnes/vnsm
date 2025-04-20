@@ -3,12 +3,13 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
+import MainLayout from "@/components/layout/MainLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "VNSM App",
-  description: "Stock and Media Management",
+  title: "VNSM - Nền tảng phân tích chứng khoán Việt Nam",
+  description: "Nền tảng phân tích chứng khoán hàng đầu Việt Nam, cung cấp thông tin và công cụ phân tích đa chiều, giúp nhà đầu tư ra quyết định chính xác.",
 };
 
 export default function RootLayout({
@@ -17,10 +18,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="dark">
+    <html lang="vi" className="dark">
       <body className={inter.className}>
         <AuthProvider>
-          {children}
+          <MainLayout>{children}</MainLayout>
           <SonnerToaster richColors closeButton />
         </AuthProvider>
       </body>

@@ -15,4 +15,5 @@ export interface User {
     updatedAt?: string;
     phone?: string | null;
     verified?: boolean;
+    _source?: string; // For tracking data source (API or token)
 } 

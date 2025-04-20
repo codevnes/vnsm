@@ -1,82 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image'; // Use Next.js Image component
-import { useAuth } from '@/contexts/AuthContext';
+import React from 'react';
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-    CardDescription // Added for better card structure
-} from "@/components/ui/card";
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-    SheetFooter, // Added for sheet buttons
-    SheetClose // Added for closing sheet easily
-} from "@/components/ui/sheet";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-    DialogClose // Added for closing dialog easily
-} from "@/components/ui/dialog";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea"; // Use Textarea for alt text
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Upload, Trash2, Edit, Loader2, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react'; // Import icons
-
-// Define the structure of an image object based on backend API
-interface ImageType {
-    id: number;
-    url: string;
-    altText: string | null;
-    processedFilename: string;
-    width?: number;
-    height?: number;
-    createdAt: string;
-    // Add other fields if needed from your backend response
-}
-
-// Define the structure of the pagination info from backend API
-interface PaginationInfo {
-    total: number;
-    limit: number;
-    offset: number;
-    hasNextPage: boolean;
-}
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-const ITEMS_PER_PAGE = 8; // How many images to show per page
+import { Upload, LoaderCircle, AlertCircle } from 'lucide-react'; // Import only used icons
 
 // Import modular components
 import { MediaGrid } from '@/components/media/MediaGrid';
@@ -87,8 +13,7 @@ import { DeleteAlertDialog } from '@/components/media/DeleteAlertDialog';
 import { useMediaManagement } from '@/hooks/useMediaManagement';
 
 export default function MediaManagementPage() {
-    const { isAuthenticated, loading } = useAuth();
-    const router = useRouter();
+    // Authentication is now checked at the layout level
 
     // Use the custom hook for state and logic
     const {
@@ -117,24 +42,6 @@ export default function MediaManagementPage() {
         handlePrevPage,
     } = useMediaManagement();
 
-    // Authentication Check / Loading State
-    useEffect(() => {
-        if (!loading && !isAuthenticated) {
-            router.push('/login');
-        }
-    }, [isAuthenticated, loading, router]);
-
-    if (loading || !isAuthenticated) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                 {loading
-                    ? <Loader2 className="w-8 h-8 animate-spin" />
-                    : "Redirecting to login..."
-                }
-            </div>
-        );
-    }
-
     return (
         <div className="p-4 md:p-6 lg:p-8">
             {/* Header Section */}
@@ -156,7 +63,7 @@ export default function MediaManagementPage() {
             {/* Content Area */}
             {isLoading && images.length === 0 ? (
                 <div className="flex items-center justify-center h-64">
-                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                    <LoaderCircle className="w-8 h-8 animate-spin text-muted-foreground" />
                 </div>
             ) : !isLoading && images.length === 0 ? (
                  <div className="p-6 text-center border rounded-md bg-muted text-muted-foreground">
@@ -205,4 +112,4 @@ export default function MediaManagementPage() {
             />
         </div>
     );
-} 
+}

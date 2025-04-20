@@ -27,7 +27,7 @@ export const stockQIndexService = {
       params.append('limit', limit.toString());
       params.append('sortBy', sortBy);
       params.append('sortOrder', sortOrder);
-      
+
       // Add filters
       if (filters.stock_id) {
         params.append('stock_id', filters.stock_id.toString());
@@ -38,7 +38,7 @@ export const stockQIndexService = {
       if (filters.date_to) {
         params.append('date_to', filters.date_to);
       }
-      
+
       const response = await api.get(`/qindices?${params.toString()}`);
       return response.data;
     } catch (error) {
@@ -78,14 +78,14 @@ export const stockQIndexService = {
       params.append('limit', limit.toString());
       params.append('sortBy', sortBy);
       params.append('sortOrder', sortOrder);
-      
+
       if (dateFrom) {
         params.append('date_from', dateFrom);
       }
       if (dateTo) {
         params.append('date_to', dateTo);
       }
-      
+
       const response = await api.get(`/stocks/${stockId}/qindices?${params.toString()}`);
       return response.data;
     } catch (error) {
@@ -136,15 +136,44 @@ export const stockQIndexService = {
    * Bulk import Q-indices for a stock
    */
   bulkImportQIndices: async (
-    stockId: string | number, 
-    data: StockQIndexBulkImportData
+    formData: FormData
   ): Promise<StockQIndexBulkImportResponse> => {
     try {
-      const response = await api.post(`/stocks/${stockId}/qindices/bulk-import`, data);
+      const response = await api.post(`/qindices/bulk-import`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       return response.data;
     } catch (error) {
-      console.error(`Error bulk importing Q-indices for stock ${stockId}:`, error);
+      console.error(`Error bulk importing Q-indices:`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Bulk import Q-indices by symbol from CSV
+   */
+  bulkImportQIndicesBySymbol: async (
+    file: File
+  ): Promise<StockQIndexBulkImportResponse> => {
+    try {
+      console.log('Uploading file:', file.name, file.size, file.type);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      console.log('Making API call to /qindices/bulk-import-by-symbol');
+      const response = await api.post(`/qindices/bulk-import-by-symbol`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      console.log('API response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`Error bulk importing Q-indices by symbol:`, error);
       throw error;
     }
   }
-}; 
+};

@@ -180,6 +180,7 @@ exports.Prisma.StockQIndexScalarFieldEnum = {
   open: 'open',
   low: 'low',
   high: 'high',
+  close: 'close',
   trend_q: 'trend_q',
   fq: 'fq',
   qv1: 'qv1',
@@ -234,12 +235,6 @@ exports.Prisma.ImageOrderByRelevanceFieldEnum = {
   url: 'url',
   altText: 'altText',
   mimetype: 'mimetype'
-};
-
-exports.Prisma.StockQIndexOrderByRelevanceFieldEnum = {
-  trend_q: 'trend_q',
-  fq: 'fq',
-  qv1: 'qv1'
 };
 exports.Role = exports.$Enums.Role = {
   admin: 'admin',

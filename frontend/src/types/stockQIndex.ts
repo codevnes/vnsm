@@ -5,14 +5,15 @@ export interface StockQIndex {
   id: string;
   stock_id: string;
   date: string;
-  open: string | null;
-  low: string | null;
-  high: string | null;
-  trend_q: string | null;
-  fq: string | null;
-  qv1: string | null;
-  band_down: string | null;
-  band_up: string | null;
+  open: number | null;
+  low: number | null;
+  high: number | null;
+  close: number | null;
+  trend_q: number | null;
+  fq: number | null;
+  qv1: number | null;
+  band_down: number | null;
+  band_up: number | null;
   stock?: Stock;
 }
 
@@ -20,14 +21,15 @@ export interface StockQIndex {
 export interface StockQIndexInput {
   stock_id: string | number;
   date: string;
-  open?: number | null;
-  low?: number | null;
-  high?: number | null;
-  trend_q?: string | null;
-  fq?: string | null;
-  qv1?: string | null;
-  band_down?: number | null;
-  band_up?: number | null;
+  open?: number | string | null;
+  low?: number | string | null;
+  high?: number | string | null;
+  close?: number | string | null;
+  trend_q?: number | string | null;
+  fq?: number | string | null;
+  qv1?: number | string | null;
+  band_down?: number | string | null;
+  band_up?: number | string | null;
 }
 
 // Response structure for listing StockQIndices
@@ -71,4 +73,4 @@ export interface StockQIndexBulkImportResponse {
   imported: number;
   failed: number;
   errors?: string[];
-} 
+}

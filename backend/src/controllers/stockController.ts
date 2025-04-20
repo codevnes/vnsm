@@ -187,6 +187,82 @@ export const getAllStocks = async (req: Request, res: Response): Promise<void> =
     }
 };
 
+// Search stocks by keyword (searches both symbol and name)
+export const searchStocks = async (req: Request, res: Response): Promise<void> => {
+    const { 
+        keyword,
+        page = '1', 
+        limit = '10', 
+        sortBy = 'symbol', 
+        sortOrder = 'asc'
+    } = req.query;
+
+    const pageNum = parseInt(page as string, 10);
+    const limitNum = parseInt(limit as string, 10);
+    const skip = (pageNum - 1) * limitNum;
+
+    // Build the WHERE clause with OR condition to search in both fields
+    const where: Prisma.StockWhereInput = {};
+    
+    if (keyword && typeof keyword === 'string' && keyword.trim() !== '') {
+        const searchTerm = keyword.trim();
+        where.OR = [
+            {
+                symbol: {
+                    contains: searchTerm.toUpperCase(),
+                }
+            },
+            {
+                name: {
+                    contains: searchTerm,
+                }
+            }
+        ];
+    }
+
+    // Define allowed sort fields
+    const allowedSortByFields: Array<keyof Pick<Prisma.StockOrderByWithRelationInput, 'symbol' | 'name' | 'exchange' | 'industry'>> = ['symbol', 'name', 'exchange', 'industry'];
+    const sortField = sortBy as string;
+    const sortDir: Prisma.SortOrder = sortOrder === 'desc' ? 'desc' : 'asc';
+    let orderBy: Prisma.StockOrderByWithRelationInput = { symbol: 'asc' };
+    if (allowedSortByFields.includes(sortField as 'symbol' | 'name' | 'exchange' | 'industry')) {
+        orderBy = { [sortField]: sortDir };
+    }
+
+    try {
+        // Use the WHERE clause in both findMany and count
+        const [stocks, totalStocks] = await prisma.$transaction([
+            prisma.stock.findMany({
+                where,
+                skip,
+                take: limitNum,
+                orderBy,
+            }),
+            prisma.stock.count({ where })
+        ]);
+
+        // Convert BigInt IDs to strings
+        const serializedStocks = stocks.map(stock => ({
+            ...stock,
+            id: stock.id.toString(),
+        }));
+
+        res.status(200).json({
+            data: serializedStocks,
+            pagination: {
+                totalItems: totalStocks,
+                itemCount: stocks.length,
+                itemsPerPage: limitNum,
+                totalPages: Math.ceil(totalStocks / limitNum),
+                currentPage: pageNum,
+            }
+        });
+    } catch (error) {
+        console.error('Error searching stocks:', error);
+        res.status(500).json({ message: 'Server error searching stocks' });
+    }
+};
+
 // Get a single stock by ID
 export const getStockById = async (req: Request, res: Response): Promise<void> => {
     const stockId = BigInt(req.params.id);
@@ -217,6 +293,38 @@ export const getStockById = async (req: Request, res: Response): Promise<void> =
             res.status(400).json({ message: 'Invalid stock ID format' });
             return;
          }
+        res.status(500).json({ message: 'Server error fetching stock' });
+    }
+};
+
+// Get a stock by symbol
+export const getStockBySymbol = async (req: Request, res: Response): Promise<void> => {
+    const { symbol } = req.params;
+    
+    if (!symbol) {
+        res.status(400).json({ message: 'Symbol is required' });
+        return;
+    }
+    
+    try {
+        const stock = await prisma.stock.findUnique({
+            where: { symbol: symbol.toUpperCase() }
+        });
+
+        if (!stock) {
+            res.status(404).json({ message: 'Stock not found' });
+            return;
+        }
+
+        // Convert BigInt ID to string
+        const serializedStock = {
+            ...stock,
+            id: stock.id.toString(),
+        };
+
+        res.status(200).json(serializedStock);
+    } catch (error) {
+        console.error('Error fetching stock by symbol:', error);
         res.status(500).json({ message: 'Server error fetching stock' });
     }
 };

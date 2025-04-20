@@ -42,10 +42,11 @@ export default function LoginPage() {
     const { setToken, isAuthenticated, loading } = useAuth();
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    
+
     // Get the redirect URL from query params if available
     const redirectPath = searchParams.get('redirect') || '/dashboard';
-    
+    console.log('Redirect path:', redirectPath); // Add logging to debug
+
     // Redirect to dashboard if already authenticated
     useEffect(() => {
         if (!loading && isAuthenticated) {
@@ -84,7 +85,7 @@ export default function LoginPage() {
             }
 
             console.log("Login successful:", data);
-            
+
             setToken(data.token);
             router.push(redirectPath);
 
@@ -95,7 +96,7 @@ export default function LoginPage() {
             setIsLoading(false);
         }
     }
-    
+
     // Show loading state while checking authentication
     if (loading) {
         return (
@@ -104,7 +105,7 @@ export default function LoginPage() {
             </div>
         );
     }
-    
+
     // Don't show login form if already authenticated
     if (isAuthenticated) {
         return null; // Will redirect via useEffect
@@ -167,4 +168,4 @@ export default function LoginPage() {
             </Card>
         </div>
     );
-} 
+}

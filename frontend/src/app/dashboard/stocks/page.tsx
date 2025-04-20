@@ -1,12 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useState } from 'react';
 import { useStockManagement } from '@/hooks/useStockManagement';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, Upload, PlusCircle, Loader2, Search } from 'lucide-react';
+import { AlertCircle, Upload, PlusCircle, Search } from 'lucide-react';
 
 // Import modular components
 import { StockTable } from '@/components/stocks/StockTable';
@@ -16,8 +14,7 @@ import { DeleteStockDialog } from '@/components/stocks/DeleteStockDialog';
 import { ImportStockSheet } from '@/components/stocks/ImportStockSheet';
 
 export default function StocksManagementPage() {
-    const { isAuthenticated, loading } = useAuth();
-    const router = useRouter();
+    // Authentication is now checked at the layout level
     const [searchTerm, setSearchTerm] = useState<string>('');
 
     const {
@@ -53,13 +50,6 @@ export default function StocksManagementPage() {
         setFilters,
     } = useStockManagement();
 
-    // Authentication Check
-    useEffect(() => {
-        if (!loading && !isAuthenticated) {
-            router.push('/login');
-        }
-    }, [isAuthenticated, loading, router]);
-
     // Handle search input change directly
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newSearchTerm = event.target.value;
@@ -69,14 +59,6 @@ export default function StocksManagementPage() {
             setFilters({ name: newSearchTerm });
         }
     };
-
-    if (loading || !isAuthenticated) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                {loading ? <Loader2 className="w-8 h-8 animate-spin" /> : "Redirecting..."}
-            </div>
-        );
-    }
 
     return (
         <div className="p-4 md:p-6 lg:p-8 space-y-6">
@@ -159,4 +141,4 @@ export default function StocksManagementPage() {
             />
         </div>
     );
-} 
+}

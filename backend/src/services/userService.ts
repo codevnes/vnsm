@@ -9,9 +9,30 @@ const prisma = new PrismaClient();
  */
 export const getUserById = async (userId: string) => {
   try {
-    const user = await prisma.user.findUnique({
+    console.log('getUserById called with userId:', userId);
+    
+    // Add a try-catch for the BigInt conversion specifically
+    let bigIntId;
+    try {
+      // Ensure userId is a clean numeric string (remove any non-numeric characters)
+      const cleanUserId = userId.replace(/[^0-9]/g, '');
+      
+      if (!cleanUserId) {
+        console.error('Invalid userId format for BigInt conversion');
+        return null;
+      }
+      
+      bigIntId = BigInt(cleanUserId);
+      console.log('Converted to BigInt successfully:', bigIntId.toString());
+    } catch (conversionError) {
+      console.error('Failed to convert userId to BigInt:', conversionError);
+      return null;
+    }
+    
+    // Try to find the user with exact ID match first
+    let user = await prisma.user.findUnique({
       where: {
-        id: BigInt(userId),
+        id: bigIntId,
       },
       select: {
         id: true,
@@ -24,6 +45,8 @@ export const getUserById = async (userId: string) => {
         // Exclude password for security
       },
     });
+
+    console.log('User lookup result:', user ? 'User found' : 'User not found');
 
     if (!user) {
       return null;

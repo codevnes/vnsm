@@ -13,7 +13,7 @@ export function DashboardSidebar() {
 
     const handleLogout = () => {
         logout(); // Use the logout function from context
-        router.push('/login'); // Redirect to login page
+        router.push('/login'); // Redirect to login page without redirect param (since it's an explicit logout)
         // Optionally add a notification here
     };
 
@@ -39,4 +39,4 @@ export function DashboardSidebar() {
              </div>
         </aside>
     );
-} 
+}

@@ -56,13 +56,17 @@ export const useQIndicesManagement = ({ stockId }: UseQIndicesManagementProps) =
       const stockResponse = await stockService.getStockById(stockId);
       setStock(stockResponse);
       
-      // Fetch Q-indices for this stock
-      const qIndicesResponse = await stockQIndexService.getQIndicesByStockId(
-        stockId,
+      // Fetch Q-indices for this stock using the main qindices endpoint with stock_id parameter
+      const qIndicesResponse = await stockQIndexService.getAllQIndices(
         pagination.currentPage,
         pagination.itemsPerPage,
-        filters.date_from,
-        filters.date_to
+        {
+          stock_id: stockId,
+          date_from: filters.date_from,
+          date_to: filters.date_to
+        },
+        'date',
+        'desc'
       );
       
       setQIndices(qIndicesResponse.data);
@@ -180,11 +184,10 @@ export const useQIndicesManagement = ({ stockId }: UseQIndicesManagementProps) =
       // Create FormData with file
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('stock_id', stockId.toString()); // Add stock_id to the form data
       
-      // Send to API
-      const result = await stockQIndexService.bulkImportQIndices(stockId, {
-        qIndices: [] // The API will extract data from the file
-      });
+      // Send to API using the updated method signature
+      const result = await stockQIndexService.bulkImportQIndices(formData);
       
       setImportResult(result);
       if (result.imported > 0) {

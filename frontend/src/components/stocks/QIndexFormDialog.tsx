@@ -29,14 +29,15 @@ import { Stock } from '@/types/stock';
 // Define the form schema with validation
 const qIndexSchema = z.object({
   date: z.string().min(1, { message: "Date is required" }),
-  open: z.string().optional().nullable().transform(val => val === '' ? null : parseFloat(val || '0')),
-  high: z.string().optional().nullable().transform(val => val === '' ? null : parseFloat(val || '0')),
-  low: z.string().optional().nullable().transform(val => val === '' ? null : parseFloat(val || '0')),
+  open: z.string().optional().nullable(),
+  high: z.string().optional().nullable(),
+  low: z.string().optional().nullable(),
+  close: z.string().optional().nullable(),
   trend_q: z.string().optional().nullable(),
   fq: z.string().optional().nullable(),
   qv1: z.string().optional().nullable(),
-  band_down: z.string().optional().nullable().transform(val => val === '' ? null : parseFloat(val || '0')),
-  band_up: z.string().optional().nullable().transform(val => val === '' ? null : parseFloat(val || '0')),
+  band_down: z.string().optional().nullable(),
+  band_up: z.string().optional().nullable()
 });
 
 type QIndexFormValues = z.infer<typeof qIndexSchema>;
@@ -75,6 +76,7 @@ export const QIndexFormDialog: React.FC<QIndexFormDialogProps> = ({
       open: initialData?.open ?? '',
       high: initialData?.high ?? '',
       low: initialData?.low ?? '',
+      close: initialData?.close ?? '',
       trend_q: initialData?.trend_q ?? '',
       fq: initialData?.fq ?? '',
       qv1: initialData?.qv1 ?? '',
@@ -90,18 +92,19 @@ export const QIndexFormDialog: React.FC<QIndexFormDialogProps> = ({
   });
 
   const handleSubmit = async (data: QIndexFormValues) => {
-    // Convert form values to API input
+    // Convert form values to API input with proper type conversions
     const qIndexData: StockQIndexInput = {
       stock_id: stock.id,
       date: data.date,
-      open: data.open,
-      high: data.high,
-      low: data.low,
+      open: data.open ? parseFloat(data.open) : null,
+      high: data.high ? parseFloat(data.high) : null,
+      low: data.low ? parseFloat(data.low) : null,
+      close: data.close ? parseFloat(data.close) : null,
       trend_q: data.trend_q,
       fq: data.fq,
       qv1: data.qv1,
-      band_down: data.band_down,
-      band_up: data.band_up,
+      band_down: data.band_down ? parseFloat(data.band_down) : null,
+      band_up: data.band_up ? parseFloat(data.band_up) : null,
     };
 
     await onSubmit(qIndexData);
@@ -109,7 +112,7 @@ export const QIndexFormDialog: React.FC<QIndexFormDialogProps> = ({
 
   const isEditing = !!initialData;
   const title = isEditing ? "Edit Q-Index" : "Add Q-Index";
-  const description = isEditing 
+  const description = isEditing
     ? `Update Q-Index data for ${stock.symbol} on ${formatDateForInput(initialData?.date)}`
     : `Add new Q-Index data for ${stock.symbol}`;
 
@@ -180,6 +183,20 @@ export const QIndexFormDialog: React.FC<QIndexFormDialogProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Low</FormLabel>
+                    <FormControl>
+                      <Input type="number" step="0.01" {...field} value={field.value ?? ''} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="close"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Close</FormLabel>
                     <FormControl>
                       <Input type="number" step="0.01" {...field} value={field.value ?? ''} />
                     </FormControl>
@@ -273,4 +290,4 @@ export const QIndexFormDialog: React.FC<QIndexFormDialogProps> = ({
       </DialogContent>
     </Dialog>
   );
-}; 
+};
