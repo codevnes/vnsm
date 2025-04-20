@@ -78,6 +78,32 @@ vnsm/
 
 ### Xem logs
 
+Script triển khai cung cấp các lệnh tiện ích để kiểm tra logs:
+
+```bash
+# Xem logs của tất cả các container
+./deploy.sh logs
+
+# Xem logs của một container cụ thể
+./deploy.sh logs backend
+./deploy.sh logs frontend
+./deploy.sh logs mysql
+./deploy.sh logs traefik
+
+# Theo dõi logs theo thời gian thực (live logs)
+./deploy.sh follow
+./deploy.sh follow backend
+
+# Hiển thị trạng thái các container
+./deploy.sh status
+
+# Khởi động lại các container
+./deploy.sh restart
+./deploy.sh restart backend
+```
+
+Bạn cũng có thể sử dụng các lệnh Docker Compose trực tiếp:
+
 ```bash
 # Xem logs của tất cả các container
 docker-compose logs
@@ -85,6 +111,10 @@ docker-compose logs
 # Xem logs của một container cụ thể
 docker-compose logs backend
 docker-compose logs frontend
+
+# Theo dõi logs theo thời gian thực
+docker-compose logs -f
+docker-compose logs -f backend
 ```
 
 ### Khởi động lại ứng dụng

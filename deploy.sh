@@ -470,30 +470,152 @@ deploy_application() {
   print_message "Lưu ý: Có thể mất vài phút để Let's Encrypt cấp chứng chỉ SSL."
 }
 
-# Hàm chính
-main() {
-  print_message "=== Bắt đầu quá trình triển khai VNSM ==="
+# Kiểm tra logs của các container
+check_logs() {
+  local service=$1
   
-  # Kiểm tra các yêu cầu cần thiết
-  check_requirements
+  if [ -z "$service" ]; then
+    print_message "Hiển thị logs của tất cả các dịch vụ..."
+    docker-compose logs
+    return
+  fi
   
-  # Lấy thông tin cấu hình
-  get_config
+  # Kiểm tra xem service có tồn tại không
+  if ! docker-compose ps "$service" &>/dev/null; then
+    print_error "Dịch vụ '$service' không tồn tại hoặc không chạy."
+    print_message "Các dịch vụ có sẵn:"
+    docker-compose ps --services
+    return 1
+  fi
   
-  # Tạo thư mục cần thiết
-  create_directories
-  
-  # Tạo các file cấu hình
-  create_docker_compose
-  create_backend_dockerfile
-  create_frontend_dockerfile
-  create_traefik_config
-  
-  # Triển khai ứng dụng
-  deploy_application
-  
-  print_message "=== Quá trình triển khai VNSM hoàn tất ==="
+  print_message "Hiển thị logs của dịch vụ $service..."
+  docker-compose logs "$service"
 }
 
-# Chạy hàm chính
-main
+# Theo dõi logs theo thời gian thực
+follow_logs() {
+  local service=$1
+  
+  if [ -z "$service" ]; then
+    print_message "Theo dõi logs của tất cả các dịch vụ..."
+    docker-compose logs -f
+    return
+  fi
+  
+  # Kiểm tra xem service có tồn tại không
+  if ! docker-compose ps "$service" &>/dev/null; then
+    print_error "Dịch vụ '$service' không tồn tại hoặc không chạy."
+    print_message "Các dịch vụ có sẵn:"
+    docker-compose ps --services
+    return 1
+  fi
+  
+  print_message "Theo dõi logs của dịch vụ $service..."
+  docker-compose logs -f "$service"
+}
+
+# Hiển thị trợ giúp
+show_help() {
+  echo "Cách sử dụng: $0 [OPTION]"
+  echo ""
+  echo "Các tùy chọn:"
+  echo "  deploy              Triển khai ứng dụng (mặc định)"
+  echo "  logs [SERVICE]      Hiển thị logs của tất cả hoặc một dịch vụ cụ thể"
+  echo "  follow [SERVICE]    Theo dõi logs theo thời gian thực"
+  echo "  restart [SERVICE]   Khởi động lại tất cả hoặc một dịch vụ cụ thể"
+  echo "  status              Hiển thị trạng thái của các dịch vụ"
+  echo "  help                Hiển thị trợ giúp này"
+  echo ""
+  echo "Ví dụ:"
+  echo "  $0                  Triển khai ứng dụng"
+  echo "  $0 logs backend     Hiển thị logs của backend"
+  echo "  $0 follow frontend  Theo dõi logs của frontend theo thời gian thực"
+  echo "  $0 restart          Khởi động lại tất cả các dịch vụ"
+  echo "  $0 status           Hiển thị trạng thái của các dịch vụ"
+}
+
+# Khởi động lại dịch vụ
+restart_service() {
+  local service=$1
+  
+  if [ -z "$service" ]; then
+    print_message "Khởi động lại tất cả các dịch vụ..."
+    docker-compose restart
+    return
+  fi
+  
+  # Kiểm tra xem service có tồn tại không
+  if ! docker-compose ps "$service" &>/dev/null; then
+    print_error "Dịch vụ '$service' không tồn tại hoặc không chạy."
+    print_message "Các dịch vụ có sẵn:"
+    docker-compose ps --services
+    return 1
+  fi
+  
+  print_message "Khởi động lại dịch vụ $service..."
+  docker-compose restart "$service"
+}
+
+# Hiển thị trạng thái
+show_status() {
+  print_message "Trạng thái các dịch vụ:"
+  docker-compose ps
+}
+
+# Hàm chính
+main() {
+  local command=$1
+  local service=$2
+  
+  case "$command" in
+    logs)
+      check_logs "$service"
+      ;;
+    follow)
+      follow_logs "$service"
+      ;;
+    restart)
+      restart_service "$service"
+      ;;
+    status)
+      show_status
+      ;;
+    help)
+      show_help
+      ;;
+    deploy|"")
+      print_message "=== Bắt đầu quá trình triển khai VNSM ==="
+      
+      # Kiểm tra các yêu cầu cần thiết
+      check_requirements
+      
+      # Lấy thông tin cấu hình
+      get_config
+      
+      # Tạo thư mục cần thiết
+      create_directories
+      
+      # Tạo các file cấu hình
+      create_docker_compose
+      create_backend_dockerfile
+      create_frontend_dockerfile
+      create_traefik_config
+      
+      # Triển khai ứng dụng
+      deploy_application
+      
+      print_message "=== Quá trình triển khai VNSM hoàn tất ==="
+      print_message "Để kiểm tra logs, sử dụng: $0 logs [SERVICE]"
+      print_message "Để theo dõi logs theo thời gian thực, sử dụng: $0 follow [SERVICE]"
+      print_message "Để xem trạng thái các dịch vụ, sử dụng: $0 status"
+      ;;
+    *)
+      print_error "Lệnh không hợp lệ: $command"
+      show_help
+      exit 1
+      ;;
+  esac
+}
+
+# Chạy hàm chính với các tham số dòng lệnh
+main "$@"
