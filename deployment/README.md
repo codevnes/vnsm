@@ -44,6 +44,7 @@ Edit the `.env` file to configure the deployment:
 - `DOMAIN`: Your domain name (e.g., vnsm.com)
 - `ACME_EMAIL`: Email address for Let's Encrypt notifications
 - `TRAEFIK_USER` and `TRAEFIK_PASSWORD`: Credentials for the Traefik dashboard
+- `ADMINER_USER` and `ADMINER_PASSWORD`: Credentials for the Adminer database manager
 - `DB_*`: PostgreSQL database configuration
 - `JWT_SECRET`: Secret for JWT authentication
 - `BACKUP_*`: Database backup settings
@@ -51,6 +52,17 @@ Edit the `.env` file to configure the deployment:
 ### Traefik Dashboard
 
 The Traefik dashboard is available at `traefik.yourdomain.com` and is protected with basic authentication.
+
+### Database Management with Adminer
+
+Adminer provides a web interface for managing your PostgreSQL database. It is available at `db.yourdomain.com` and is protected with basic authentication.
+
+To connect to your database:
+- System: PostgreSQL
+- Server: db
+- Username: (your DB_USER from .env)
+- Password: (your DB_PASSWORD from .env)
+- Database: (your DB_NAME from .env)
 
 ### Automatic SSL Certificates
 
@@ -112,6 +124,7 @@ docker-compose logs frontend
 docker-compose logs backend
 docker-compose logs db
 docker-compose logs traefik
+docker-compose logs adminer
 ```
 
 ## Troubleshooting

@@ -89,6 +89,28 @@ services:
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
 
+  # Add Adminer service for database management
+  adminer:
+    image: adminer:latest
+    container_name: vnsm-adminer
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - backend
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adminer.rule=Host(`db.${DOMAIN}`)"
+      - "traefik.http.routers.adminer.entrypoints=websecure"
+      - "traefik.http.routers.adminer.tls.certresolver=letsencrypt"
+      - "traefik.http.services.adminer.loadbalancer.server.port=8080"
+      - "traefik.http.routers.adminer.middlewares=adminer-auth"
+      - "traefik.http.middlewares.adminer-auth.basicauth.users=${ADMINER_USER}:${ADMINER_PASSWORD}"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+      ADMINER_DESIGN: pepa-linha-dark
+
 networks:
   proxy:
     external: true
