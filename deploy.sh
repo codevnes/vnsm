@@ -297,14 +297,28 @@ RUN npm install csv-parse @types/csv-parse
 # Copy source code
 COPY . .
 
-# Tạo Prisma client
-RUN npx prisma generate
-
 # Thêm cấu hình TypeScript để bỏ qua lỗi kiểu dữ liệu
 RUN echo '{ "compilerOptions": { "noImplicitAny": false } }' > ./tsconfig.build.json
 
 # Build ứng dụng với cấu hình mở rộng
 RUN npm run build || (echo "Đang thử build lại với cấu hình khác..." && npx tsc --skipLibCheck)
+
+# Tạo Prisma client sau khi build để đảm bảo đúng đường dẫn
+RUN npx prisma generate
+
+# Kiểm tra xem thư mục generated/prisma có tồn tại không
+RUN if [ ! -d "./src/generated/prisma" ]; then \
+      mkdir -p ./src/generated/prisma && \
+      cp -r ./node_modules/.prisma/client/* ./src/generated/prisma/ && \
+      echo "Đã sao chép Prisma client vào thư mục generated/prisma"; \
+    fi
+
+# Kiểm tra xem thư mục dist/generated/prisma có tồn tại không
+RUN if [ ! -d "./dist/generated/prisma" ]; then \
+      mkdir -p ./dist/generated/prisma && \
+      cp -r ./node_modules/.prisma/client/* ./dist/generated/prisma/ && \
+      echo "Đã sao chép Prisma client vào thư mục dist/generated/prisma"; \
+    fi
 
 # Expose port
 EXPOSE 3001
