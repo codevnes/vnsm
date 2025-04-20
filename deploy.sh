@@ -306,25 +306,43 @@ RUN npm run build || (echo "Đang thử build lại với cấu hình khác..." 
 # Tạo Prisma client sau khi build để đảm bảo đúng đường dẫn
 RUN npx prisma generate
 
-# Kiểm tra xem thư mục generated/prisma có tồn tại không
-RUN if [ ! -d "./src/generated/prisma" ]; then \
-      mkdir -p ./src/generated/prisma && \
-      cp -r ./node_modules/.prisma/client/* ./src/generated/prisma/ && \
-      echo "Đã sao chép Prisma client vào thư mục generated/prisma"; \
-    fi
+# Đảm bảo thư mục generated/prisma tồn tại trong cả src và dist
+RUN mkdir -p ./src/generated/prisma
+RUN mkdir -p ./dist/generated/prisma
 
-# Kiểm tra xem thư mục dist/generated/prisma có tồn tại không
-RUN if [ ! -d "./dist/generated/prisma" ]; then \
-      mkdir -p ./dist/generated/prisma && \
-      cp -r ./node_modules/.prisma/client/* ./dist/generated/prisma/ && \
-      echo "Đã sao chép Prisma client vào thư mục dist/generated/prisma"; \
-    fi
+# Sao chép Prisma client vào các thư mục cần thiết
+RUN cp -r ./node_modules/.prisma/client/* ./src/generated/prisma/
+RUN cp -r ./node_modules/.prisma/client/* ./dist/generated/prisma/
+
+# Tạo file index.js trong thư mục dist/generated/prisma để đảm bảo import hoạt động
+RUN echo "const { PrismaClient } = require('@prisma/client');" > ./dist/generated/prisma/index.js
+RUN echo "module.exports = { PrismaClient };" >> ./dist/generated/prisma/index.js
+
+# Tạo file index.d.ts trong thư mục dist/generated/prisma để đảm bảo TypeScript hoạt động
+RUN echo "export * from '@prisma/client';" > ./dist/generated/prisma/index.d.ts
+
+# Hiển thị cấu trúc thư mục để debug
+RUN echo "Cấu trúc thư mục dist:" && ls -la ./dist && ls -la ./dist/generated || true
 
 # Expose port
 EXPOSE 3001
 
+# Tạo script khởi động để đảm bảo Prisma client được tạo đúng cách
+RUN echo '#!/bin/sh' > /app/start.sh
+RUN echo 'echo "Đang tạo Prisma client..."' >> /app/start.sh
+RUN echo 'npx prisma generate' >> /app/start.sh
+RUN echo 'echo "Đang kiểm tra thư mục Prisma client..."' >> /app/start.sh
+RUN echo 'if [ ! -d "./dist/generated/prisma" ]; then' >> /app/start.sh
+RUN echo '  echo "Thư mục dist/generated/prisma không tồn tại, đang tạo..."' >> /app/start.sh
+RUN echo '  mkdir -p ./dist/generated/prisma' >> /app/start.sh
+RUN echo '  cp -r ./node_modules/.prisma/client/* ./dist/generated/prisma/' >> /app/start.sh
+RUN echo 'fi' >> /app/start.sh
+RUN echo 'echo "Đang khởi động ứng dụng..."' >> /app/start.sh
+RUN echo 'npm start' >> /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Khởi động ứng dụng
-CMD ["npm", "start"]
+CMD ["/app/start.sh"]
 EOL
 
   print_message "Đã tạo Dockerfile cho backend thành công!"
