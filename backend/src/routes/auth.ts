@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { registerUser, loginUser } from '../controllers/authController';
+import { registerUser, loginUser, getCurrentUser } from '../controllers/authController';
 import { validateRegistration, validateLogin } from '../middleware/validationMiddleware';
+import { authenticateJWT } from '../middleware/authMiddleware';
 const router = Router();
 
 /**
@@ -88,6 +89,38 @@ router.post('/register', ...validateRegistration, registerUser);
  *         description: Server error
  */
 router.post('/login', ...validateLogin, loginUser);
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     summary: Get current user information
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Current user information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 full_name:
+ *                   type: string
+ *                 role:
+ *                   type: string
+ *                   enum: [admin, editor, user]
+ *       401:
+ *         description: Not authenticated
+ *       500:
+ *         description: Server error
+ */
+router.get('/me', authenticateJWT, getCurrentUser);
 
 // --- TODO: Add Forgot Password Route --- 
 

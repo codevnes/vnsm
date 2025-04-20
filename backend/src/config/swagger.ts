@@ -42,7 +42,13 @@ const options: swaggerJsdoc.Options = {
     },
     // Path to the API docs files (can include controllers, routes, etc.)
     apis: [
-        path.join(__dirname, '../routes/*.ts'),         // Include all route files
+        path.join(__dirname, '../routes/auth.ts'),      // Include specific route files 
+        path.join(__dirname, '../routes/category.ts'),  // Include specific route files
+        path.join(__dirname, '../routes/post.ts'),      // Include specific route files
+        path.join(__dirname, '../routes/stock.ts'),     // Include specific route files
+        path.join(__dirname, '../routes/upload.ts'),    // Include specific route files
+        path.join(__dirname, '../routes/image.ts'),     // Include specific route files
+        path.join(__dirname, '../routes/stockQindexNew.ts'),  // Include stockQindexNew routes
         // path.join(__dirname, '../controllers/*.ts'), // Optionally include controllers if they have annotations
     ],
 };

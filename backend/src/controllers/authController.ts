@@ -3,6 +3,7 @@ import prisma from '../lib/prisma'; // Import Prisma client
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { getUserByEmail, createUser, getUserById } from '../services/userService';
 // import { Role } from '@prisma/client'; // Import Role enum - Removed as it's not directly needed here
 
 dotenv.config();
@@ -21,42 +22,36 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 
     try {
         // Check if user already exists
-        const existingUser = await prisma.user.findUnique({
-            where: { email },
-        });
+        const existingUser = await getUserByEmail(email);
         if (existingUser) {
-            res.status(400).json({ message: 'User already exists with this email' });
+            res.status(400).json({ message: 'User with this email already exists' });
             return;
         }
 
-        // Hash the password before saving
+        // Hash the password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Create new user using Prisma Client
-        const newUser = await prisma.user.create({
-            data: {
-                email,
-                password: hashedPassword, // Save hashed password
-                full_name,
-                phone,
-                // role is defaulted in schema
-                // verified is defaulted in schema
-            },
-            select: { id: true } // Only select the id
+        // Create user with hashed password
+        const user = await createUser({
+            email,
+            password: hashedPassword,
+            full_name,
+            phone,
+            // Default role is 'user', set in the schema
         });
 
-        // Convert BigInt userId to string for JSON serialization
-        const userIdString = newUser.id.toString();
-
-        res.status(201).json({ message: 'User registered successfully', userId: userIdString });
-        return;
-
+        res.status(201).json({
+            message: 'User registered successfully',
+            user: {
+                id: user.id,
+                email: user.email,
+                full_name: user.full_name,
+            },
+        });
     } catch (error) {
         console.error('Registration error:', error);
-        // Consider more specific error handling for Prisma errors
-        res.status(500).json({ message: 'Server error during registration' });
-        return;
+        res.status(500).json({ message: 'An error occurred during registration' });
     }
 };
 
@@ -65,52 +60,72 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
     try {
-        // Find user by email using Prisma Client
-        const user = await prisma.user.findUnique({
-            where: { email },
-        });
+        // Find the user
+        const user = await getUserByEmail(email);
         if (!user) {
-            res.status(401).json({ message: 'Invalid credentials' });
+            res.status(401).json({ message: 'Invalid email or password' });
             return;
         }
 
-        // Compare passwords
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            res.status(401).json({ message: 'Invalid credentials' });
+        // Check password
+        const passwordValid = await bcrypt.compare(password, user.password);
+        if (!passwordValid) {
+            res.status(401).json({ message: 'Invalid email or password' });
             return;
         }
 
-        // Passwords match, generate JWT token
-        // Convert BigInt id to string or number if necessary for JWT payload
-        const userIdString = user.id.toString(); 
-
-        const payload = {
-            user: {
-                id: userIdString, // Use converted ID
-                role: user.role // Role comes from Prisma model
-            }
-        };
-
-        jwt.sign(
-            payload,
-            JWT_SECRET!, 
-            { expiresIn: 86400 }, // Use numeric value (1 day in seconds)
-            (err, token) => {
-                if (err) {
-                    console.error('JWT sign error:', err);
-                    res.status(500).json({ message: 'Server error generating token' });
-                    return; 
-                }
-                res.json({ token });
-                return;
-            }
+        // Generate JWT token
+        const token = jwt.sign(
+            {
+                userId: user.id,
+                email: user.email,
+                role: user.role,
+            },
+            JWT_SECRET!,
+            { expiresIn: '24h' }
         );
 
+        res.status(200).json({
+            message: 'Login successful',
+            token,
+            user: {
+                id: user.id,
+                email: user.email,
+                full_name: user.full_name,
+                role: user.role,
+            },
+        });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ message: 'Server error during login' });
-        return;
+        res.status(500).json({ message: 'An error occurred during login' });
+    }
+};
+
+/**
+ * Get current user information
+ */
+export const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // User should be attached to the request by the authenticateJWT middleware
+        if (!req.user) {
+            res.status(401).json({ message: 'Not authenticated' });
+            return;
+        }
+
+        const { userId } = req.user;
+        
+        // Get user details from database (excluding password)
+        const user = await getUserById(userId);
+        if (!user) {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+
+        // Return user data
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Get current user error:', error);
+        res.status(500).json({ message: 'Server error retrieving user data' });
     }
 };
 

@@ -36,7 +36,17 @@ export const createPost = async (req: Request, res: Response): Promise<void> => 
                 user_id: BigInt(user_id) // Replace with req.user.id in production
             }
         });
-        res.status(201).json(newPost);
+        
+        // --- FIX: Serialize BigInt fields before sending response ---
+        const serializedPost = {
+            ...newPost,
+            id: newPost.id.toString(),
+            category_id: newPost.category_id.toString(),
+            user_id: newPost.user_id.toString(),
+            stock_id: newPost.stock_id?.toString() ?? null,
+        };
+        
+        res.status(201).json(serializedPost); // Send serialized data
     } catch (error) {
         console.error('Error creating post:', error);
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
@@ -104,7 +114,17 @@ export const updatePost = async (req: Request, res: Response): Promise<void> => 
             where: { id: postId }, // Add ownership check here in production: where: { id: postId, user_id: BigInt(loggedInUserId) }
             data: dataToUpdate
         });
-        res.status(200).json(updatedPost);
+        
+        // --- FIX: Serialize BigInt fields before sending response --- 
+        const serializedPost = {
+            ...updatedPost,
+            id: updatedPost.id.toString(),
+            category_id: updatedPost.category_id.toString(),
+            user_id: updatedPost.user_id.toString(),
+            stock_id: updatedPost.stock_id?.toString() ?? null,
+        };
+
+        res.status(200).json(serializedPost);
     } catch (error) {
         console.error('Error updating post:', error);
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -143,6 +163,135 @@ export const deletePost = async (req: Request, res: Response): Promise<void> => 
             return;
         }
         res.status(500).json({ message: 'Server error deleting post' });
+    }
+};
+
+// Get all posts with filtering and pagination
+export const getAllPosts = async (req: Request, res: Response): Promise<void> => {
+    const { page = '1', limit = '10', categoryId, userId, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+
+    const pageNum = parseInt(page as string, 10);
+    const limitNum = parseInt(limit as string, 10);
+    const skip = (pageNum - 1) * limitNum;
+
+    const where: Prisma.PostWhereInput = {};
+    if (categoryId) {
+        where.category_id = BigInt(categoryId as string);
+    }
+    if (userId) {
+        where.user_id = BigInt(userId as string);
+    }
+    // Add more filters like search on title/content if needed
+    // if (search) { 
+    //     where.OR = [
+    //         { title: { contains: search as string, mode: 'insensitive' } }, // mode requires specific DB support
+    //         { content: { contains: search as string, mode: 'insensitive' } }
+    //     ];
+    // }
+
+    // Define allowed sort fields
+    const allowedSortByFields: Array<keyof Pick<Prisma.PostOrderByWithRelationInput, 'createdAt' | 'updatedAt' | 'title'> > = ['createdAt', 'updatedAt', 'title'];
+    const sortField = sortBy as string;
+    const sortDir: Prisma.SortOrder = sortOrder === 'asc' ? 'asc' : 'desc';
+
+    let orderBy: Prisma.PostOrderByWithRelationInput = { createdAt: 'desc' }; // Default sort
+
+    if (allowedSortByFields.includes(sortField as 'createdAt' | 'updatedAt' | 'title')) {
+         // Create a new orderBy object with the dynamic key
+         orderBy = { [sortField]: sortDir };
+    }
+
+    try {
+        const [posts, totalPosts] = await prisma.$transaction([
+            prisma.post.findMany({
+                where,
+                skip,
+                take: limitNum,
+                orderBy,
+                include: {
+                    category: { select: { id: true, title: true, slug: true } }, // Select specific fields
+                    user: { select: { id: true, full_name: true } }      // Select specific fields
+                }
+            }),
+            prisma.post.count({ where })
+        ]);
+
+        // Convert BigInt IDs to strings
+        const serializedPosts = posts.map(post => ({
+            ...post,
+            id: post.id.toString(),
+            category_id: post.category_id.toString(),
+            user_id: post.user_id.toString(),
+            stock_id: post.stock_id?.toString() ?? null,
+            category: {
+                 ...post.category,
+                 id: post.category.id.toString()
+            },
+            user: {
+                ...post.user,
+                id: post.user.id.toString()
+            }
+        }));
+
+        res.status(200).json({
+            data: serializedPosts,
+            pagination: {
+                totalItems: totalPosts,
+                itemCount: posts.length,
+                itemsPerPage: limitNum,
+                totalPages: Math.ceil(totalPosts / limitNum),
+                currentPage: pageNum,
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        res.status(500).json({ message: 'Server error fetching posts' });
+    }
+};
+
+// Get a single post by ID
+export const getPostById = async (req: Request, res: Response): Promise<void> => {
+    const postId = BigInt(req.params.id);
+    try {
+        const post = await prisma.post.findUnique({
+            where: { id: postId },
+            include: {
+                category: { select: { id: true, title: true, slug: true } },
+                user: { select: { id: true, full_name: true, email: true } }, // Include email for owner check maybe
+                stock: true // Include full stock info
+            }
+        });
+
+        if (!post) {
+            res.status(404).json({ message: 'Post not found' });
+            return;
+        }
+
+        // Convert BigInt IDs to strings
+        const serializedPost = {
+            ...post,
+            id: post.id.toString(),
+            category_id: post.category_id.toString(),
+            user_id: post.user_id.toString(),
+            stock_id: post.stock_id?.toString() ?? null,
+            category: {
+                 ...post.category,
+                 id: post.category.id.toString()
+            },
+            user: {
+                ...post.user,
+                id: post.user.id.toString()
+            },
+            stock: post.stock ? {
+                ...post.stock,
+                id: post.stock.id.toString()
+            } : null
+        };
+
+        res.status(200).json(serializedPost);
+    } catch (error) {
+        console.error('Error fetching post by ID:', error);
+        res.status(500).json({ message: 'Server error fetching post' });
     }
 };
 

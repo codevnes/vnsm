@@ -17,7 +17,8 @@ const generateSlug = (title: string): string => {
 
 // Create a new category
 export const createCategory = async (req: Request, res: Response): Promise<void> => {
-    const { title, description, thumbnail, parent_id } = req.body;
+    // Destructure slug from body as well
+    const { title, description, thumbnail, parent_id, slug: requestedSlug } = req.body; 
 
     // Basic validation
     if (!title) {
@@ -25,24 +26,36 @@ export const createCategory = async (req: Request, res: Response): Promise<void>
         return;
     }
 
-    const slug = generateSlug(title);
+    // Determine the final slug:
+    // 1. Use requestedSlug if provided and not empty, generate it otherwise.
+    // 2. Consider adding validation/sanitization to requestedSlug (e.g., ensure it looks like a slug).
+    let finalSlug = requestedSlug && requestedSlug.trim() !== '' 
+                      ? requestedSlug.trim() // Basic trim, consider more robust sanitization
+                      : generateSlug(title);
 
     try {
         const newCategory = await prisma.category.create({
             data: {
                 title,
-                slug,
+                slug: finalSlug, // Use the determined finalSlug
                 description,
                 thumbnail,
-                parent_id: parent_id ? BigInt(parent_id) : null // Ensure parent_id is BigInt or null
+                parent_id: parent_id ? BigInt(parent_id) : null 
             }
         });
-        res.status(201).json(newCategory);
+        // Convert BigInt IDs to strings for JSON safety
+        const serializedCategory = {
+            ...newCategory,
+            id: newCategory.id.toString(),
+            parent_id: newCategory.parent_id?.toString() ?? null,
+        };
+        res.status(201).json(serializedCategory);
+        return; 
     } catch (error) {
         console.error('Error creating category:', error);
-        // Handle potential unique constraint violation (slug)
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-             res.status(409).json({ message: 'Category with this title/slug already exists' });
+            // Make error message slightly more generic as conflict could be title or slug
+             res.status(409).json({ message: 'A category with this title or slug already exists' }); 
              return;
         }
         res.status(500).json({ message: 'Server error creating category' });
@@ -87,7 +100,14 @@ export const updateCategory = async (req: Request, res: Response): Promise<void>
             where: { id: categoryId },
             data: dataToUpdate
         });
-        res.status(200).json(updatedCategory);
+        
+        // --- FIX: Serialize BigInt fields before sending response ---
+        const serializedCategory = {
+            ...updatedCategory,
+            id: updatedCategory.id.toString(),
+            parent_id: updatedCategory.parent_id?.toString() ?? null,
+        };
+        res.status(200).json(serializedCategory); // Send serialized data
     } catch (error) {
         console.error('Error updating category:', error);
          if (error instanceof Prisma.PrismaClientKnownRequestError) {

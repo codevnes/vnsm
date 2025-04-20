@@ -159,6 +159,34 @@ exports.Prisma.PostScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ImageScalarFieldEnum = {
+  id: 'id',
+  filename: 'filename',
+  processedFilename: 'processedFilename',
+  path: 'path',
+  url: 'url',
+  altText: 'altText',
+  mimetype: 'mimetype',
+  size: 'size',
+  width: 'width',
+  height: 'height',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.StockQIndexScalarFieldEnum = {
+  id: 'id',
+  stock_id: 'stock_id',
+  date: 'date',
+  open: 'open',
+  low: 'low',
+  high: 'high',
+  trend_q: 'trend_q',
+  fq: 'fq',
+  qv1: 'qv1',
+  band_down: 'band_down',
+  band_up: 'band_up'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -198,6 +226,21 @@ exports.Prisma.PostOrderByRelevanceFieldEnum = {
   content: 'content',
   thumbnail: 'thumbnail'
 };
+
+exports.Prisma.ImageOrderByRelevanceFieldEnum = {
+  filename: 'filename',
+  processedFilename: 'processedFilename',
+  path: 'path',
+  url: 'url',
+  altText: 'altText',
+  mimetype: 'mimetype'
+};
+
+exports.Prisma.StockQIndexOrderByRelevanceFieldEnum = {
+  trend_q: 'trend_q',
+  fq: 'fq',
+  qv1: 'qv1'
+};
 exports.Role = exports.$Enums.Role = {
   admin: 'admin',
   editor: 'editor',
@@ -208,7 +251,9 @@ exports.Prisma.ModelName = {
   User: 'User',
   Category: 'Category',
   Stock: 'Stock',
-  Post: 'Post'
+  Post: 'Post',
+  Image: 'Image',
+  StockQIndex: 'StockQIndex'
 };
 
 /**

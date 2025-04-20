@@ -89,4 +89,30 @@ export const validatePostData = [
         .isInt({ allow_leading_zeroes: false }).withMessage('user_id must be an integer')
         .toInt(),
     handleValidationErrors
+];
+
+// Validation rules for creating/updating a stock
+export const validateStockData = [
+    body('symbol')
+        .optional() // Symbol might not be present on update
+        .notEmpty().withMessage('Symbol cannot be empty')
+        .isLength({ max: 20 }).withMessage('Symbol cannot exceed 20 characters') 
+        .trim()
+        .escape(), // Basic escaping
+    body('name')
+        .optional() // Name might not be present on update
+        .notEmpty().withMessage('Name cannot be empty')
+        .trim()
+        .escape(),
+    body('exchange')
+        .optional()
+        .isLength({ max: 100 }).withMessage('Exchange cannot exceed 100 characters')
+        .trim()
+        .escape(),
+    body('industry')
+        .optional()
+        .isLength({ max: 100 }).withMessage('Industry cannot exceed 100 characters')
+        .trim()
+        .escape(),
+    handleValidationErrors
 ]; 

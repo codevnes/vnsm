@@ -51,12 +51,13 @@ model Category {
 }
 
 model Stock {
-  id       BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
-  symbol   String  @unique @db.VarChar(20)
-  name     String  @db.VarChar(255)
-  exchange String? @db.VarChar(100)
-  industry String? @db.VarChar(100)
-  posts    Post[]  // Relation to Post model
+  id        BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
+  symbol    String       @unique @db.VarChar(20)
+  name      String       @db.VarChar(255)
+  exchange  String?      @db.VarChar(100)
+  industry  String?      @db.VarChar(100)
+  posts     Post[]       // Relation to Post model
+  qindexes  StockQIndex[] // Relation to StockQIndex model
 
   @@map("stocks")
 }
@@ -80,4 +81,43 @@ model Post {
   user        User      @relation(fields: [user_id], references: [id])
 
   @@map("posts")
+}
+
+// --- NEW IMAGE MODEL ---
+model Image {
+  id                Int      @id @default(autoincrement())
+  filename          String   // Original filename
+  processedFilename String   // Filename after processing (e.g., sanitized-timestamp.webp)
+  path              String   // Relative path in storage (e.g., /uploads/images/processed-name.webp)
+  url               String   @unique // Full public URL (e.g., http://localhost:3001/uploads/images/...)
+  altText           String?  // SEO Alt Text
+  mimetype          String?  // e.g., image/webp
+  size              Int?     // Size in bytes
+  width             Int?     // Image width
+  height            Int?     // Image height
+  createdAt         DateTime @default(now())
+
+  // Optional: Add relations if images belong to specific posts, users, etc.
+  // postId    Int?
+  // post      Post? @relation(fields: [postId], references: [id])
+}
+
+// --- STOCK QINDEX MODEL ---
+model StockQIndex {
+  id        BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  stock_id  BigInt    @db.UnsignedBigInt
+  date      DateTime  @db.Date
+  open      Decimal?  @db.Decimal(15, 2)
+  low       Decimal?  @db.Decimal(15, 2)
+  high      Decimal?  @db.Decimal(15, 2)
+  trend_q   String?   @db.VarChar(100)
+  fq        String?   @db.VarChar(50)
+  qv1       String?   @db.VarChar(50)
+  band_down Decimal?  @db.Decimal(15, 2)
+  band_up   Decimal?  @db.Decimal(15, 2)
+  stock     Stock     @relation(fields: [stock_id], references: [id])
+
+  @@map("stock_qindex")
+  @@index([stock_id])
+  @@index([date])
 }

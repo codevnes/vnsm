@@ -3,8 +3,8 @@ import {
     createPost,
     updatePost,
     deletePost,
-    // getPostById, // TODO
-    // getAllPosts // TODO
+    getPostById,
+    getAllPosts
 } from '../controllers/postController';
 import { validatePostData } from '../middleware/validationMiddleware'; // TODO: Create validation rules
 // import { checkAuth } from '../middleware/authMiddleware'; // TODO: Implement auth middleware
@@ -239,6 +239,116 @@ router.delete(
     deletePost
 );
 
-// TODO: GET routes for retrieving posts
+/**
+ * @swagger
+ * /api/posts/{id}:
+ *   get:
+ *     summary: Get a single post by ID
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *           format: int64
+ *         required: true
+ *         description: Numeric ID of the post to retrieve
+ *     responses:
+ *       200:
+ *         description: Post details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               # Note: Adjust this if you include relations in the controller
+ *               $ref: '#/components/schemas/Post' 
+ *       404:
+ *         description: Post not found
+ *       500:
+ *         description: Server error
+ */
+router.get(
+    '/:id',
+    // checkAuth, // Optional: Add auth if posts aren't public
+    getPostById
+);
+
+/**
+ * @swagger
+ * /api/posts:
+ *   get:
+ *     summary: Get a list of posts with optional filtering and pagination
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of items per page
+ *       - in: query
+ *         name: categoryId
+ *         schema:
+ *           type: integer
+ *           format: int64
+ *         description: Filter posts by category ID
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: integer
+ *           format: int64
+ *         description: Filter posts by user ID
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [createdAt, updatedAt, title]
+ *           default: createdAt
+ *         description: Field to sort by
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Sort order (ascending or descending)
+ *     responses:
+ *       200:
+ *         description: A list of posts with pagination info
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Post'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     totalItems:
+ *                       type: integer
+ *                     itemCount:
+ *                       type: integer
+ *                     itemsPerPage:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     currentPage:
+ *                       type: integer
+ *       500:
+ *         description: Server error
+ */
+router.get(
+    '/',
+    // checkAuth, // Optional: Add auth if posts aren't public
+    getAllPosts
+);
 
 export default router; 

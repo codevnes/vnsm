@@ -33,6 +33,16 @@ export type Stock = $Result.DefaultSelection<Prisma.$StockPayload>
  * 
  */
 export type Post = $Result.DefaultSelection<Prisma.$PostPayload>
+/**
+ * Model Image
+ * 
+ */
+export type Image = $Result.DefaultSelection<Prisma.$ImagePayload>
+/**
+ * Model StockQIndex
+ * 
+ */
+export type StockQIndex = $Result.DefaultSelection<Prisma.$StockQIndexPayload>
 
 /**
  * Enums
@@ -216,6 +226,26 @@ export class PrismaClient<
     * ```
     */
   get post(): Prisma.PostDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.image`: Exposes CRUD operations for the **Image** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Images
+    * const images = await prisma.image.findMany()
+    * ```
+    */
+  get image(): Prisma.ImageDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.stockQIndex`: Exposes CRUD operations for the **StockQIndex** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more StockQIndices
+    * const stockQIndices = await prisma.stockQIndex.findMany()
+    * ```
+    */
+  get stockQIndex(): Prisma.StockQIndexDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -659,7 +689,9 @@ export namespace Prisma {
     User: 'User',
     Category: 'Category',
     Stock: 'Stock',
-    Post: 'Post'
+    Post: 'Post',
+    Image: 'Image',
+    StockQIndex: 'StockQIndex'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -678,7 +710,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "category" | "stock" | "post"
+      modelProps: "user" | "category" | "stock" | "post" | "image" | "stockQIndex"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -946,6 +978,138 @@ export namespace Prisma {
           }
         }
       }
+      Image: {
+        payload: Prisma.$ImagePayload<ExtArgs>
+        fields: Prisma.ImageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ImageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ImageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>
+          }
+          findFirst: {
+            args: Prisma.ImageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ImageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>
+          }
+          findMany: {
+            args: Prisma.ImageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>[]
+          }
+          create: {
+            args: Prisma.ImageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>
+          }
+          createMany: {
+            args: Prisma.ImageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.ImageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>
+          }
+          update: {
+            args: Prisma.ImageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>
+          }
+          deleteMany: {
+            args: Prisma.ImageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ImageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ImageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>
+          }
+          aggregate: {
+            args: Prisma.ImageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateImage>
+          }
+          groupBy: {
+            args: Prisma.ImageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ImageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ImageCountArgs<ExtArgs>
+            result: $Utils.Optional<ImageCountAggregateOutputType> | number
+          }
+        }
+      }
+      StockQIndex: {
+        payload: Prisma.$StockQIndexPayload<ExtArgs>
+        fields: Prisma.StockQIndexFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.StockQIndexFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockQIndexPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.StockQIndexFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockQIndexPayload>
+          }
+          findFirst: {
+            args: Prisma.StockQIndexFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockQIndexPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.StockQIndexFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockQIndexPayload>
+          }
+          findMany: {
+            args: Prisma.StockQIndexFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockQIndexPayload>[]
+          }
+          create: {
+            args: Prisma.StockQIndexCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockQIndexPayload>
+          }
+          createMany: {
+            args: Prisma.StockQIndexCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.StockQIndexDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockQIndexPayload>
+          }
+          update: {
+            args: Prisma.StockQIndexUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockQIndexPayload>
+          }
+          deleteMany: {
+            args: Prisma.StockQIndexDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.StockQIndexUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.StockQIndexUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockQIndexPayload>
+          }
+          aggregate: {
+            args: Prisma.StockQIndexAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStockQIndex>
+          }
+          groupBy: {
+            args: Prisma.StockQIndexGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StockQIndexGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.StockQIndexCountArgs<ExtArgs>
+            result: $Utils.Optional<StockQIndexCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1034,6 +1198,8 @@ export namespace Prisma {
     category?: CategoryOmit
     stock?: StockOmit
     post?: PostOmit
+    image?: ImageOmit
+    stockQIndex?: StockQIndexOmit
   }
 
   /* Types for Logging */
@@ -1200,10 +1366,12 @@ export namespace Prisma {
 
   export type StockCountOutputType = {
     posts: number
+    qindexes: number
   }
 
   export type StockCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     posts?: boolean | StockCountOutputTypeCountPostsArgs
+    qindexes?: boolean | StockCountOutputTypeCountQindexesArgs
   }
 
   // Custom InputTypes
@@ -1222,6 +1390,13 @@ export namespace Prisma {
    */
   export type StockCountOutputTypeCountPostsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PostWhereInput
+  }
+
+  /**
+   * StockCountOutputType without action
+   */
+  export type StockCountOutputTypeCountQindexesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StockQIndexWhereInput
   }
 
 
@@ -3505,6 +3680,7 @@ export namespace Prisma {
     exchange?: boolean
     industry?: boolean
     posts?: boolean | Stock$postsArgs<ExtArgs>
+    qindexes?: boolean | Stock$qindexesArgs<ExtArgs>
     _count?: boolean | StockCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["stock"]>
 
@@ -3521,6 +3697,7 @@ export namespace Prisma {
   export type StockOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "name" | "exchange" | "industry", ExtArgs["result"]["stock"]>
   export type StockInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     posts?: boolean | Stock$postsArgs<ExtArgs>
+    qindexes?: boolean | Stock$qindexesArgs<ExtArgs>
     _count?: boolean | StockCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -3528,6 +3705,7 @@ export namespace Prisma {
     name: "Stock"
     objects: {
       posts: Prisma.$PostPayload<ExtArgs>[]
+      qindexes: Prisma.$StockQIndexPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: bigint
@@ -3876,6 +4054,7 @@ export namespace Prisma {
   export interface Prisma__StockClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     posts<T extends Stock$postsArgs<ExtArgs> = {}>(args?: Subset<T, Stock$postsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    qindexes<T extends Stock$qindexesArgs<ExtArgs> = {}>(args?: Subset<T, Stock$qindexesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockQIndexPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4274,6 +4453,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
+  }
+
+  /**
+   * Stock.qindexes
+   */
+  export type Stock$qindexesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockQIndex
+     */
+    select?: StockQIndexSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockQIndex
+     */
+    omit?: StockQIndexOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockQIndexInclude<ExtArgs> | null
+    where?: StockQIndexWhereInput
+    orderBy?: StockQIndexOrderByWithRelationInput | StockQIndexOrderByWithRelationInput[]
+    cursor?: StockQIndexWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StockQIndexScalarFieldEnum | StockQIndexScalarFieldEnum[]
   }
 
   /**
@@ -5364,6 +5567,2053 @@ export namespace Prisma {
 
 
   /**
+   * Model Image
+   */
+
+  export type AggregateImage = {
+    _count: ImageCountAggregateOutputType | null
+    _avg: ImageAvgAggregateOutputType | null
+    _sum: ImageSumAggregateOutputType | null
+    _min: ImageMinAggregateOutputType | null
+    _max: ImageMaxAggregateOutputType | null
+  }
+
+  export type ImageAvgAggregateOutputType = {
+    id: number | null
+    size: number | null
+    width: number | null
+    height: number | null
+  }
+
+  export type ImageSumAggregateOutputType = {
+    id: number | null
+    size: number | null
+    width: number | null
+    height: number | null
+  }
+
+  export type ImageMinAggregateOutputType = {
+    id: number | null
+    filename: string | null
+    processedFilename: string | null
+    path: string | null
+    url: string | null
+    altText: string | null
+    mimetype: string | null
+    size: number | null
+    width: number | null
+    height: number | null
+    createdAt: Date | null
+  }
+
+  export type ImageMaxAggregateOutputType = {
+    id: number | null
+    filename: string | null
+    processedFilename: string | null
+    path: string | null
+    url: string | null
+    altText: string | null
+    mimetype: string | null
+    size: number | null
+    width: number | null
+    height: number | null
+    createdAt: Date | null
+  }
+
+  export type ImageCountAggregateOutputType = {
+    id: number
+    filename: number
+    processedFilename: number
+    path: number
+    url: number
+    altText: number
+    mimetype: number
+    size: number
+    width: number
+    height: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ImageAvgAggregateInputType = {
+    id?: true
+    size?: true
+    width?: true
+    height?: true
+  }
+
+  export type ImageSumAggregateInputType = {
+    id?: true
+    size?: true
+    width?: true
+    height?: true
+  }
+
+  export type ImageMinAggregateInputType = {
+    id?: true
+    filename?: true
+    processedFilename?: true
+    path?: true
+    url?: true
+    altText?: true
+    mimetype?: true
+    size?: true
+    width?: true
+    height?: true
+    createdAt?: true
+  }
+
+  export type ImageMaxAggregateInputType = {
+    id?: true
+    filename?: true
+    processedFilename?: true
+    path?: true
+    url?: true
+    altText?: true
+    mimetype?: true
+    size?: true
+    width?: true
+    height?: true
+    createdAt?: true
+  }
+
+  export type ImageCountAggregateInputType = {
+    id?: true
+    filename?: true
+    processedFilename?: true
+    path?: true
+    url?: true
+    altText?: true
+    mimetype?: true
+    size?: true
+    width?: true
+    height?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ImageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Image to aggregate.
+     */
+    where?: ImageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Images to fetch.
+     */
+    orderBy?: ImageOrderByWithRelationInput | ImageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ImageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Images from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Images.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Images
+    **/
+    _count?: true | ImageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ImageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ImageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ImageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ImageMaxAggregateInputType
+  }
+
+  export type GetImageAggregateType<T extends ImageAggregateArgs> = {
+        [P in keyof T & keyof AggregateImage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateImage[P]>
+      : GetScalarType<T[P], AggregateImage[P]>
+  }
+
+
+
+
+  export type ImageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageWhereInput
+    orderBy?: ImageOrderByWithAggregationInput | ImageOrderByWithAggregationInput[]
+    by: ImageScalarFieldEnum[] | ImageScalarFieldEnum
+    having?: ImageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ImageCountAggregateInputType | true
+    _avg?: ImageAvgAggregateInputType
+    _sum?: ImageSumAggregateInputType
+    _min?: ImageMinAggregateInputType
+    _max?: ImageMaxAggregateInputType
+  }
+
+  export type ImageGroupByOutputType = {
+    id: number
+    filename: string
+    processedFilename: string
+    path: string
+    url: string
+    altText: string | null
+    mimetype: string | null
+    size: number | null
+    width: number | null
+    height: number | null
+    createdAt: Date
+    _count: ImageCountAggregateOutputType | null
+    _avg: ImageAvgAggregateOutputType | null
+    _sum: ImageSumAggregateOutputType | null
+    _min: ImageMinAggregateOutputType | null
+    _max: ImageMaxAggregateOutputType | null
+  }
+
+  type GetImageGroupByPayload<T extends ImageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ImageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ImageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ImageGroupByOutputType[P]>
+            : GetScalarType<T[P], ImageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ImageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    filename?: boolean
+    processedFilename?: boolean
+    path?: boolean
+    url?: boolean
+    altText?: boolean
+    mimetype?: boolean
+    size?: boolean
+    width?: boolean
+    height?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["image"]>
+
+
+
+  export type ImageSelectScalar = {
+    id?: boolean
+    filename?: boolean
+    processedFilename?: boolean
+    path?: boolean
+    url?: boolean
+    altText?: boolean
+    mimetype?: boolean
+    size?: boolean
+    width?: boolean
+    height?: boolean
+    createdAt?: boolean
+  }
+
+  export type ImageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "filename" | "processedFilename" | "path" | "url" | "altText" | "mimetype" | "size" | "width" | "height" | "createdAt", ExtArgs["result"]["image"]>
+
+  export type $ImagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Image"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      filename: string
+      processedFilename: string
+      path: string
+      url: string
+      altText: string | null
+      mimetype: string | null
+      size: number | null
+      width: number | null
+      height: number | null
+      createdAt: Date
+    }, ExtArgs["result"]["image"]>
+    composites: {}
+  }
+
+  type ImageGetPayload<S extends boolean | null | undefined | ImageDefaultArgs> = $Result.GetResult<Prisma.$ImagePayload, S>
+
+  type ImageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ImageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ImageCountAggregateInputType | true
+    }
+
+  export interface ImageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Image'], meta: { name: 'Image' } }
+    /**
+     * Find zero or one Image that matches the filter.
+     * @param {ImageFindUniqueArgs} args - Arguments to find a Image
+     * @example
+     * // Get one Image
+     * const image = await prisma.image.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ImageFindUniqueArgs>(args: SelectSubset<T, ImageFindUniqueArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Image that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ImageFindUniqueOrThrowArgs} args - Arguments to find a Image
+     * @example
+     * // Get one Image
+     * const image = await prisma.image.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ImageFindUniqueOrThrowArgs>(args: SelectSubset<T, ImageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Image that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageFindFirstArgs} args - Arguments to find a Image
+     * @example
+     * // Get one Image
+     * const image = await prisma.image.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ImageFindFirstArgs>(args?: SelectSubset<T, ImageFindFirstArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Image that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageFindFirstOrThrowArgs} args - Arguments to find a Image
+     * @example
+     * // Get one Image
+     * const image = await prisma.image.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ImageFindFirstOrThrowArgs>(args?: SelectSubset<T, ImageFindFirstOrThrowArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Images that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Images
+     * const images = await prisma.image.findMany()
+     * 
+     * // Get first 10 Images
+     * const images = await prisma.image.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const imageWithIdOnly = await prisma.image.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ImageFindManyArgs>(args?: SelectSubset<T, ImageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Image.
+     * @param {ImageCreateArgs} args - Arguments to create a Image.
+     * @example
+     * // Create one Image
+     * const Image = await prisma.image.create({
+     *   data: {
+     *     // ... data to create a Image
+     *   }
+     * })
+     * 
+     */
+    create<T extends ImageCreateArgs>(args: SelectSubset<T, ImageCreateArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Images.
+     * @param {ImageCreateManyArgs} args - Arguments to create many Images.
+     * @example
+     * // Create many Images
+     * const image = await prisma.image.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ImageCreateManyArgs>(args?: SelectSubset<T, ImageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Image.
+     * @param {ImageDeleteArgs} args - Arguments to delete one Image.
+     * @example
+     * // Delete one Image
+     * const Image = await prisma.image.delete({
+     *   where: {
+     *     // ... filter to delete one Image
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ImageDeleteArgs>(args: SelectSubset<T, ImageDeleteArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Image.
+     * @param {ImageUpdateArgs} args - Arguments to update one Image.
+     * @example
+     * // Update one Image
+     * const image = await prisma.image.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ImageUpdateArgs>(args: SelectSubset<T, ImageUpdateArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Images.
+     * @param {ImageDeleteManyArgs} args - Arguments to filter Images to delete.
+     * @example
+     * // Delete a few Images
+     * const { count } = await prisma.image.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ImageDeleteManyArgs>(args?: SelectSubset<T, ImageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Images.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Images
+     * const image = await prisma.image.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ImageUpdateManyArgs>(args: SelectSubset<T, ImageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Image.
+     * @param {ImageUpsertArgs} args - Arguments to update or create a Image.
+     * @example
+     * // Update or create a Image
+     * const image = await prisma.image.upsert({
+     *   create: {
+     *     // ... data to create a Image
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Image we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ImageUpsertArgs>(args: SelectSubset<T, ImageUpsertArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Images.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageCountArgs} args - Arguments to filter Images to count.
+     * @example
+     * // Count the number of Images
+     * const count = await prisma.image.count({
+     *   where: {
+     *     // ... the filter for the Images we want to count
+     *   }
+     * })
+    **/
+    count<T extends ImageCountArgs>(
+      args?: Subset<T, ImageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ImageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Image.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ImageAggregateArgs>(args: Subset<T, ImageAggregateArgs>): Prisma.PrismaPromise<GetImageAggregateType<T>>
+
+    /**
+     * Group by Image.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ImageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ImageGroupByArgs['orderBy'] }
+        : { orderBy?: ImageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ImageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetImageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Image model
+   */
+  readonly fields: ImageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Image.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ImageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Image model
+   */
+  interface ImageFieldRefs {
+    readonly id: FieldRef<"Image", 'Int'>
+    readonly filename: FieldRef<"Image", 'String'>
+    readonly processedFilename: FieldRef<"Image", 'String'>
+    readonly path: FieldRef<"Image", 'String'>
+    readonly url: FieldRef<"Image", 'String'>
+    readonly altText: FieldRef<"Image", 'String'>
+    readonly mimetype: FieldRef<"Image", 'String'>
+    readonly size: FieldRef<"Image", 'Int'>
+    readonly width: FieldRef<"Image", 'Int'>
+    readonly height: FieldRef<"Image", 'Int'>
+    readonly createdAt: FieldRef<"Image", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Image findUnique
+   */
+  export type ImageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Filter, which Image to fetch.
+     */
+    where: ImageWhereUniqueInput
+  }
+
+  /**
+   * Image findUniqueOrThrow
+   */
+  export type ImageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Filter, which Image to fetch.
+     */
+    where: ImageWhereUniqueInput
+  }
+
+  /**
+   * Image findFirst
+   */
+  export type ImageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Filter, which Image to fetch.
+     */
+    where?: ImageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Images to fetch.
+     */
+    orderBy?: ImageOrderByWithRelationInput | ImageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Images.
+     */
+    cursor?: ImageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Images from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Images.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Images.
+     */
+    distinct?: ImageScalarFieldEnum | ImageScalarFieldEnum[]
+  }
+
+  /**
+   * Image findFirstOrThrow
+   */
+  export type ImageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Filter, which Image to fetch.
+     */
+    where?: ImageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Images to fetch.
+     */
+    orderBy?: ImageOrderByWithRelationInput | ImageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Images.
+     */
+    cursor?: ImageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Images from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Images.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Images.
+     */
+    distinct?: ImageScalarFieldEnum | ImageScalarFieldEnum[]
+  }
+
+  /**
+   * Image findMany
+   */
+  export type ImageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Filter, which Images to fetch.
+     */
+    where?: ImageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Images to fetch.
+     */
+    orderBy?: ImageOrderByWithRelationInput | ImageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Images.
+     */
+    cursor?: ImageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Images from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Images.
+     */
+    skip?: number
+    distinct?: ImageScalarFieldEnum | ImageScalarFieldEnum[]
+  }
+
+  /**
+   * Image create
+   */
+  export type ImageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Image.
+     */
+    data: XOR<ImageCreateInput, ImageUncheckedCreateInput>
+  }
+
+  /**
+   * Image createMany
+   */
+  export type ImageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Images.
+     */
+    data: ImageCreateManyInput | ImageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Image update
+   */
+  export type ImageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Image.
+     */
+    data: XOR<ImageUpdateInput, ImageUncheckedUpdateInput>
+    /**
+     * Choose, which Image to update.
+     */
+    where: ImageWhereUniqueInput
+  }
+
+  /**
+   * Image updateMany
+   */
+  export type ImageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Images.
+     */
+    data: XOR<ImageUpdateManyMutationInput, ImageUncheckedUpdateManyInput>
+    /**
+     * Filter which Images to update
+     */
+    where?: ImageWhereInput
+    /**
+     * Limit how many Images to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Image upsert
+   */
+  export type ImageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Image to update in case it exists.
+     */
+    where: ImageWhereUniqueInput
+    /**
+     * In case the Image found by the `where` argument doesn't exist, create a new Image with this data.
+     */
+    create: XOR<ImageCreateInput, ImageUncheckedCreateInput>
+    /**
+     * In case the Image was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ImageUpdateInput, ImageUncheckedUpdateInput>
+  }
+
+  /**
+   * Image delete
+   */
+  export type ImageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Filter which Image to delete.
+     */
+    where: ImageWhereUniqueInput
+  }
+
+  /**
+   * Image deleteMany
+   */
+  export type ImageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Images to delete
+     */
+    where?: ImageWhereInput
+    /**
+     * Limit how many Images to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Image without action
+   */
+  export type ImageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model StockQIndex
+   */
+
+  export type AggregateStockQIndex = {
+    _count: StockQIndexCountAggregateOutputType | null
+    _avg: StockQIndexAvgAggregateOutputType | null
+    _sum: StockQIndexSumAggregateOutputType | null
+    _min: StockQIndexMinAggregateOutputType | null
+    _max: StockQIndexMaxAggregateOutputType | null
+  }
+
+  export type StockQIndexAvgAggregateOutputType = {
+    id: number | null
+    stock_id: number | null
+    open: Decimal | null
+    low: Decimal | null
+    high: Decimal | null
+    band_down: Decimal | null
+    band_up: Decimal | null
+  }
+
+  export type StockQIndexSumAggregateOutputType = {
+    id: bigint | null
+    stock_id: bigint | null
+    open: Decimal | null
+    low: Decimal | null
+    high: Decimal | null
+    band_down: Decimal | null
+    band_up: Decimal | null
+  }
+
+  export type StockQIndexMinAggregateOutputType = {
+    id: bigint | null
+    stock_id: bigint | null
+    date: Date | null
+    open: Decimal | null
+    low: Decimal | null
+    high: Decimal | null
+    trend_q: string | null
+    fq: string | null
+    qv1: string | null
+    band_down: Decimal | null
+    band_up: Decimal | null
+  }
+
+  export type StockQIndexMaxAggregateOutputType = {
+    id: bigint | null
+    stock_id: bigint | null
+    date: Date | null
+    open: Decimal | null
+    low: Decimal | null
+    high: Decimal | null
+    trend_q: string | null
+    fq: string | null
+    qv1: string | null
+    band_down: Decimal | null
+    band_up: Decimal | null
+  }
+
+  export type StockQIndexCountAggregateOutputType = {
+    id: number
+    stock_id: number
+    date: number
+    open: number
+    low: number
+    high: number
+    trend_q: number
+    fq: number
+    qv1: number
+    band_down: number
+    band_up: number
+    _all: number
+  }
+
+
+  export type StockQIndexAvgAggregateInputType = {
+    id?: true
+    stock_id?: true
+    open?: true
+    low?: true
+    high?: true
+    band_down?: true
+    band_up?: true
+  }
+
+  export type StockQIndexSumAggregateInputType = {
+    id?: true
+    stock_id?: true
+    open?: true
+    low?: true
+    high?: true
+    band_down?: true
+    band_up?: true
+  }
+
+  export type StockQIndexMinAggregateInputType = {
+    id?: true
+    stock_id?: true
+    date?: true
+    open?: true
+    low?: true
+    high?: true
+    trend_q?: true
+    fq?: true
+    qv1?: true
+    band_down?: true
+    band_up?: true
+  }
+
+  export type StockQIndexMaxAggregateInputType = {
+    id?: true
+    stock_id?: true
+    date?: true
+    open?: true
+    low?: true
+    high?: true
+    trend_q?: true
+    fq?: true
+    qv1?: true
+    band_down?: true
+    band_up?: true
+  }
+
+  export type StockQIndexCountAggregateInputType = {
+    id?: true
+    stock_id?: true
+    date?: true
+    open?: true
+    low?: true
+    high?: true
+    trend_q?: true
+    fq?: true
+    qv1?: true
+    band_down?: true
+    band_up?: true
+    _all?: true
+  }
+
+  export type StockQIndexAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StockQIndex to aggregate.
+     */
+    where?: StockQIndexWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockQIndices to fetch.
+     */
+    orderBy?: StockQIndexOrderByWithRelationInput | StockQIndexOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: StockQIndexWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockQIndices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockQIndices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned StockQIndices
+    **/
+    _count?: true | StockQIndexCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: StockQIndexAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: StockQIndexSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: StockQIndexMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: StockQIndexMaxAggregateInputType
+  }
+
+  export type GetStockQIndexAggregateType<T extends StockQIndexAggregateArgs> = {
+        [P in keyof T & keyof AggregateStockQIndex]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateStockQIndex[P]>
+      : GetScalarType<T[P], AggregateStockQIndex[P]>
+  }
+
+
+
+
+  export type StockQIndexGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StockQIndexWhereInput
+    orderBy?: StockQIndexOrderByWithAggregationInput | StockQIndexOrderByWithAggregationInput[]
+    by: StockQIndexScalarFieldEnum[] | StockQIndexScalarFieldEnum
+    having?: StockQIndexScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: StockQIndexCountAggregateInputType | true
+    _avg?: StockQIndexAvgAggregateInputType
+    _sum?: StockQIndexSumAggregateInputType
+    _min?: StockQIndexMinAggregateInputType
+    _max?: StockQIndexMaxAggregateInputType
+  }
+
+  export type StockQIndexGroupByOutputType = {
+    id: bigint
+    stock_id: bigint
+    date: Date
+    open: Decimal | null
+    low: Decimal | null
+    high: Decimal | null
+    trend_q: string | null
+    fq: string | null
+    qv1: string | null
+    band_down: Decimal | null
+    band_up: Decimal | null
+    _count: StockQIndexCountAggregateOutputType | null
+    _avg: StockQIndexAvgAggregateOutputType | null
+    _sum: StockQIndexSumAggregateOutputType | null
+    _min: StockQIndexMinAggregateOutputType | null
+    _max: StockQIndexMaxAggregateOutputType | null
+  }
+
+  type GetStockQIndexGroupByPayload<T extends StockQIndexGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<StockQIndexGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof StockQIndexGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], StockQIndexGroupByOutputType[P]>
+            : GetScalarType<T[P], StockQIndexGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type StockQIndexSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    stock_id?: boolean
+    date?: boolean
+    open?: boolean
+    low?: boolean
+    high?: boolean
+    trend_q?: boolean
+    fq?: boolean
+    qv1?: boolean
+    band_down?: boolean
+    band_up?: boolean
+    stock?: boolean | StockDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stockQIndex"]>
+
+
+
+  export type StockQIndexSelectScalar = {
+    id?: boolean
+    stock_id?: boolean
+    date?: boolean
+    open?: boolean
+    low?: boolean
+    high?: boolean
+    trend_q?: boolean
+    fq?: boolean
+    qv1?: boolean
+    band_down?: boolean
+    band_up?: boolean
+  }
+
+  export type StockQIndexOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "stock_id" | "date" | "open" | "low" | "high" | "trend_q" | "fq" | "qv1" | "band_down" | "band_up", ExtArgs["result"]["stockQIndex"]>
+  export type StockQIndexInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    stock?: boolean | StockDefaultArgs<ExtArgs>
+  }
+
+  export type $StockQIndexPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "StockQIndex"
+    objects: {
+      stock: Prisma.$StockPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: bigint
+      stock_id: bigint
+      date: Date
+      open: Prisma.Decimal | null
+      low: Prisma.Decimal | null
+      high: Prisma.Decimal | null
+      trend_q: string | null
+      fq: string | null
+      qv1: string | null
+      band_down: Prisma.Decimal | null
+      band_up: Prisma.Decimal | null
+    }, ExtArgs["result"]["stockQIndex"]>
+    composites: {}
+  }
+
+  type StockQIndexGetPayload<S extends boolean | null | undefined | StockQIndexDefaultArgs> = $Result.GetResult<Prisma.$StockQIndexPayload, S>
+
+  type StockQIndexCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<StockQIndexFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: StockQIndexCountAggregateInputType | true
+    }
+
+  export interface StockQIndexDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['StockQIndex'], meta: { name: 'StockQIndex' } }
+    /**
+     * Find zero or one StockQIndex that matches the filter.
+     * @param {StockQIndexFindUniqueArgs} args - Arguments to find a StockQIndex
+     * @example
+     * // Get one StockQIndex
+     * const stockQIndex = await prisma.stockQIndex.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends StockQIndexFindUniqueArgs>(args: SelectSubset<T, StockQIndexFindUniqueArgs<ExtArgs>>): Prisma__StockQIndexClient<$Result.GetResult<Prisma.$StockQIndexPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one StockQIndex that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {StockQIndexFindUniqueOrThrowArgs} args - Arguments to find a StockQIndex
+     * @example
+     * // Get one StockQIndex
+     * const stockQIndex = await prisma.stockQIndex.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends StockQIndexFindUniqueOrThrowArgs>(args: SelectSubset<T, StockQIndexFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StockQIndexClient<$Result.GetResult<Prisma.$StockQIndexPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StockQIndex that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockQIndexFindFirstArgs} args - Arguments to find a StockQIndex
+     * @example
+     * // Get one StockQIndex
+     * const stockQIndex = await prisma.stockQIndex.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends StockQIndexFindFirstArgs>(args?: SelectSubset<T, StockQIndexFindFirstArgs<ExtArgs>>): Prisma__StockQIndexClient<$Result.GetResult<Prisma.$StockQIndexPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StockQIndex that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockQIndexFindFirstOrThrowArgs} args - Arguments to find a StockQIndex
+     * @example
+     * // Get one StockQIndex
+     * const stockQIndex = await prisma.stockQIndex.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends StockQIndexFindFirstOrThrowArgs>(args?: SelectSubset<T, StockQIndexFindFirstOrThrowArgs<ExtArgs>>): Prisma__StockQIndexClient<$Result.GetResult<Prisma.$StockQIndexPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more StockQIndices that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockQIndexFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all StockQIndices
+     * const stockQIndices = await prisma.stockQIndex.findMany()
+     * 
+     * // Get first 10 StockQIndices
+     * const stockQIndices = await prisma.stockQIndex.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const stockQIndexWithIdOnly = await prisma.stockQIndex.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends StockQIndexFindManyArgs>(args?: SelectSubset<T, StockQIndexFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockQIndexPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a StockQIndex.
+     * @param {StockQIndexCreateArgs} args - Arguments to create a StockQIndex.
+     * @example
+     * // Create one StockQIndex
+     * const StockQIndex = await prisma.stockQIndex.create({
+     *   data: {
+     *     // ... data to create a StockQIndex
+     *   }
+     * })
+     * 
+     */
+    create<T extends StockQIndexCreateArgs>(args: SelectSubset<T, StockQIndexCreateArgs<ExtArgs>>): Prisma__StockQIndexClient<$Result.GetResult<Prisma.$StockQIndexPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many StockQIndices.
+     * @param {StockQIndexCreateManyArgs} args - Arguments to create many StockQIndices.
+     * @example
+     * // Create many StockQIndices
+     * const stockQIndex = await prisma.stockQIndex.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends StockQIndexCreateManyArgs>(args?: SelectSubset<T, StockQIndexCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a StockQIndex.
+     * @param {StockQIndexDeleteArgs} args - Arguments to delete one StockQIndex.
+     * @example
+     * // Delete one StockQIndex
+     * const StockQIndex = await prisma.stockQIndex.delete({
+     *   where: {
+     *     // ... filter to delete one StockQIndex
+     *   }
+     * })
+     * 
+     */
+    delete<T extends StockQIndexDeleteArgs>(args: SelectSubset<T, StockQIndexDeleteArgs<ExtArgs>>): Prisma__StockQIndexClient<$Result.GetResult<Prisma.$StockQIndexPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one StockQIndex.
+     * @param {StockQIndexUpdateArgs} args - Arguments to update one StockQIndex.
+     * @example
+     * // Update one StockQIndex
+     * const stockQIndex = await prisma.stockQIndex.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends StockQIndexUpdateArgs>(args: SelectSubset<T, StockQIndexUpdateArgs<ExtArgs>>): Prisma__StockQIndexClient<$Result.GetResult<Prisma.$StockQIndexPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more StockQIndices.
+     * @param {StockQIndexDeleteManyArgs} args - Arguments to filter StockQIndices to delete.
+     * @example
+     * // Delete a few StockQIndices
+     * const { count } = await prisma.stockQIndex.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends StockQIndexDeleteManyArgs>(args?: SelectSubset<T, StockQIndexDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StockQIndices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockQIndexUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many StockQIndices
+     * const stockQIndex = await prisma.stockQIndex.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends StockQIndexUpdateManyArgs>(args: SelectSubset<T, StockQIndexUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one StockQIndex.
+     * @param {StockQIndexUpsertArgs} args - Arguments to update or create a StockQIndex.
+     * @example
+     * // Update or create a StockQIndex
+     * const stockQIndex = await prisma.stockQIndex.upsert({
+     *   create: {
+     *     // ... data to create a StockQIndex
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the StockQIndex we want to update
+     *   }
+     * })
+     */
+    upsert<T extends StockQIndexUpsertArgs>(args: SelectSubset<T, StockQIndexUpsertArgs<ExtArgs>>): Prisma__StockQIndexClient<$Result.GetResult<Prisma.$StockQIndexPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of StockQIndices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockQIndexCountArgs} args - Arguments to filter StockQIndices to count.
+     * @example
+     * // Count the number of StockQIndices
+     * const count = await prisma.stockQIndex.count({
+     *   where: {
+     *     // ... the filter for the StockQIndices we want to count
+     *   }
+     * })
+    **/
+    count<T extends StockQIndexCountArgs>(
+      args?: Subset<T, StockQIndexCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], StockQIndexCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a StockQIndex.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockQIndexAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends StockQIndexAggregateArgs>(args: Subset<T, StockQIndexAggregateArgs>): Prisma.PrismaPromise<GetStockQIndexAggregateType<T>>
+
+    /**
+     * Group by StockQIndex.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockQIndexGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends StockQIndexGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: StockQIndexGroupByArgs['orderBy'] }
+        : { orderBy?: StockQIndexGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, StockQIndexGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStockQIndexGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the StockQIndex model
+   */
+  readonly fields: StockQIndexFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for StockQIndex.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__StockQIndexClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    stock<T extends StockDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StockDefaultArgs<ExtArgs>>): Prisma__StockClient<$Result.GetResult<Prisma.$StockPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the StockQIndex model
+   */
+  interface StockQIndexFieldRefs {
+    readonly id: FieldRef<"StockQIndex", 'BigInt'>
+    readonly stock_id: FieldRef<"StockQIndex", 'BigInt'>
+    readonly date: FieldRef<"StockQIndex", 'DateTime'>
+    readonly open: FieldRef<"StockQIndex", 'Decimal'>
+    readonly low: FieldRef<"StockQIndex", 'Decimal'>
+    readonly high: FieldRef<"StockQIndex", 'Decimal'>
+    readonly trend_q: FieldRef<"StockQIndex", 'String'>
+    readonly fq: FieldRef<"StockQIndex", 'String'>
+    readonly qv1: FieldRef<"StockQIndex", 'String'>
+    readonly band_down: FieldRef<"StockQIndex", 'Decimal'>
+    readonly band_up: FieldRef<"StockQIndex", 'Decimal'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * StockQIndex findUnique
+   */
+  export type StockQIndexFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockQIndex
+     */
+    select?: StockQIndexSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockQIndex
+     */
+    omit?: StockQIndexOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockQIndexInclude<ExtArgs> | null
+    /**
+     * Filter, which StockQIndex to fetch.
+     */
+    where: StockQIndexWhereUniqueInput
+  }
+
+  /**
+   * StockQIndex findUniqueOrThrow
+   */
+  export type StockQIndexFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockQIndex
+     */
+    select?: StockQIndexSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockQIndex
+     */
+    omit?: StockQIndexOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockQIndexInclude<ExtArgs> | null
+    /**
+     * Filter, which StockQIndex to fetch.
+     */
+    where: StockQIndexWhereUniqueInput
+  }
+
+  /**
+   * StockQIndex findFirst
+   */
+  export type StockQIndexFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockQIndex
+     */
+    select?: StockQIndexSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockQIndex
+     */
+    omit?: StockQIndexOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockQIndexInclude<ExtArgs> | null
+    /**
+     * Filter, which StockQIndex to fetch.
+     */
+    where?: StockQIndexWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockQIndices to fetch.
+     */
+    orderBy?: StockQIndexOrderByWithRelationInput | StockQIndexOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StockQIndices.
+     */
+    cursor?: StockQIndexWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockQIndices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockQIndices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StockQIndices.
+     */
+    distinct?: StockQIndexScalarFieldEnum | StockQIndexScalarFieldEnum[]
+  }
+
+  /**
+   * StockQIndex findFirstOrThrow
+   */
+  export type StockQIndexFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockQIndex
+     */
+    select?: StockQIndexSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockQIndex
+     */
+    omit?: StockQIndexOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockQIndexInclude<ExtArgs> | null
+    /**
+     * Filter, which StockQIndex to fetch.
+     */
+    where?: StockQIndexWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockQIndices to fetch.
+     */
+    orderBy?: StockQIndexOrderByWithRelationInput | StockQIndexOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StockQIndices.
+     */
+    cursor?: StockQIndexWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockQIndices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockQIndices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StockQIndices.
+     */
+    distinct?: StockQIndexScalarFieldEnum | StockQIndexScalarFieldEnum[]
+  }
+
+  /**
+   * StockQIndex findMany
+   */
+  export type StockQIndexFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockQIndex
+     */
+    select?: StockQIndexSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockQIndex
+     */
+    omit?: StockQIndexOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockQIndexInclude<ExtArgs> | null
+    /**
+     * Filter, which StockQIndices to fetch.
+     */
+    where?: StockQIndexWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockQIndices to fetch.
+     */
+    orderBy?: StockQIndexOrderByWithRelationInput | StockQIndexOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing StockQIndices.
+     */
+    cursor?: StockQIndexWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockQIndices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockQIndices.
+     */
+    skip?: number
+    distinct?: StockQIndexScalarFieldEnum | StockQIndexScalarFieldEnum[]
+  }
+
+  /**
+   * StockQIndex create
+   */
+  export type StockQIndexCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockQIndex
+     */
+    select?: StockQIndexSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockQIndex
+     */
+    omit?: StockQIndexOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockQIndexInclude<ExtArgs> | null
+    /**
+     * The data needed to create a StockQIndex.
+     */
+    data: XOR<StockQIndexCreateInput, StockQIndexUncheckedCreateInput>
+  }
+
+  /**
+   * StockQIndex createMany
+   */
+  export type StockQIndexCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many StockQIndices.
+     */
+    data: StockQIndexCreateManyInput | StockQIndexCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * StockQIndex update
+   */
+  export type StockQIndexUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockQIndex
+     */
+    select?: StockQIndexSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockQIndex
+     */
+    omit?: StockQIndexOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockQIndexInclude<ExtArgs> | null
+    /**
+     * The data needed to update a StockQIndex.
+     */
+    data: XOR<StockQIndexUpdateInput, StockQIndexUncheckedUpdateInput>
+    /**
+     * Choose, which StockQIndex to update.
+     */
+    where: StockQIndexWhereUniqueInput
+  }
+
+  /**
+   * StockQIndex updateMany
+   */
+  export type StockQIndexUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update StockQIndices.
+     */
+    data: XOR<StockQIndexUpdateManyMutationInput, StockQIndexUncheckedUpdateManyInput>
+    /**
+     * Filter which StockQIndices to update
+     */
+    where?: StockQIndexWhereInput
+    /**
+     * Limit how many StockQIndices to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * StockQIndex upsert
+   */
+  export type StockQIndexUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockQIndex
+     */
+    select?: StockQIndexSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockQIndex
+     */
+    omit?: StockQIndexOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockQIndexInclude<ExtArgs> | null
+    /**
+     * The filter to search for the StockQIndex to update in case it exists.
+     */
+    where: StockQIndexWhereUniqueInput
+    /**
+     * In case the StockQIndex found by the `where` argument doesn't exist, create a new StockQIndex with this data.
+     */
+    create: XOR<StockQIndexCreateInput, StockQIndexUncheckedCreateInput>
+    /**
+     * In case the StockQIndex was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<StockQIndexUpdateInput, StockQIndexUncheckedUpdateInput>
+  }
+
+  /**
+   * StockQIndex delete
+   */
+  export type StockQIndexDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockQIndex
+     */
+    select?: StockQIndexSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockQIndex
+     */
+    omit?: StockQIndexOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockQIndexInclude<ExtArgs> | null
+    /**
+     * Filter which StockQIndex to delete.
+     */
+    where: StockQIndexWhereUniqueInput
+  }
+
+  /**
+   * StockQIndex deleteMany
+   */
+  export type StockQIndexDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StockQIndices to delete
+     */
+    where?: StockQIndexWhereInput
+    /**
+     * Limit how many StockQIndices to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * StockQIndex without action
+   */
+  export type StockQIndexDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockQIndex
+     */
+    select?: StockQIndexSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockQIndex
+     */
+    omit?: StockQIndexOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockQIndexInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -5431,6 +7681,40 @@ export namespace Prisma {
   export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
 
 
+  export const ImageScalarFieldEnum: {
+    id: 'id',
+    filename: 'filename',
+    processedFilename: 'processedFilename',
+    path: 'path',
+    url: 'url',
+    altText: 'altText',
+    mimetype: 'mimetype',
+    size: 'size',
+    width: 'width',
+    height: 'height',
+    createdAt: 'createdAt'
+  };
+
+  export type ImageScalarFieldEnum = (typeof ImageScalarFieldEnum)[keyof typeof ImageScalarFieldEnum]
+
+
+  export const StockQIndexScalarFieldEnum: {
+    id: 'id',
+    stock_id: 'stock_id',
+    date: 'date',
+    open: 'open',
+    low: 'low',
+    high: 'high',
+    trend_q: 'trend_q',
+    fq: 'fq',
+    qv1: 'qv1',
+    band_down: 'band_down',
+    band_up: 'band_up'
+  };
+
+  export type StockQIndexScalarFieldEnum = (typeof StockQIndexScalarFieldEnum)[keyof typeof StockQIndexScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -5489,6 +7773,27 @@ export namespace Prisma {
   export type PostOrderByRelevanceFieldEnum = (typeof PostOrderByRelevanceFieldEnum)[keyof typeof PostOrderByRelevanceFieldEnum]
 
 
+  export const ImageOrderByRelevanceFieldEnum: {
+    filename: 'filename',
+    processedFilename: 'processedFilename',
+    path: 'path',
+    url: 'url',
+    altText: 'altText',
+    mimetype: 'mimetype'
+  };
+
+  export type ImageOrderByRelevanceFieldEnum = (typeof ImageOrderByRelevanceFieldEnum)[keyof typeof ImageOrderByRelevanceFieldEnum]
+
+
+  export const StockQIndexOrderByRelevanceFieldEnum: {
+    trend_q: 'trend_q',
+    fq: 'fq',
+    qv1: 'qv1'
+  };
+
+  export type StockQIndexOrderByRelevanceFieldEnum = (typeof StockQIndexOrderByRelevanceFieldEnum)[keyof typeof StockQIndexOrderByRelevanceFieldEnum]
+
+
   /**
    * Field references
    */
@@ -5533,6 +7838,13 @@ export namespace Prisma {
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Decimal'
+   */
+  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
     
 
 
@@ -5698,6 +8010,7 @@ export namespace Prisma {
     exchange?: StringNullableFilter<"Stock"> | string | null
     industry?: StringNullableFilter<"Stock"> | string | null
     posts?: PostListRelationFilter
+    qindexes?: StockQIndexListRelationFilter
   }
 
   export type StockOrderByWithRelationInput = {
@@ -5707,6 +8020,7 @@ export namespace Prisma {
     exchange?: SortOrderInput | SortOrder
     industry?: SortOrderInput | SortOrder
     posts?: PostOrderByRelationAggregateInput
+    qindexes?: StockQIndexOrderByRelationAggregateInput
     _relevance?: StockOrderByRelevanceInput
   }
 
@@ -5720,6 +8034,7 @@ export namespace Prisma {
     exchange?: StringNullableFilter<"Stock"> | string | null
     industry?: StringNullableFilter<"Stock"> | string | null
     posts?: PostListRelationFilter
+    qindexes?: StockQIndexListRelationFilter
   }, "id" | "symbol">
 
   export type StockOrderByWithAggregationInput = {
@@ -5838,6 +8153,179 @@ export namespace Prisma {
     user_id?: BigIntWithAggregatesFilter<"Post"> | bigint | number
     createdAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
+  }
+
+  export type ImageWhereInput = {
+    AND?: ImageWhereInput | ImageWhereInput[]
+    OR?: ImageWhereInput[]
+    NOT?: ImageWhereInput | ImageWhereInput[]
+    id?: IntFilter<"Image"> | number
+    filename?: StringFilter<"Image"> | string
+    processedFilename?: StringFilter<"Image"> | string
+    path?: StringFilter<"Image"> | string
+    url?: StringFilter<"Image"> | string
+    altText?: StringNullableFilter<"Image"> | string | null
+    mimetype?: StringNullableFilter<"Image"> | string | null
+    size?: IntNullableFilter<"Image"> | number | null
+    width?: IntNullableFilter<"Image"> | number | null
+    height?: IntNullableFilter<"Image"> | number | null
+    createdAt?: DateTimeFilter<"Image"> | Date | string
+  }
+
+  export type ImageOrderByWithRelationInput = {
+    id?: SortOrder
+    filename?: SortOrder
+    processedFilename?: SortOrder
+    path?: SortOrder
+    url?: SortOrder
+    altText?: SortOrderInput | SortOrder
+    mimetype?: SortOrderInput | SortOrder
+    size?: SortOrderInput | SortOrder
+    width?: SortOrderInput | SortOrder
+    height?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _relevance?: ImageOrderByRelevanceInput
+  }
+
+  export type ImageWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    url?: string
+    AND?: ImageWhereInput | ImageWhereInput[]
+    OR?: ImageWhereInput[]
+    NOT?: ImageWhereInput | ImageWhereInput[]
+    filename?: StringFilter<"Image"> | string
+    processedFilename?: StringFilter<"Image"> | string
+    path?: StringFilter<"Image"> | string
+    altText?: StringNullableFilter<"Image"> | string | null
+    mimetype?: StringNullableFilter<"Image"> | string | null
+    size?: IntNullableFilter<"Image"> | number | null
+    width?: IntNullableFilter<"Image"> | number | null
+    height?: IntNullableFilter<"Image"> | number | null
+    createdAt?: DateTimeFilter<"Image"> | Date | string
+  }, "id" | "url">
+
+  export type ImageOrderByWithAggregationInput = {
+    id?: SortOrder
+    filename?: SortOrder
+    processedFilename?: SortOrder
+    path?: SortOrder
+    url?: SortOrder
+    altText?: SortOrderInput | SortOrder
+    mimetype?: SortOrderInput | SortOrder
+    size?: SortOrderInput | SortOrder
+    width?: SortOrderInput | SortOrder
+    height?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: ImageCountOrderByAggregateInput
+    _avg?: ImageAvgOrderByAggregateInput
+    _max?: ImageMaxOrderByAggregateInput
+    _min?: ImageMinOrderByAggregateInput
+    _sum?: ImageSumOrderByAggregateInput
+  }
+
+  export type ImageScalarWhereWithAggregatesInput = {
+    AND?: ImageScalarWhereWithAggregatesInput | ImageScalarWhereWithAggregatesInput[]
+    OR?: ImageScalarWhereWithAggregatesInput[]
+    NOT?: ImageScalarWhereWithAggregatesInput | ImageScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Image"> | number
+    filename?: StringWithAggregatesFilter<"Image"> | string
+    processedFilename?: StringWithAggregatesFilter<"Image"> | string
+    path?: StringWithAggregatesFilter<"Image"> | string
+    url?: StringWithAggregatesFilter<"Image"> | string
+    altText?: StringNullableWithAggregatesFilter<"Image"> | string | null
+    mimetype?: StringNullableWithAggregatesFilter<"Image"> | string | null
+    size?: IntNullableWithAggregatesFilter<"Image"> | number | null
+    width?: IntNullableWithAggregatesFilter<"Image"> | number | null
+    height?: IntNullableWithAggregatesFilter<"Image"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"Image"> | Date | string
+  }
+
+  export type StockQIndexWhereInput = {
+    AND?: StockQIndexWhereInput | StockQIndexWhereInput[]
+    OR?: StockQIndexWhereInput[]
+    NOT?: StockQIndexWhereInput | StockQIndexWhereInput[]
+    id?: BigIntFilter<"StockQIndex"> | bigint | number
+    stock_id?: BigIntFilter<"StockQIndex"> | bigint | number
+    date?: DateTimeFilter<"StockQIndex"> | Date | string
+    open?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    low?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    high?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    trend_q?: StringNullableFilter<"StockQIndex"> | string | null
+    fq?: StringNullableFilter<"StockQIndex"> | string | null
+    qv1?: StringNullableFilter<"StockQIndex"> | string | null
+    band_down?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    band_up?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    stock?: XOR<StockScalarRelationFilter, StockWhereInput>
+  }
+
+  export type StockQIndexOrderByWithRelationInput = {
+    id?: SortOrder
+    stock_id?: SortOrder
+    date?: SortOrder
+    open?: SortOrderInput | SortOrder
+    low?: SortOrderInput | SortOrder
+    high?: SortOrderInput | SortOrder
+    trend_q?: SortOrderInput | SortOrder
+    fq?: SortOrderInput | SortOrder
+    qv1?: SortOrderInput | SortOrder
+    band_down?: SortOrderInput | SortOrder
+    band_up?: SortOrderInput | SortOrder
+    stock?: StockOrderByWithRelationInput
+    _relevance?: StockQIndexOrderByRelevanceInput
+  }
+
+  export type StockQIndexWhereUniqueInput = Prisma.AtLeast<{
+    id?: bigint | number
+    AND?: StockQIndexWhereInput | StockQIndexWhereInput[]
+    OR?: StockQIndexWhereInput[]
+    NOT?: StockQIndexWhereInput | StockQIndexWhereInput[]
+    stock_id?: BigIntFilter<"StockQIndex"> | bigint | number
+    date?: DateTimeFilter<"StockQIndex"> | Date | string
+    open?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    low?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    high?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    trend_q?: StringNullableFilter<"StockQIndex"> | string | null
+    fq?: StringNullableFilter<"StockQIndex"> | string | null
+    qv1?: StringNullableFilter<"StockQIndex"> | string | null
+    band_down?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    band_up?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    stock?: XOR<StockScalarRelationFilter, StockWhereInput>
+  }, "id">
+
+  export type StockQIndexOrderByWithAggregationInput = {
+    id?: SortOrder
+    stock_id?: SortOrder
+    date?: SortOrder
+    open?: SortOrderInput | SortOrder
+    low?: SortOrderInput | SortOrder
+    high?: SortOrderInput | SortOrder
+    trend_q?: SortOrderInput | SortOrder
+    fq?: SortOrderInput | SortOrder
+    qv1?: SortOrderInput | SortOrder
+    band_down?: SortOrderInput | SortOrder
+    band_up?: SortOrderInput | SortOrder
+    _count?: StockQIndexCountOrderByAggregateInput
+    _avg?: StockQIndexAvgOrderByAggregateInput
+    _max?: StockQIndexMaxOrderByAggregateInput
+    _min?: StockQIndexMinOrderByAggregateInput
+    _sum?: StockQIndexSumOrderByAggregateInput
+  }
+
+  export type StockQIndexScalarWhereWithAggregatesInput = {
+    AND?: StockQIndexScalarWhereWithAggregatesInput | StockQIndexScalarWhereWithAggregatesInput[]
+    OR?: StockQIndexScalarWhereWithAggregatesInput[]
+    NOT?: StockQIndexScalarWhereWithAggregatesInput | StockQIndexScalarWhereWithAggregatesInput[]
+    id?: BigIntWithAggregatesFilter<"StockQIndex"> | bigint | number
+    stock_id?: BigIntWithAggregatesFilter<"StockQIndex"> | bigint | number
+    date?: DateTimeWithAggregatesFilter<"StockQIndex"> | Date | string
+    open?: DecimalNullableWithAggregatesFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    low?: DecimalNullableWithAggregatesFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    high?: DecimalNullableWithAggregatesFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    trend_q?: StringNullableWithAggregatesFilter<"StockQIndex"> | string | null
+    fq?: StringNullableWithAggregatesFilter<"StockQIndex"> | string | null
+    qv1?: StringNullableWithAggregatesFilter<"StockQIndex"> | string | null
+    band_down?: DecimalNullableWithAggregatesFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    band_up?: DecimalNullableWithAggregatesFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
   }
 
   export type UserCreateInput = {
@@ -5998,6 +8486,7 @@ export namespace Prisma {
     exchange?: string | null
     industry?: string | null
     posts?: PostCreateNestedManyWithoutStockInput
+    qindexes?: StockQIndexCreateNestedManyWithoutStockInput
   }
 
   export type StockUncheckedCreateInput = {
@@ -6007,6 +8496,7 @@ export namespace Prisma {
     exchange?: string | null
     industry?: string | null
     posts?: PostUncheckedCreateNestedManyWithoutStockInput
+    qindexes?: StockQIndexUncheckedCreateNestedManyWithoutStockInput
   }
 
   export type StockUpdateInput = {
@@ -6016,6 +8506,7 @@ export namespace Prisma {
     exchange?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     posts?: PostUpdateManyWithoutStockNestedInput
+    qindexes?: StockQIndexUpdateManyWithoutStockNestedInput
   }
 
   export type StockUncheckedUpdateInput = {
@@ -6025,6 +8516,7 @@ export namespace Prisma {
     exchange?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     posts?: PostUncheckedUpdateManyWithoutStockNestedInput
+    qindexes?: StockQIndexUncheckedUpdateManyWithoutStockNestedInput
   }
 
   export type StockCreateManyInput = {
@@ -6144,6 +8636,198 @@ export namespace Prisma {
     user_id?: BigIntFieldUpdateOperationsInput | bigint | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageCreateInput = {
+    filename: string
+    processedFilename: string
+    path: string
+    url: string
+    altText?: string | null
+    mimetype?: string | null
+    size?: number | null
+    width?: number | null
+    height?: number | null
+    createdAt?: Date | string
+  }
+
+  export type ImageUncheckedCreateInput = {
+    id?: number
+    filename: string
+    processedFilename: string
+    path: string
+    url: string
+    altText?: string | null
+    mimetype?: string | null
+    size?: number | null
+    width?: number | null
+    height?: number | null
+    createdAt?: Date | string
+  }
+
+  export type ImageUpdateInput = {
+    filename?: StringFieldUpdateOperationsInput | string
+    processedFilename?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    altText?: NullableStringFieldUpdateOperationsInput | string | null
+    mimetype?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    width?: NullableIntFieldUpdateOperationsInput | number | null
+    height?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    filename?: StringFieldUpdateOperationsInput | string
+    processedFilename?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    altText?: NullableStringFieldUpdateOperationsInput | string | null
+    mimetype?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    width?: NullableIntFieldUpdateOperationsInput | number | null
+    height?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageCreateManyInput = {
+    id?: number
+    filename: string
+    processedFilename: string
+    path: string
+    url: string
+    altText?: string | null
+    mimetype?: string | null
+    size?: number | null
+    width?: number | null
+    height?: number | null
+    createdAt?: Date | string
+  }
+
+  export type ImageUpdateManyMutationInput = {
+    filename?: StringFieldUpdateOperationsInput | string
+    processedFilename?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    altText?: NullableStringFieldUpdateOperationsInput | string | null
+    mimetype?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    width?: NullableIntFieldUpdateOperationsInput | number | null
+    height?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    filename?: StringFieldUpdateOperationsInput | string
+    processedFilename?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    altText?: NullableStringFieldUpdateOperationsInput | string | null
+    mimetype?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    width?: NullableIntFieldUpdateOperationsInput | number | null
+    height?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockQIndexCreateInput = {
+    id?: bigint | number
+    date: Date | string
+    open?: Decimal | DecimalJsLike | number | string | null
+    low?: Decimal | DecimalJsLike | number | string | null
+    high?: Decimal | DecimalJsLike | number | string | null
+    trend_q?: string | null
+    fq?: string | null
+    qv1?: string | null
+    band_down?: Decimal | DecimalJsLike | number | string | null
+    band_up?: Decimal | DecimalJsLike | number | string | null
+    stock: StockCreateNestedOneWithoutQindexesInput
+  }
+
+  export type StockQIndexUncheckedCreateInput = {
+    id?: bigint | number
+    stock_id: bigint | number
+    date: Date | string
+    open?: Decimal | DecimalJsLike | number | string | null
+    low?: Decimal | DecimalJsLike | number | string | null
+    high?: Decimal | DecimalJsLike | number | string | null
+    trend_q?: string | null
+    fq?: string | null
+    qv1?: string | null
+    band_down?: Decimal | DecimalJsLike | number | string | null
+    band_up?: Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type StockQIndexUpdateInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
+    fq?: NullableStringFieldUpdateOperationsInput | string | null
+    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    stock?: StockUpdateOneRequiredWithoutQindexesNestedInput
+  }
+
+  export type StockQIndexUncheckedUpdateInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    stock_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
+    fq?: NullableStringFieldUpdateOperationsInput | string | null
+    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type StockQIndexCreateManyInput = {
+    id?: bigint | number
+    stock_id: bigint | number
+    date: Date | string
+    open?: Decimal | DecimalJsLike | number | string | null
+    low?: Decimal | DecimalJsLike | number | string | null
+    high?: Decimal | DecimalJsLike | number | string | null
+    trend_q?: string | null
+    fq?: string | null
+    qv1?: string | null
+    band_down?: Decimal | DecimalJsLike | number | string | null
+    band_up?: Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type StockQIndexUpdateManyMutationInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
+    fq?: NullableStringFieldUpdateOperationsInput | string | null
+    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type StockQIndexUncheckedUpdateManyInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    stock_id?: BigIntFieldUpdateOperationsInput | bigint | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
+    fq?: NullableStringFieldUpdateOperationsInput | string | null
+    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
 
   export type BigIntFilter<$PrismaModel = never> = {
@@ -6416,6 +9100,16 @@ export namespace Prisma {
     _max?: NestedBigIntNullableFilter<$PrismaModel>
   }
 
+  export type StockQIndexListRelationFilter = {
+    every?: StockQIndexWhereInput
+    some?: StockQIndexWhereInput
+    none?: StockQIndexWhereInput
+  }
+
+  export type StockQIndexOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type StockOrderByRelevanceInput = {
     fields: StockOrderByRelevanceFieldEnum | StockOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -6554,6 +9248,222 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type ImageOrderByRelevanceInput = {
+    fields: ImageOrderByRelevanceFieldEnum | ImageOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type ImageCountOrderByAggregateInput = {
+    id?: SortOrder
+    filename?: SortOrder
+    processedFilename?: SortOrder
+    path?: SortOrder
+    url?: SortOrder
+    altText?: SortOrder
+    mimetype?: SortOrder
+    size?: SortOrder
+    width?: SortOrder
+    height?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ImageAvgOrderByAggregateInput = {
+    id?: SortOrder
+    size?: SortOrder
+    width?: SortOrder
+    height?: SortOrder
+  }
+
+  export type ImageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    filename?: SortOrder
+    processedFilename?: SortOrder
+    path?: SortOrder
+    url?: SortOrder
+    altText?: SortOrder
+    mimetype?: SortOrder
+    size?: SortOrder
+    width?: SortOrder
+    height?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ImageMinOrderByAggregateInput = {
+    id?: SortOrder
+    filename?: SortOrder
+    processedFilename?: SortOrder
+    path?: SortOrder
+    url?: SortOrder
+    altText?: SortOrder
+    mimetype?: SortOrder
+    size?: SortOrder
+    width?: SortOrder
+    height?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ImageSumOrderByAggregateInput = {
+    id?: SortOrder
+    size?: SortOrder
+    width?: SortOrder
+    height?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type DecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type StockScalarRelationFilter = {
+    is?: StockWhereInput
+    isNot?: StockWhereInput
+  }
+
+  export type StockQIndexOrderByRelevanceInput = {
+    fields: StockQIndexOrderByRelevanceFieldEnum | StockQIndexOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type StockQIndexCountOrderByAggregateInput = {
+    id?: SortOrder
+    stock_id?: SortOrder
+    date?: SortOrder
+    open?: SortOrder
+    low?: SortOrder
+    high?: SortOrder
+    trend_q?: SortOrder
+    fq?: SortOrder
+    qv1?: SortOrder
+    band_down?: SortOrder
+    band_up?: SortOrder
+  }
+
+  export type StockQIndexAvgOrderByAggregateInput = {
+    id?: SortOrder
+    stock_id?: SortOrder
+    open?: SortOrder
+    low?: SortOrder
+    high?: SortOrder
+    band_down?: SortOrder
+    band_up?: SortOrder
+  }
+
+  export type StockQIndexMaxOrderByAggregateInput = {
+    id?: SortOrder
+    stock_id?: SortOrder
+    date?: SortOrder
+    open?: SortOrder
+    low?: SortOrder
+    high?: SortOrder
+    trend_q?: SortOrder
+    fq?: SortOrder
+    qv1?: SortOrder
+    band_down?: SortOrder
+    band_up?: SortOrder
+  }
+
+  export type StockQIndexMinOrderByAggregateInput = {
+    id?: SortOrder
+    stock_id?: SortOrder
+    date?: SortOrder
+    open?: SortOrder
+    low?: SortOrder
+    high?: SortOrder
+    trend_q?: SortOrder
+    fq?: SortOrder
+    qv1?: SortOrder
+    band_down?: SortOrder
+    band_up?: SortOrder
+  }
+
+  export type StockQIndexSumOrderByAggregateInput = {
+    id?: SortOrder
+    stock_id?: SortOrder
+    open?: SortOrder
+    low?: SortOrder
+    high?: SortOrder
+    band_down?: SortOrder
+    band_up?: SortOrder
+  }
+
+  export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
   export type PostCreateNestedManyWithoutUserInput = {
@@ -6737,11 +9647,25 @@ export namespace Prisma {
     connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
   }
 
+  export type StockQIndexCreateNestedManyWithoutStockInput = {
+    create?: XOR<StockQIndexCreateWithoutStockInput, StockQIndexUncheckedCreateWithoutStockInput> | StockQIndexCreateWithoutStockInput[] | StockQIndexUncheckedCreateWithoutStockInput[]
+    connectOrCreate?: StockQIndexCreateOrConnectWithoutStockInput | StockQIndexCreateOrConnectWithoutStockInput[]
+    createMany?: StockQIndexCreateManyStockInputEnvelope
+    connect?: StockQIndexWhereUniqueInput | StockQIndexWhereUniqueInput[]
+  }
+
   export type PostUncheckedCreateNestedManyWithoutStockInput = {
     create?: XOR<PostCreateWithoutStockInput, PostUncheckedCreateWithoutStockInput> | PostCreateWithoutStockInput[] | PostUncheckedCreateWithoutStockInput[]
     connectOrCreate?: PostCreateOrConnectWithoutStockInput | PostCreateOrConnectWithoutStockInput[]
     createMany?: PostCreateManyStockInputEnvelope
     connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+  }
+
+  export type StockQIndexUncheckedCreateNestedManyWithoutStockInput = {
+    create?: XOR<StockQIndexCreateWithoutStockInput, StockQIndexUncheckedCreateWithoutStockInput> | StockQIndexCreateWithoutStockInput[] | StockQIndexUncheckedCreateWithoutStockInput[]
+    connectOrCreate?: StockQIndexCreateOrConnectWithoutStockInput | StockQIndexCreateOrConnectWithoutStockInput[]
+    createMany?: StockQIndexCreateManyStockInputEnvelope
+    connect?: StockQIndexWhereUniqueInput | StockQIndexWhereUniqueInput[]
   }
 
   export type PostUpdateManyWithoutStockNestedInput = {
@@ -6758,6 +9682,20 @@ export namespace Prisma {
     deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
   }
 
+  export type StockQIndexUpdateManyWithoutStockNestedInput = {
+    create?: XOR<StockQIndexCreateWithoutStockInput, StockQIndexUncheckedCreateWithoutStockInput> | StockQIndexCreateWithoutStockInput[] | StockQIndexUncheckedCreateWithoutStockInput[]
+    connectOrCreate?: StockQIndexCreateOrConnectWithoutStockInput | StockQIndexCreateOrConnectWithoutStockInput[]
+    upsert?: StockQIndexUpsertWithWhereUniqueWithoutStockInput | StockQIndexUpsertWithWhereUniqueWithoutStockInput[]
+    createMany?: StockQIndexCreateManyStockInputEnvelope
+    set?: StockQIndexWhereUniqueInput | StockQIndexWhereUniqueInput[]
+    disconnect?: StockQIndexWhereUniqueInput | StockQIndexWhereUniqueInput[]
+    delete?: StockQIndexWhereUniqueInput | StockQIndexWhereUniqueInput[]
+    connect?: StockQIndexWhereUniqueInput | StockQIndexWhereUniqueInput[]
+    update?: StockQIndexUpdateWithWhereUniqueWithoutStockInput | StockQIndexUpdateWithWhereUniqueWithoutStockInput[]
+    updateMany?: StockQIndexUpdateManyWithWhereWithoutStockInput | StockQIndexUpdateManyWithWhereWithoutStockInput[]
+    deleteMany?: StockQIndexScalarWhereInput | StockQIndexScalarWhereInput[]
+  }
+
   export type PostUncheckedUpdateManyWithoutStockNestedInput = {
     create?: XOR<PostCreateWithoutStockInput, PostUncheckedCreateWithoutStockInput> | PostCreateWithoutStockInput[] | PostUncheckedCreateWithoutStockInput[]
     connectOrCreate?: PostCreateOrConnectWithoutStockInput | PostCreateOrConnectWithoutStockInput[]
@@ -6770,6 +9708,20 @@ export namespace Prisma {
     update?: PostUpdateWithWhereUniqueWithoutStockInput | PostUpdateWithWhereUniqueWithoutStockInput[]
     updateMany?: PostUpdateManyWithWhereWithoutStockInput | PostUpdateManyWithWhereWithoutStockInput[]
     deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
+  }
+
+  export type StockQIndexUncheckedUpdateManyWithoutStockNestedInput = {
+    create?: XOR<StockQIndexCreateWithoutStockInput, StockQIndexUncheckedCreateWithoutStockInput> | StockQIndexCreateWithoutStockInput[] | StockQIndexUncheckedCreateWithoutStockInput[]
+    connectOrCreate?: StockQIndexCreateOrConnectWithoutStockInput | StockQIndexCreateOrConnectWithoutStockInput[]
+    upsert?: StockQIndexUpsertWithWhereUniqueWithoutStockInput | StockQIndexUpsertWithWhereUniqueWithoutStockInput[]
+    createMany?: StockQIndexCreateManyStockInputEnvelope
+    set?: StockQIndexWhereUniqueInput | StockQIndexWhereUniqueInput[]
+    disconnect?: StockQIndexWhereUniqueInput | StockQIndexWhereUniqueInput[]
+    delete?: StockQIndexWhereUniqueInput | StockQIndexWhereUniqueInput[]
+    connect?: StockQIndexWhereUniqueInput | StockQIndexWhereUniqueInput[]
+    update?: StockQIndexUpdateWithWhereUniqueWithoutStockInput | StockQIndexUpdateWithWhereUniqueWithoutStockInput[]
+    updateMany?: StockQIndexUpdateManyWithWhereWithoutStockInput | StockQIndexUpdateManyWithWhereWithoutStockInput[]
+    deleteMany?: StockQIndexScalarWhereInput | StockQIndexScalarWhereInput[]
   }
 
   export type CategoryCreateNestedOneWithoutPostsInput = {
@@ -6818,6 +9770,44 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutPostsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPostsInput, UserUpdateWithoutPostsInput>, UserUncheckedUpdateWithoutPostsInput>
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type StockCreateNestedOneWithoutQindexesInput = {
+    create?: XOR<StockCreateWithoutQindexesInput, StockUncheckedCreateWithoutQindexesInput>
+    connectOrCreate?: StockCreateOrConnectWithoutQindexesInput
+    connect?: StockWhereUniqueInput
+  }
+
+  export type NullableDecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string | null
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type StockUpdateOneRequiredWithoutQindexesNestedInput = {
+    create?: XOR<StockCreateWithoutQindexesInput, StockUncheckedCreateWithoutQindexesInput>
+    connectOrCreate?: StockCreateOrConnectWithoutQindexesInput
+    upsert?: StockUpsertWithoutQindexesInput
+    connect?: StockWhereUniqueInput
+    update?: XOR<XOR<StockUpdateToOneWithWhereWithoutQindexesInput, StockUpdateWithoutQindexesInput>, StockUncheckedUpdateWithoutQindexesInput>
   }
 
   export type NestedBigIntFilter<$PrismaModel = never> = {
@@ -7037,6 +10027,65 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
   export type PostCreateWithoutUserInput = {
@@ -7310,6 +10359,42 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type StockQIndexCreateWithoutStockInput = {
+    id?: bigint | number
+    date: Date | string
+    open?: Decimal | DecimalJsLike | number | string | null
+    low?: Decimal | DecimalJsLike | number | string | null
+    high?: Decimal | DecimalJsLike | number | string | null
+    trend_q?: string | null
+    fq?: string | null
+    qv1?: string | null
+    band_down?: Decimal | DecimalJsLike | number | string | null
+    band_up?: Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type StockQIndexUncheckedCreateWithoutStockInput = {
+    id?: bigint | number
+    date: Date | string
+    open?: Decimal | DecimalJsLike | number | string | null
+    low?: Decimal | DecimalJsLike | number | string | null
+    high?: Decimal | DecimalJsLike | number | string | null
+    trend_q?: string | null
+    fq?: string | null
+    qv1?: string | null
+    band_down?: Decimal | DecimalJsLike | number | string | null
+    band_up?: Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type StockQIndexCreateOrConnectWithoutStockInput = {
+    where: StockQIndexWhereUniqueInput
+    create: XOR<StockQIndexCreateWithoutStockInput, StockQIndexUncheckedCreateWithoutStockInput>
+  }
+
+  export type StockQIndexCreateManyStockInputEnvelope = {
+    data: StockQIndexCreateManyStockInput | StockQIndexCreateManyStockInput[]
+    skipDuplicates?: boolean
+  }
+
   export type PostUpsertWithWhereUniqueWithoutStockInput = {
     where: PostWhereUniqueInput
     update: XOR<PostUpdateWithoutStockInput, PostUncheckedUpdateWithoutStockInput>
@@ -7324,6 +10409,39 @@ export namespace Prisma {
   export type PostUpdateManyWithWhereWithoutStockInput = {
     where: PostScalarWhereInput
     data: XOR<PostUpdateManyMutationInput, PostUncheckedUpdateManyWithoutStockInput>
+  }
+
+  export type StockQIndexUpsertWithWhereUniqueWithoutStockInput = {
+    where: StockQIndexWhereUniqueInput
+    update: XOR<StockQIndexUpdateWithoutStockInput, StockQIndexUncheckedUpdateWithoutStockInput>
+    create: XOR<StockQIndexCreateWithoutStockInput, StockQIndexUncheckedCreateWithoutStockInput>
+  }
+
+  export type StockQIndexUpdateWithWhereUniqueWithoutStockInput = {
+    where: StockQIndexWhereUniqueInput
+    data: XOR<StockQIndexUpdateWithoutStockInput, StockQIndexUncheckedUpdateWithoutStockInput>
+  }
+
+  export type StockQIndexUpdateManyWithWhereWithoutStockInput = {
+    where: StockQIndexScalarWhereInput
+    data: XOR<StockQIndexUpdateManyMutationInput, StockQIndexUncheckedUpdateManyWithoutStockInput>
+  }
+
+  export type StockQIndexScalarWhereInput = {
+    AND?: StockQIndexScalarWhereInput | StockQIndexScalarWhereInput[]
+    OR?: StockQIndexScalarWhereInput[]
+    NOT?: StockQIndexScalarWhereInput | StockQIndexScalarWhereInput[]
+    id?: BigIntFilter<"StockQIndex"> | bigint | number
+    stock_id?: BigIntFilter<"StockQIndex"> | bigint | number
+    date?: DateTimeFilter<"StockQIndex"> | Date | string
+    open?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    low?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    high?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    trend_q?: StringNullableFilter<"StockQIndex"> | string | null
+    fq?: StringNullableFilter<"StockQIndex"> | string | null
+    qv1?: StringNullableFilter<"StockQIndex"> | string | null
+    band_down?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
+    band_up?: DecimalNullableFilter<"StockQIndex"> | Decimal | DecimalJsLike | number | string | null
   }
 
   export type CategoryCreateWithoutPostsInput = {
@@ -7357,6 +10475,7 @@ export namespace Prisma {
     name: string
     exchange?: string | null
     industry?: string | null
+    qindexes?: StockQIndexCreateNestedManyWithoutStockInput
   }
 
   export type StockUncheckedCreateWithoutPostsInput = {
@@ -7365,6 +10484,7 @@ export namespace Prisma {
     name: string
     exchange?: string | null
     industry?: string | null
+    qindexes?: StockQIndexUncheckedCreateNestedManyWithoutStockInput
   }
 
   export type StockCreateOrConnectWithoutPostsInput = {
@@ -7447,6 +10567,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     exchange?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
+    qindexes?: StockQIndexUpdateManyWithoutStockNestedInput
   }
 
   export type StockUncheckedUpdateWithoutPostsInput = {
@@ -7455,6 +10576,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     exchange?: NullableStringFieldUpdateOperationsInput | string | null
     industry?: NullableStringFieldUpdateOperationsInput | string | null
+    qindexes?: StockQIndexUncheckedUpdateManyWithoutStockNestedInput
   }
 
   export type UserUpsertWithoutPostsInput = {
@@ -7488,6 +10610,58 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     verified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+  }
+
+  export type StockCreateWithoutQindexesInput = {
+    id?: bigint | number
+    symbol: string
+    name: string
+    exchange?: string | null
+    industry?: string | null
+    posts?: PostCreateNestedManyWithoutStockInput
+  }
+
+  export type StockUncheckedCreateWithoutQindexesInput = {
+    id?: bigint | number
+    symbol: string
+    name: string
+    exchange?: string | null
+    industry?: string | null
+    posts?: PostUncheckedCreateNestedManyWithoutStockInput
+  }
+
+  export type StockCreateOrConnectWithoutQindexesInput = {
+    where: StockWhereUniqueInput
+    create: XOR<StockCreateWithoutQindexesInput, StockUncheckedCreateWithoutQindexesInput>
+  }
+
+  export type StockUpsertWithoutQindexesInput = {
+    update: XOR<StockUpdateWithoutQindexesInput, StockUncheckedUpdateWithoutQindexesInput>
+    create: XOR<StockCreateWithoutQindexesInput, StockUncheckedCreateWithoutQindexesInput>
+    where?: StockWhereInput
+  }
+
+  export type StockUpdateToOneWithWhereWithoutQindexesInput = {
+    where?: StockWhereInput
+    data: XOR<StockUpdateWithoutQindexesInput, StockUncheckedUpdateWithoutQindexesInput>
+  }
+
+  export type StockUpdateWithoutQindexesInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    symbol?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    exchange?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    posts?: PostUpdateManyWithoutStockNestedInput
+  }
+
+  export type StockUncheckedUpdateWithoutQindexesInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    symbol?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    exchange?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    posts?: PostUncheckedUpdateManyWithoutStockNestedInput
   }
 
   export type PostCreateManyUserInput = {
@@ -7643,6 +10817,19 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type StockQIndexCreateManyStockInput = {
+    id?: bigint | number
+    date: Date | string
+    open?: Decimal | DecimalJsLike | number | string | null
+    low?: Decimal | DecimalJsLike | number | string | null
+    high?: Decimal | DecimalJsLike | number | string | null
+    trend_q?: string | null
+    fq?: string | null
+    qv1?: string | null
+    band_down?: Decimal | DecimalJsLike | number | string | null
+    band_up?: Decimal | DecimalJsLike | number | string | null
+  }
+
   export type PostUpdateWithoutStockInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     title?: StringFieldUpdateOperationsInput | string
@@ -7680,6 +10867,45 @@ export namespace Prisma {
     user_id?: BigIntFieldUpdateOperationsInput | bigint | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockQIndexUpdateWithoutStockInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
+    fq?: NullableStringFieldUpdateOperationsInput | string | null
+    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type StockQIndexUncheckedUpdateWithoutStockInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
+    fq?: NullableStringFieldUpdateOperationsInput | string | null
+    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type StockQIndexUncheckedUpdateManyWithoutStockInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trend_q?: NullableStringFieldUpdateOperationsInput | string | null
+    fq?: NullableStringFieldUpdateOperationsInput | string | null
+    qv1?: NullableStringFieldUpdateOperationsInput | string | null
+    band_down?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    band_up?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
 
 
