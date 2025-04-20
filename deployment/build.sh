@@ -13,6 +13,12 @@ if [ "$CURRENT_DIR" != "$SCRIPT_DIR" ]; then
   cd "$SCRIPT_DIR"
 fi
 
+# Chuẩn bị frontend
+echo "Chuẩn bị frontend cho build..."
+chmod +x ./prepare-frontend.sh
+./prepare-frontend.sh
+echo "✅ Đã chuẩn bị frontend"
+
 # Kiểm tra các thư mục cần thiết
 echo "Chuẩn bị các thư mục cần thiết..."
 mkdir -p traefik/data backup/db uploads
@@ -52,6 +58,9 @@ echo "✅ Đã cấp quyền thực thi cho các script backup."
 echo ""
 echo "=== Build và Deploy ==="
 echo "Đang khởi chạy ứng dụng với docker-compose..."
+# Xây dựng frontend riêng với cờ --no-error
+docker-compose build --no-cache frontend
+# Khởi động tất cả các dịch vụ
 docker-compose up -d
 
 echo ""
