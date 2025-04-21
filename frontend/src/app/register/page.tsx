@@ -35,7 +35,7 @@ const formSchema = z.object({
 });
 
 // Define the API endpoint (replace if your backend runs on a different port/host)
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/';
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -60,7 +60,7 @@ export default function RegisterPage() {
         console.log("Submitting:", values); // Log values being sent
 
         try {
-            const response = await fetch(`${API_URL}/api/auth/register`, {
+            const response = await fetch(`${API_URL}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
