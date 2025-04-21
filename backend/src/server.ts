@@ -47,15 +47,15 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // Auth Routes
-app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 
 // --- Add other API Routes ---
-app.use('/api/categories', categoryRoutes);
-app.use('/api/posts', postRoutes);
-app.use('/api/stocks', stockRoutes);
-app.use('/api/upload', uploadRoutes); // Mount the upload routes
-app.use('/api/images', imageRoutes);  // Mount image routes for GET/PUT/DELETE /api/images...
-app.use('/api/qindices', stockQIndexRoutes);
+app.use('/categories', categoryRoutes);
+app.use('/posts', postRoutes);
+app.use('/stocks', stockRoutes);
+app.use('/upload', uploadRoutes); // Mount the upload routes
+app.use('/images', imageRoutes);  // Mount image routes for GET/PUT/DELETE /images...
+app.use('/qindices', stockQIndexRoutes);
 
 // --- Swagger Setup ---
 setupSwagger(app);
