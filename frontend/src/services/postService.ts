@@ -1,6 +1,6 @@
 import { Post, PostInput, PaginatedPostsResponse } from '@/types/post';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 // Shared response handler (can be moved to a common util if used elsewhere)
 async function handleResponse<T>(response: Response): Promise<T> {

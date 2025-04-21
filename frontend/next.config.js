@@ -7,7 +7,8 @@ const nextConfig = {
       'localhost',
       'api.vsmi.vn',
       'vsmi.vn',
-      'www.vsmi.vn'
+      'www.vsmi.vn',
+      'backend'
     ],
   },
   typescript: {
