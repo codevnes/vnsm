@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '../lib/prisma';
 
 // Helper function (same as in categoryController)
 const generateSlug = (title: string): string => {

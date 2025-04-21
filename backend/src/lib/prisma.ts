@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 // Instantiate Prisma Client
 const prisma = new PrismaClient({
@@ -8,6 +8,12 @@ const prisma = new PrismaClient({
 
 // Export the instance
 export default prisma;
+
+// Export Prisma namespace for types
+export { Prisma };
+
+// Export Role type for convenience
+export type Role = 'admin' | 'editor' | 'user';
 
 // Optional: Add graceful shutdown logic
 // process.on('beforeExit', async () => {

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
-import { Prisma } from '@prisma/client'; // Import Prisma namespace for specific types if needed
+import { Prisma } from '../lib/prisma'; // Import Prisma namespace for specific types if needed
 
 // Helper function to generate slug (you might want a more robust library like slugify)
 const generateSlug = (title: string): string => {

@@ -1,9 +1,5 @@
-// Sử dụng đường dẫn tuyệt đối để tránh vấn đề khi build
-import { PrismaClient, Prisma } from '@prisma/client';
-// Role là một enum trong namespace Prisma
-type Role = Prisma.UserCreateInput['role'];
-
-const prisma = new PrismaClient();
+// Import từ file prisma.ts trung tâm
+import prisma, { Role } from '../lib/prisma';
 
 /**
  * Get a user by ID
