@@ -1,4 +1,5 @@
 import { PrismaClient } from '../src/generated/prisma';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -16,6 +17,31 @@ const stockData = [
 ];
 
 async function main() {
+  // Tạo người dùng admin
+  console.log(`Kiểm tra người dùng admin...`);
+  const adminExists = await prisma.user.findUnique({
+    where: {
+      email: 'admin@vsmi.vn',
+    },
+  });
+
+  if (!adminExists) {
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    await prisma.user.create({
+      data: {
+        email: 'admin@vsmi.vn',
+        full_name: 'Admin',
+        password: hashedPassword,
+        role: 'admin',
+        verified: true,
+      },
+    });
+    console.log('Đã tạo người dùng admin');
+  } else {
+    console.log('Người dùng admin đã tồn tại');
+  }
+
+  // Tạo dữ liệu cổ phiếu
   console.log(`Start seeding stocks...`);
   for (const stock of stockData) {
     const upsertedStock = await prisma.stock.upsert({

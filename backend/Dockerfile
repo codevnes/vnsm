@@ -15,6 +15,10 @@ RUN mkdir -p public/uploads
 # Generate Prisma client
 RUN npx prisma generate
 
+# Thêm script để chạy Prisma migrate khi container khởi động
+COPY ./docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
+
 # Build ứng dụng
 RUN npm run build
 
@@ -24,4 +28,4 @@ RUN npm run build
 EXPOSE 3001
 
 # Khởi động ứng dụng
-CMD ["npm", "start"]
+CMD ["/app/docker-entrypoint.sh"]

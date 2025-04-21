@@ -7,7 +7,7 @@ services:
     container_name: vnsm-mysql
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=Timem.2302
       - MYSQL_DATABASE=vsmi_db
       - MYSQL_USER=vsmi
       - MYSQL_PASSWORD=Timem.2302
@@ -29,10 +29,10 @@ services:
     restart: always
     environment:
       - PORT=3001
-      - DATABASE_URL=mysql://${DB_USER:-vsmi}:${DB_PASSWORD:-Timem.2302}@mysql:3306/${DB_NAME:-vsmi_db}?connection_limit=5&pool_timeout=2&connect_timeout=5
+      - DATABASE_URL=mysql://root:root@mysql:3306/${DB_NAME:-vsmi_db}?connection_limit=5&pool_timeout=2&connect_timeout=5
       - DB_HOST=mysql
-      - DB_USER=${DB_USER:-vsmi}
-      - DB_PASSWORD=${DB_PASSWORD:-Timem.2302}
+      - DB_USER=root
+      - DB_PASSWORD=root
       - DB_NAME=${DB_NAME:-vsmi_db}
       - DB_PORT=3306
       - JWT_SECRET=${JWT_SECRET:-your_jwt_secret_key}
