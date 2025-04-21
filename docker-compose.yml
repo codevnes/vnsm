@@ -44,12 +44,13 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.vsmi.vn`)"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.vsmi.io`)"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.entrypoints=websecure"
+
       - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik.middlewares=traefik-auth"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$apr1$$yRq0BdaH$$3vHVEOAT96P90jP08//yM1"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:admin:$$apr1$$32lt.0Ss$$Pg5GZ499SXCBu/Ys8yzED1"
 
   # MySQL Database
   mysql:
@@ -57,10 +58,10 @@ services:
     container_name: vnsm-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: "vnsm_password"
-      MYSQL_DATABASE: "vnsm_db"
-      MYSQL_USER: "vnsm_user"
-      MYSQL_PASSWORD: "vnsm_password"
+      MYSQL_ROOT_PASSWORD: vnsm_password
+      MYSQL_DATABASE: vnsm_db
+      MYSQL_USER: vnsm_user
+      MYSQL_PASSWORD: vnsm_password
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d
@@ -76,7 +77,7 @@ services:
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: "vnsm_password"
+      MYSQL_ROOT_PASSWORD: vnsm_password
       UPLOAD_LIMIT: 64M
     networks:
       - backend-network
@@ -85,8 +86,9 @@ services:
       - mysql
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.phpmyadmin.rule=Host(`db.vsmi.vn`)"
+      - "traefik.http.routers.phpmyadmin.rule=Host(`db.vsmi.io`)"
       - "traefik.http.routers.phpmyadmin.entrypoints=websecure"
+
       - "traefik.http.routers.phpmyadmin.tls.certresolver=letsencrypt"
       - "traefik.http.services.phpmyadmin.loadbalancer.server.port=80"
 
@@ -98,14 +100,14 @@ services:
     container_name: vnsm-backend
     restart: unless-stopped
     environment:
-      NODE_ENV: "production"
+      NODE_ENV: production
       PORT: 3001
       DB_HOST: mysql
-      DB_USER: "vnsm_user"
-      DB_PASSWORD: "vnsm_password"
-      DB_NAME: "vnsm_db"
+      DB_USER: vnsm_user
+      DB_PASSWORD: vnsm_password
+      DB_NAME: vnsm_db
       DB_PORT: 3306
-      JWT_SECRET: "random_jwt_secret"
+      JWT_SECRET: d5db37ceaf68271bd5304f8963f9a7f0562ee11f25600e6adb93eb8517be98a2
       JWT_EXPIRES_IN: 1d
       DATABASE_URL: mysql://vnsm_user:vnsm_password@mysql:3306/vnsm_db
     volumes:
@@ -117,8 +119,9 @@ services:
       - mysql
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.vsmi.vn`)"
+      - "traefik.http.routers.backend.rule=Host(`api.vsmi.io`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
+
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend.loadbalancer.server.port=3001"
 
@@ -128,19 +131,20 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: https://api.vsmi.vn
+        NEXT_PUBLIC_API_URL: https://trueapi.vsmi.io
     container_name: vnsm-frontend
     restart: unless-stopped
     environment:
-      NODE_ENV: "production"
-      NEXT_PUBLIC_API_URL: https://api.vsmi.vn
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: https://trueapi.vsmi.io
     networks:
       - traefik-network
     depends_on:
       - backend
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`vsmi.vn`)"
+      - "traefik.http.routers.frontend.rule=Host(`vsmi.io`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
+
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000" 
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
