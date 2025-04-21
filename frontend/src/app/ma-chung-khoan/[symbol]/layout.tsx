@@ -1,19 +1,12 @@
-import { Metadata, ResolvingMetadata } from 'next';
+import { Metadata } from 'next';
 
-type Props = {
-  params: { symbol: string };
-  children: React.ReactNode;
-};
-
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: { symbol: string } 
+}): Promise<Metadata> {
   // Get the symbol from the URL params
   const symbol = params.symbol.toUpperCase();
-  
-  // You could fetch the stock data here to get more details for meta tags
-  // For now, we'll use the symbol directly
   
   return {
     title: `${symbol} - Thông tin chi tiết và biểu đồ giá | VNSM`,
@@ -34,10 +27,10 @@ export async function generateMetadata(
   };
 }
 
-export default function StockDetailLayout({
-  children,
-}: {
-  children: React.ReactNode;
+export default function StockDetailLayout({ 
+  children 
+}: { 
+  children: React.ReactNode 
 }) {
   return <>{children}</>;
-} 
+}

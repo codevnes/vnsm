@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState, useEffect, useRef, forwardRef } from 'react';
+import React, { useMemo, useRef, forwardRef } from 'react';
 import dynamic from 'next/dynamic';
 import 'react-quill-new/dist/quill.snow.css';
 // Optional: Import bubble theme CSS if you prefer it
@@ -11,7 +11,7 @@ import 'react-quill-new/dist/quill.snow.css';
 import type ReactQuillType from 'react-quill-new';
 import type Quill from 'quill'; // Import Quill type if needed for casting
 
-// @ts-ignore - No official types available
+// @ts-expect-error - No official types available
 import ImageResize from 'quill-image-resize-module';
 
 // --- Dynamic Import Types ---
@@ -26,12 +26,12 @@ const ReactQuill = dynamic<ReactQuillWrapperProps>(
         const {
             default: RQ
         } = await import('react-quill-new');
-        // @ts-ignore - Import the new resize module
+        // @ts-expect-error - Import the new resize module
         const { default: ImageResize } = await import('quill-image-resize');
 
         // Register the module *after* importing Quill
         if (typeof window !== 'undefined') {
-            // @ts-ignore - Access static Quill property
+            // @ts-expect-error - Access static Quill property
             const QuillInstance = RQ.Quill || RQ.default?.Quill;
             if (QuillInstance && typeof QuillInstance.register === 'function') {
                 try {
@@ -200,4 +200,4 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     );
 };
 
-export default RichTextEditor; 
+export default RichTextEditor;

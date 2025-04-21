@@ -30,7 +30,7 @@ export interface PaginationInfo {
 /**
  * Represents the data structure returned by the successful upload API call.
  */
-export interface UploadSuccessData extends Image {}
+export type UploadSuccessData = Image;
 
 /**
  * Represents the data structure returned by the successful image list API call.
@@ -52,4 +52,4 @@ export interface SingleImageResponse {
 /**
  * Represents the data structure returned by the successful image update API call.
  */
-export interface UpdateImageResponse extends SingleImageResponse {} 
+export type UpdateImageResponse = SingleImageResponse;

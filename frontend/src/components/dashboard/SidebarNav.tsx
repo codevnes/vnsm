@@ -50,7 +50,7 @@ const sidebarNavItems = [
     },
 ];
 
-interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {}
+type SidebarNavProps = React.HTMLAttributes<HTMLElement>;
 
 export function SidebarNav({ className, ...props }: SidebarNavProps) {
     const pathname = usePathname();

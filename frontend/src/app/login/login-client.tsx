@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -24,6 +23,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { getErrorMessage } from "@/types/error";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -85,9 +85,9 @@ export default function LoginClient() {
             setToken(data.token);
             router.push(redirectPath);
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Login error:", err);
-            setError(err.message || "An unexpected error occurred.");
+            setError(getErrorMessage(err) || "An unexpected error occurred.");
         } finally {
             setIsLoading(false);
         }
@@ -154,7 +154,7 @@ export default function LoginClient() {
                 </CardContent>
                 <CardFooter className="flex flex-col items-center space-y-2">
                     <p className="text-sm text-muted-foreground">
-                        Don't have an account?{' '}
+                        Don&apos;t have an account?{' '}
                         <Link href="/register" className="underline underline-offset-4 hover:text-primary">
                             Register
                         </Link>
@@ -163,4 +163,4 @@ export default function LoginClient() {
             </Card>
         </div>
     );
-} 
+}

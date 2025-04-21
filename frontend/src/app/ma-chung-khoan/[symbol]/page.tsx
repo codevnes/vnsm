@@ -31,7 +31,7 @@ type TimePeriod = '3m' | '6m' | '1y' | '5y';
 export default function StockDetailPage() {
   const params = useParams();
   const symbol = params.symbol as string;
-  
+
   const [stock, setStock] = useState<Stock | null>(null);
   const [qIndices, setQIndices] = useState<StockQIndex[]>([]);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('3m');
@@ -44,7 +44,7 @@ export default function StockDetailPage() {
   useEffect(() => {
     const fetchStockData = async () => {
       if (!symbol) return;
-      
+
       try {
         setLoading(true);
         const data = await getStockBySymbolAPI(symbol);
@@ -66,14 +66,14 @@ export default function StockDetailPage() {
   useEffect(() => {
     const fetchQIndexData = async () => {
       if (!stock) return;
-      
+
       setChartLoading(true);
       setChartError(null);
 
       // Calculate date range
       const today = new Date();
       const endDate = formatDate(today);
-      let fromDate = new Date();
+      const fromDate = new Date();
 
       switch (timePeriod) {
         case '3m':
@@ -102,7 +102,7 @@ export default function StockDetailPage() {
           startDate,
           endDate
         );
-        
+
         const rawData = response.data || [];
         setQIndices(rawData);
       } catch (err) {
@@ -212,12 +212,12 @@ export default function StockDetailPage() {
             <div className="md:col-span-2 bg-gray-50 dark:bg-gray-700/30 p-4 rounded-lg">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-gray-800 dark:text-gray-200">Biểu đồ giá</h3>
-                <TimePeriodSelector 
-                  selectedPeriod={timePeriod} 
-                  onChange={handleTimePeriodChange} 
+                <TimePeriodSelector
+                  selectedPeriod={timePeriod}
+                  onChange={handleTimePeriodChange}
                 />
               </div>
-              
+
               {chartLoading ? (
                 <div className="flex justify-center items-center h-64">
                   <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
@@ -228,7 +228,7 @@ export default function StockDetailPage() {
                 </div>
               ) : qIndices.length > 0 ? (
                 <div className="h-[300px] w-full">
-                  <StockChart 
+                  <StockChart
                     data={qIndices}
                     chartType="candlestick"
                     lineOptions={{
@@ -251,4 +251,4 @@ export default function StockDetailPage() {
       </div>
     </div>
   );
-} 
+}

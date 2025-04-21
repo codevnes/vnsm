@@ -10,15 +10,15 @@ import { DataTable } from '@/components/ui/data-table';
 import { getPostColumns } from '@/components/posts/post-columns';
 import { toast } from 'sonner';
 import { PlusCircle } from 'lucide-react';
-import { 
-    AlertDialog, 
-    AlertDialogAction, 
-    AlertDialogCancel, 
-    AlertDialogContent, 
-    AlertDialogDescription, 
-    AlertDialogFooter, 
-    AlertDialogHeader, 
-    AlertDialogTitle 
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle
 } from '@/components/ui/alert-dialog';
 
 // Reusable Delete Dialog (Could be moved to a common ui component)
@@ -29,11 +29,11 @@ interface DeleteConfirmationDialogProps {
     postTitle: string;
 }
 
-const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ 
-    open, 
-    onOpenChange, 
-    onConfirm, 
-    postTitle 
+const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
+    open,
+    onOpenChange,
+    onConfirm,
+    postTitle
 }) => {
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -41,8 +41,8 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete the post 
-                        "<strong>{postTitle}</strong>".
+                        This action cannot be undone. This will permanently delete the post
+                        &quot;<strong>{postTitle}</strong>&quot;.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -62,7 +62,7 @@ const PostsPage = () => {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    
+
     const [posts, setPosts] = useState<Post[]>([]);
     const [totalItems, setTotalItems] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
@@ -71,7 +71,7 @@ const PostsPage = () => {
     // State for Delete Dialog
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [postToDelete, setPostToDelete] = useState<Post | null>(null);
-    
+
     // Get page from query params or default to 1
     const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
@@ -122,13 +122,13 @@ const PostsPage = () => {
             // Close dialog even on error
             setIsDeleteDialogOpen(false);
             setPostToDelete(null);
-        } 
+        }
     }, [postToDelete, fetchPosts, currentPage]);
 
     // Define columns using useMemo
-    const columns = useMemo(() => getPostColumns({ 
-        onEdit: handleEdit, 
-        onDeleteRequest: handleDeleteRequest 
+    const columns = useMemo(() => getPostColumns({
+        onEdit: handleEdit,
+        onDeleteRequest: handleDeleteRequest
     }), [handleEdit, handleDeleteRequest]);
 
     // --- Pagination Logic ---
@@ -158,13 +158,13 @@ const PostsPage = () => {
             {error && !loading && <p className="text-red-500">Error: {error}. Please try refreshing.</p>}
             {!loading && !error && (
                 <>
-                    <DataTable 
-                        columns={columns} 
-                        data={posts} 
+                    <DataTable
+                        columns={columns}
+                        data={posts}
                         filterColumnId="title" // Allow filtering by title
                         filterInputPlaceholder="Filter posts by title..."
                     />
-                    {/* Custom Pagination Controls */} 
+                    {/* Custom Pagination Controls */}
                     {totalPages > 1 && (
                         <div className="flex items-center justify-end space-x-2 py-4">
                             <Button
@@ -191,7 +191,7 @@ const PostsPage = () => {
                  </>
             )}
 
-            {/* Render Delete Confirmation Dialog */} 
+            {/* Render Delete Confirmation Dialog */}
             {postToDelete && (
                 <DeleteConfirmationDialog
                     open={isDeleteDialogOpen}
@@ -204,4 +204,4 @@ const PostsPage = () => {
     );
 };
 
-export default PostsPage; 
+export default PostsPage;

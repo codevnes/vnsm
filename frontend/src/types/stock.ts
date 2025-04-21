@@ -40,7 +40,7 @@ export interface StockListResponse {
 /**
  * Represents the data structure for single stock API responses (Get by ID, Create, Update).
  */
-export interface SingleStockResponse extends StockType {}
+export type SingleStockResponse = StockType;
 
 /**
  * Represents the summary returned by the bulk import API.
@@ -57,7 +57,7 @@ export interface BulkImportSummary {
 export interface BulkImportError {
     row: number;
     message: string;
-    data?: any;
+    data?: unknown;
 }
 
 /**
@@ -76,9 +76,7 @@ export interface StockFilters {
     // Add other potential filters here if needed in the future
 }
 
-export interface FetchStocksResponse {
-    // ... existing response structure ...
-}
+export type FetchStocksResponse = StockListResponse;
 
 // Basic Stock type definition
 export interface Stock {
@@ -91,4 +89,4 @@ export interface Stock {
     industry?: string | null;
     createdAt?: string;
     updatedAt?: string;
-} 
+}

@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { api } from '@/lib/api';
 import { StockQIndex } from '@/types/stockQIndex';
+import { Post } from '@/types/post';
 
 // Create a non-authenticated API instance for public pages
 const publicApi = axios.create({
@@ -13,7 +13,7 @@ const publicApi = axios.create({
 interface QIndicesResponse {
   data: StockQIndex[];
   // Adjust meta based on potential backend response changes
-  meta?: { 
+  meta?: {
     currentPage?: number;
     totalPages?: number;
     totalItems?: number;
@@ -41,7 +41,7 @@ export const homeService = {
   ): Promise<QIndicesResponse> => {
     try {
       // Build params, include date filters if provided
-      const params: Record<string, any> = {
+      const params: Record<string, unknown> = {
         page: 1,
         // Remove limit or set very high if dates aren't used? Controller implies limit is used.
         // Let's keep limit=1 initially, backend might ignore if dates present
@@ -61,7 +61,7 @@ export const homeService = {
 
       // Use publicApi for unauthenticated requests
       const response = await publicApi.get(`/qindices`, { params }); // Use the built params object
-      
+
       // Handle potentially different pagination structures
       const responseData = response.data;
       if (responseData.pagination && !responseData.meta) {
@@ -70,7 +70,7 @@ export const homeService = {
             meta: responseData.pagination // Map pagination to meta if needed
          };
       }
-      
+
       return responseData;
     } catch (error) {
       console.error(`Error fetching QIndices:`, error);
@@ -90,7 +90,7 @@ export const homeService = {
   /**
    * Fetch latest posts
    */
-  fetchLatestPosts: async (limit: number = 5): Promise<any[]> => {
+  fetchLatestPosts: async (limit: number = 5): Promise<Post[]> => {
     try {
       // Replace with actual API endpoint when available
       // Use publicApi for unauthenticated requests

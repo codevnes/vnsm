@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 // Use environment variable for API URL, fallback to localhost
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -17,7 +18,7 @@ api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('authToken');
     console.log(`API Request to ${config.url}, token exists:`, !!token);
-    
+
     if (token) {
       try {
         // Log token details without exposing sensitive parts
@@ -36,7 +37,7 @@ api.interceptors.request.use((config) => {
       } catch (e) {
         console.warn('Failed to decode token for debugging:', e);
       }
-      
+
       config.headers.Authorization = `Bearer ${token}`;
       console.log('Authorization header set:', `Bearer ${token.substring(0, 15)}...`);
     }
@@ -75,9 +76,8 @@ api.interceptors.response.use(
           window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
         }
 
-        // If you're using js-cookie
+        // Remove cookie
         try {
-          const Cookies = require('js-cookie');
           Cookies.remove('authToken', { path: '/' });
         } catch (e) {
           console.error('Failed to remove cookie:', e);

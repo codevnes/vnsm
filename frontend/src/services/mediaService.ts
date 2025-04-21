@@ -1,6 +1,6 @@
 // frontend/src/services/mediaService.ts
 
-import { ImageListResponse, SingleImageResponse, UploadSuccessData, UpdateImageResponse } from '@/types/image';
+import { ImageListResponse, UploadSuccessData, UpdateImageResponse } from '@/types/image';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
@@ -15,7 +15,7 @@ async function fetchAPI<T>(url: string, options: RequestInit = {}): Promise<T> {
         if (response.status === 204) {
             // Can't call response.json() on empty body, return something indicative if needed
             // Or just let it resolve to void/undefined depending on T
-            return undefined as T; 
+            return undefined as T;
         }
 
         const data = await response.json();
@@ -89,4 +89,4 @@ export const deleteImageAPI = (id: number, token: string | null): Promise<void> 
         method: 'DELETE',
         headers,
     });
-}; 
+};

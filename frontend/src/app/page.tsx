@@ -6,7 +6,8 @@ import { homeService } from '@/services/homeService';
 import StockChart from '@/components/charts/StockChart';
 import TimePeriodSelector from '@/components/charts/TimePeriodSelector';
 import LatestPosts from '@/components/home/LatestPosts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Post } from '@/types/post';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowUpRight, BarChart2, TrendingUp, Activity } from 'lucide-react';
 
@@ -22,10 +23,10 @@ type TimePeriod = '3m' | '6m' | '1y' | '5y';
 
 export default function Home() {
   // State now holds data directly fetched from API based on timePeriod
-  const [qIndices, setQIndices] = useState<StockQIndex[]>([]); 
+  const [qIndices, setQIndices] = useState<StockQIndex[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('3m');
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,8 +42,8 @@ export default function Home() {
       // Calculate date range
       const today = new Date();
       const endDate = formatDate(today);
-      let startDate: string;
       const fromDate = new Date();
+      let startDate: string;
 
       switch (timePeriod) {
         case '3m':
@@ -65,13 +66,13 @@ export default function Home() {
       try {
         // Fetch data for the calculated date range, sort ascending for charts
         const response = await homeService.fetchQIndices(
-            stockId, 
-            'date', 
-            'asc', 
-            startDate, 
+            stockId,
+            'date',
+            'asc',
+            startDate,
             endDate
         );
-        
+
         const rawData = response.data || [];
         setQIndices(rawData);
       } catch (err) {
@@ -85,7 +86,7 @@ export default function Home() {
 
     fetchData();
   // Re-fetch data when stockId or timePeriod changes
-  }, [stockId, timePeriod]); 
+  }, [stockId, timePeriod]);
 
   // Fetch latest posts (remains the same)
   useEffect(() => {
@@ -112,16 +113,16 @@ export default function Home() {
   // Get the latest index data for summary stats
   const latestData = qIndices.length > 0 ? qIndices[qIndices.length - 1] : null;
   const previousData = qIndices.length > 1 ? qIndices[qIndices.length - 2] : null;
-  
+
   // Calculate change percentages
   const priceChange = latestData && previousData && latestData.close && previousData.close
     ? ((parseFloat(latestData.close.toString()) - parseFloat(previousData.close.toString())) / parseFloat(previousData.close.toString())) * 100
     : 0;
-  
+
   const trendQChange = latestData && previousData && latestData.trend_q && previousData.trend_q
     ? ((parseFloat(latestData.trend_q.toString()) - parseFloat(previousData.trend_q.toString())) / parseFloat(previousData.trend_q.toString())) * 100
     : 0;
-  
+
   const fqChange = latestData && previousData && latestData.fq && previousData.fq
     ? ((parseFloat(latestData.fq.toString()) - parseFloat(previousData.fq.toString())) / parseFloat(previousData.fq.toString())) * 100
     : 0;
@@ -131,7 +132,7 @@ export default function Home() {
       <div className="container mx-auto px-4">
         <section className="mb-8">
           <h1 className="text-3xl font-bold mb-8">Tổng quan thị trường</h1>
-          
+
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
               {error}
@@ -274,21 +275,21 @@ export default function Home() {
                         <h3 className="text-lg font-medium mb-3">Biểu đồ giá</h3>
                         <StockChart
                           chartType="candlestick"
-                          data={qIndices as any}
+                          data={qIndices}
                           height={300}
                           hideXAxis={true}
                           rightPriceScaleMinimumWidth={60}
                         />
                       </div>
-                      
+
                       {/* Trend Q & FQ */}
                       <div>
                         <h3 className="text-lg font-medium mb-3">Trend Q & FQ</h3>
                         <StockChart
                           chartType="line"
-                          data={qIndices as any}
-                          lineOptions={{ 
-                            fields: ['trend_q', 'fq'], 
+                          data={qIndices}
+                          lineOptions={{
+                            fields: ['trend_q', 'fq'],
                             colors: ['#2962FF', '#FF6D00'],
                             smooth: true
                           }}
@@ -297,13 +298,13 @@ export default function Home() {
                           rightPriceScaleMinimumWidth={60}
                         />
                       </div>
-                      
+
                       {/* QV1 Values */}
                       <div>
                         <h3 className="text-lg font-medium mb-3">QV1 Values</h3>
                         <StockChart
                           chartType="histogram"
-                          data={qIndices as any}
+                          data={qIndices}
                           height={200}
                           rightPriceScaleMinimumWidth={60}
                         />

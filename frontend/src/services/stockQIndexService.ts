@@ -5,7 +5,6 @@ import {
   StockQIndexListResponse,
   StockQIndexDetailResponse,
   StockQIndexFilters,
-  StockQIndexBulkImportData,
   StockQIndexBulkImportResponse
 } from "@/types/stockQIndex";
 

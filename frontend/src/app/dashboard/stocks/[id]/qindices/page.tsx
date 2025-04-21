@@ -20,7 +20,7 @@ import {
   TableBody,
   TableCell
 } from '@/components/ui/table';
-import { toast } from 'sonner';
+// import { toast } from 'sonner';
 import { useQIndicesManagement } from '@/hooks/useQIndicesManagement';
 import { QIndexFormDialog } from '@/components/stocks/QIndexFormDialog';
 import { DeleteQIndexDialog } from '@/components/stocks/DeleteQIndexDialog';

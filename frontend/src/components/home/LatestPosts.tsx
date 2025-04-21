@@ -2,17 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowRight, Clock } from 'lucide-react';
 
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-  createdAt: string;
-  author?: string;
-}
+import { Post } from '@/types/post';
 
 interface LatestPostsProps {
   posts: Post[];
@@ -56,9 +50,9 @@ const LatestPosts: React.FC<LatestPostsProps> = ({ posts, isLoading }) => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN', { 
-      day: 'numeric', 
-      month: 'numeric', 
+    return date.toLocaleDateString('vi-VN', {
+      day: 'numeric',
+      month: 'numeric',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -80,10 +74,10 @@ const LatestPosts: React.FC<LatestPostsProps> = ({ posts, isLoading }) => {
               <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                 <Clock className="h-3.5 w-3.5 mr-1" />
                 <span>{formatDate(post.createdAt)}</span>
-                {post.author && (
+                {post.user && (
                   <>
                     <span className="mx-2">•</span>
-                    <span>{post.author}</span>
+                    <span>{post.user.full_name}</span>
                   </>
                 )}
               </div>

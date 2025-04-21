@@ -1,6 +1,5 @@
-import { Category } from './category'; // Assuming Category type exists
-import { User } from './user'; // Assuming User type exists
-import { Stock } from './stock'; // Assuming Stock type exists
+// These types are defined inline below instead of importing
+// to avoid circular dependencies
 
 // Basic shape for related data included in API responses
 interface RelatedCategory {
@@ -64,4 +63,4 @@ export interface PaginatedPostsResponse {
         totalPages: number;
         currentPage: number;
     };
-} 
+}

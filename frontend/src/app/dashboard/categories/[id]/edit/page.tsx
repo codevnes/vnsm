@@ -7,11 +7,12 @@ import { CategoryFormValues } from '@/lib/schemas/categorySchema';
 import { categoryService } from '@/services/categoryService';
 import { Category } from '@/types/category';
 import { toast } from 'sonner';
+import { getErrorMessage } from '@/types/error';
 
 const EditCategoryPage = () => {
     const router = useRouter();
     const params = useParams();
-    const categoryId = params.id as string; 
+    const categoryId = params.id as string;
 
     const [categoryData, setCategoryData] = useState<Category | null>(null);
     const [allCategories, setAllCategories] = useState<Category[]>([]);
@@ -27,7 +28,7 @@ const EditCategoryPage = () => {
             setLoading(false);
             return;
         }
-        
+
         setLoading(true);
         setError(null);
         try {
@@ -38,12 +39,12 @@ const EditCategoryPage = () => {
             ]);
             setCategoryData(categoryRes);
             setAllCategories(allCategoriesRes);
-        } catch (err: any) {
-            const message = err.message || 'Failed to load category data.';
+        } catch (err: unknown) {
+            const message = getErrorMessage(err) || 'Failed to load category data.';
             setError(message);
             toast.error('Error loading data', { description: message });
             // Set category data to null explicitly on error to avoid rendering form with stale/no data
-            setCategoryData(null); 
+            setCategoryData(null);
         } finally {
             setLoading(false);
         }
@@ -55,7 +56,7 @@ const EditCategoryPage = () => {
 
     // Handle form submission
     const onSubmit = async (values: CategoryFormValues) => {
-        if (!categoryId) return; 
+        if (!categoryId) return;
 
         setIsSubmitting(true);
         try {
@@ -68,13 +69,13 @@ const EditCategoryPage = () => {
 
             await categoryService.updateCategory(categoryId, dataToSend);
             toast.success('Category updated successfully!');
-            router.push('/dashboard/categories'); 
-        } catch (error: any) {
+            router.push('/dashboard/categories');
+        } catch (error: unknown) {
              toast.error('Failed to update category', {
-                 description: error.message || 'An unexpected error occurred.',
+                 description: getErrorMessage(error) || 'An unexpected error occurred.',
              });
-             setIsSubmitting(false); 
-        } 
+             setIsSubmitting(false);
+        }
     };
 
     // Prepare initial data for the form, ensuring nulls are handled
@@ -89,18 +90,18 @@ const EditCategoryPage = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold mb-6">Edit Category {categoryData ? ` - ${categoryData.title}` : ''}</h1>
-            
+
             {loading && <p>Loading category data...</p>}
             {/* Display error prominently if loading failed */}
             {error && !loading && <p className="text-red-500 font-semibold">Error: {error}. Please try again or go back.</p>}
 
             {/* Only render form if loading is complete, there was no error, and we have category data */}
             {!loading && !error && categoryData && initialDataForForm && (
-                <CategoryForm 
-                    onSubmit={onSubmit} 
-                    initialData={initialDataForForm} 
-                    allCategories={allCategories} 
-                    isLoading={isSubmitting} 
+                <CategoryForm
+                    onSubmit={onSubmit}
+                    initialData={initialDataForForm}
+                    allCategories={allCategories}
+                    isLoading={isSubmitting}
                     submitButtonText="Update Category"
                 />
             )}
@@ -112,4 +113,4 @@ const EditCategoryPage = () => {
     );
 };
 
-export default EditCategoryPage; 
+export default EditCategoryPage;
