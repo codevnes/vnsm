@@ -67,57 +67,30 @@ check_requirements() {
 
 # Yêu cầu thông tin cấu hình
 get_config() {
-  # Domain chính
-  read -p "Nhập domain chính (ví dụ: example.com): " DOMAIN
-  if [ -z "$DOMAIN" ]; then
-    print_error "Domain không được để trống!"
-    exit 1
-  fi
-
-  # Subdomain cho API
-  read -p "Nhập subdomain cho API (mặc định: api): " API_SUBDOMAIN
-  API_SUBDOMAIN=${API_SUBDOMAIN:-api}
-
-  # Subdomain cho phpMyAdmin
-  read -p "Nhập subdomain cho phpMyAdmin (mặc định: db): " PMA_SUBDOMAIN
-  PMA_SUBDOMAIN=${PMA_SUBDOMAIN:-db}
-
-  # Email cho Let's Encrypt
-  read -p "Nhập email cho Let's Encrypt: " EMAIL
-  if [ -z "$EMAIL" ]; then
-    print_error "Email không được để trống!"
-    exit 1
-  fi
-
-  # Hỏi người dùng có muốn bắt buộc chuyển hướng HTTPS không
-  read -p "Bắt buộc chuyển hướng HTTP sang HTTPS? (y/n, mặc định: y): " FORCE_HTTPS
-  FORCE_HTTPS=${FORCE_HTTPS:-y}
-  if [[ "$FORCE_HTTPS" =~ ^[Yy]$ ]]; then
-    FORCE_HTTPS="true"
-  else
-    FORCE_HTTPS="false"
-  fi
-
+  # Pre-configure domain and email settings
+  DOMAIN="vsmi.vn"
+  API_SUBDOMAIN="api"
+  PMA_SUBDOMAIN="db"
+  EMAIL="admin@vsmi.vn"
+  FORCE_HTTPS="true"
+  
   # Thông tin cơ sở dữ liệu
-  read -p "Nhập mật khẩu cho MySQL root (mặc định: vnsm_password): " MYSQL_ROOT_PASSWORD
-  MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-vnsm_password}
-
-  read -p "Nhập tên database (mặc định: vnsm_db): " MYSQL_DATABASE
-  MYSQL_DATABASE=${MYSQL_DATABASE:-vnsm_db}
-
-  read -p "Nhập tên người dùng database (mặc định: vnsm_user): " MYSQL_USER
-  MYSQL_USER=${MYSQL_USER:-vnsm_user}
-
-  read -p "Nhập mật khẩu người dùng database (mặc định: vnsm_password): " MYSQL_PASSWORD
-  MYSQL_PASSWORD=${MYSQL_PASSWORD:-vnsm_password}
-
+  MYSQL_ROOT_PASSWORD="vnsm_password"
+  MYSQL_DATABASE="vnsm_db"
+  MYSQL_USER="vnsm_user"
+  MYSQL_PASSWORD="vnsm_password"
+  
   # JWT Secret
-  read -p "Nhập JWT secret (mặc định: random string): " JWT_SECRET
-  JWT_SECRET=${JWT_SECRET:-$(openssl rand -hex 32)}
-
+  JWT_SECRET=$(openssl rand -hex 32)
+  
   # Môi trường
-  read -p "Môi trường triển khai (production/staging, mặc định: production): " ENVIRONMENT
-  ENVIRONMENT=${ENVIRONMENT:-production}
+  ENVIRONMENT="production"
+  
+  print_message "Cấu hình đã được thiết lập tự động:"
+  print_message "Domain: ${DOMAIN}"
+  print_message "API Subdomain: ${API_SUBDOMAIN}.${DOMAIN}"
+  print_message "phpMyAdmin: ${PMA_SUBDOMAIN}.${DOMAIN}"
+  print_message "Email: ${EMAIL}"
 }
 
 # Tạo thư mục cần thiết
