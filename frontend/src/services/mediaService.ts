@@ -2,7 +2,7 @@
 
 import { ImageListResponse, UploadSuccessData, UpdateImageResponse } from '@/types/image';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 /**
  * Helper function to handle fetch requests and basic error handling.

@@ -3,15 +3,19 @@
 # Đợi MySQL khởi động
 echo "Đợi MySQL khởi động..."
 i=1
-while [ $i -le 30 ]; do
-  if mysqladmin ping -h mysql -u root -pTimem.2302 --silent; then
+while [ $i -le 60 ]; do
+  if mysql -h mysql -u root -pTimem.2302 -e "SELECT 1" >/dev/null 2>&1; then
     echo "MySQL đã sẵn sàng!"
     break
   fi
-  echo "Đang đợi MySQL khởi động... ($i/30)"
+  echo "Đang đợi MySQL khởi động... ($i/60)"
   i=$((i+1))
-  sleep 2
+  sleep 5
 done
+
+# Thêm thời gian chờ thêm để đảm bảo MySQL hoàn toàn sẵn sàng
+echo "Đợi thêm 10 giây để đảm bảo MySQL hoàn toàn sẵn sàng..."
+sleep 10
 
 # Đảm bảo Prisma client được tạo đúng cho môi trường hiện tại
 echo "Tạo lại Prisma client cho môi trường hiện tại..."

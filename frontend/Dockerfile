@@ -10,8 +10,8 @@ RUN npm ci
 COPY . .
 
 # Thiết lập biến môi trường cho build
-ENV NEXT_PUBLIC_API_URL=https://api.vsmi.vn/api
-ENV NEXT_PUBLIC_API_BASE_URL=https://api.vsmi.vn/api
+ENV NEXT_PUBLIC_API_URL=https://api.vsmi.vn
+ENV NEXT_PUBLIC_API_BASE_URL=https://api.vsmi.vn
 ENV NODE_ENV=production
 
 # Build ứng dụng
@@ -33,8 +33,8 @@ COPY --from=builder /app/.next/static ./.next/static
 EXPOSE 3000
 
 # Thiết lập biến môi trường cho runtime
-ENV NEXT_PUBLIC_API_URL=https://api.vsmi.vn/api
-ENV NEXT_PUBLIC_API_BASE_URL=https://api.vsmi.vn/api
+ENV NEXT_PUBLIC_API_URL=https://api.vsmi.vn
+ENV NEXT_PUBLIC_API_BASE_URL=https://api.vsmi.vn
 ENV PORT=3000
 
 # Khởi động ứng dụng

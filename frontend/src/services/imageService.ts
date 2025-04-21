@@ -1,6 +1,6 @@
 import { Image } from "@/types/image"; // Assuming Image type definition exists or will be created
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 // Basic error/response handling (can be expanded)
 async function handleResponse<T>(response: Response): Promise<T> {

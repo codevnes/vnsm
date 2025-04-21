@@ -7,7 +7,7 @@ import {
     StockFilters
 } from '@/types/stock';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 /**
  * Generic fetch helper (consider moving to a shared lib/utils if used elsewhere)
