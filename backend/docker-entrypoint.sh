@@ -23,7 +23,13 @@ npx prisma generate
 
 # Chạy Prisma migrate để đảm bảo cơ sở dữ liệu được tạo đúng cách
 echo "Chạy Prisma migrate..."
-npx prisma migrate deploy
+# Kiểm tra xem cơ sở dữ liệu đã có bảng chưa
+if mysql -h mysql -u root -pTimem.2302 -e "USE ${DB_NAME:-vsmi_db}; SHOW TABLES;" | grep -q "users"; then
+  echo "Cơ sở dữ liệu đã có dữ liệu, bỏ qua migrate..."
+else
+  echo "Cơ sở dữ liệu trống, thực hiện migrate..."
+  npx prisma migrate deploy
+fi
 
 # Chạy Prisma seed để tạo dữ liệu mẫu
 echo "Chạy Prisma seed..."
