@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
-import { Prisma } from '../generated/prisma';
+import { Prisma } from '@prisma/client';
 import csvParser from 'csv-parser';
 import { Readable } from 'stream';
 

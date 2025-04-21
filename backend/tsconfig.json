@@ -12,6 +12,6 @@
     "experimentalDecorators": true,           /* Enable experimental support for TC39 stage 2 draft decorators. */
     "emitDecoratorMetadata": true             /* Emit design-type metadata for decorated declarations in source files. */
   },
-  "include": ["src/**/*"],                    /* Specifies the files to include in the program. */
+  "include": ["src/**/*", "src/generated/**/*"],  /* Specifies the files to include in the program. */
   "exclude": ["node_modules", "**/*.spec.ts"] /* Specifies the files to exclude from the program. */
 } 

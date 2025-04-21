@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  // Sử dụng vị trí mặc định của Prisma client
 }
 
 datasource db {

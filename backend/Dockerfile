@@ -18,6 +18,9 @@ RUN npx prisma generate
 # Build ứng dụng
 RUN npm run build
 
+# Sao chép thư mục generated Prisma vào dist
+RUN mkdir -p dist/generated && cp -r src/generated/prisma dist/generated/
+
 # Expose port
 EXPOSE 3001
 
