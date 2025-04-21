@@ -1,6 +1,24 @@
 version: '3.8'
 
 services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: vnsm-mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=vmsi_db
+      - MYSQL_USER=vmsi
+      - MYSQL_PASSWORD=Timem.2302
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - vnsm-network
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
   # Backend API
   backend:
     build:
@@ -10,8 +28,8 @@ services:
     restart: always
     environment:
       - PORT=3001
-      - DATABASE_URL=mysql://${DB_USER:-vnsm_user}:${DB_PASSWORD:-your_db_password}@host.docker.internal:3306/${DB_NAME:-vnsm_db}
-      - DB_HOST=host.docker.internal
+      - DATABASE_URL=mysql://${DB_USER:-vnsm_user}:${DB_PASSWORD:-your_db_password}@mysql:3306/${DB_NAME:-vnsm_db}
+      - DB_HOST=mysql
       - DB_USER=${DB_USER:-vnsm_user}
       - DB_PASSWORD=${DB_PASSWORD:-your_db_password}
       - DB_NAME=${DB_NAME:-vnsm_db}
@@ -24,8 +42,8 @@ services:
       - ./backend/public/uploads:/app/public/uploads
     networks:
       - vnsm-network
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    depends_on:
+      - mysql
 
   # Frontend
   frontend:
@@ -47,3 +65,6 @@ services:
 networks:
   vnsm-network:
     driver: bridge
+
+volumes:
+  mysql-data:
