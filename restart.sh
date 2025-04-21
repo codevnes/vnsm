@@ -8,9 +8,13 @@ docker-compose down
 echo "Xóa volume MySQL..."
 docker volume rm vnsm_mysql-data || true
 
+# Xóa các image để đảm bảo rằng chúng được xây dựng lại
+echo "Xóa các image..."
+docker rmi vnsm-backend:latest || true
+
 # Khởi động lại các container
 echo "Khởi động lại các container..."
-docker-compose up -d
+docker-compose up -d --build
 
 # Hiển thị logs của container backend
 echo "Hiển thị logs của container backend..."
