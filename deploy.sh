@@ -390,15 +390,36 @@ EXPOSE 3001
 
 # Tạo script khởi động để đảm bảo Prisma client được tạo đúng cách
 RUN echo '#!/bin/sh' > /app/start.sh
+RUN echo 'set -e' >> /app/start.sh
 RUN echo 'echo "Đang tạo Prisma client..."' >> /app/start.sh
+
+# Xóa thư mục node_modules/.prisma nếu tồn tại để đảm bảo tạo mới hoàn toàn
+RUN echo 'if [ -d "./node_modules/.prisma" ]; then' >> /app/start.sh
+RUN echo '  echo "Xóa thư mục node_modules/.prisma cũ để tạo mới..."' >> /app/start.sh
+RUN echo '  rm -rf ./node_modules/.prisma' >> /app/start.sh
+RUN echo 'fi' >> /app/start.sh
+
+# Đảm bảo thư mục prisma tồn tại và có schema.prisma
+RUN echo 'if [ ! -f "./prisma/schema.prisma" ]; then' >> /app/start.sh
+RUN echo '  echo "Lỗi: Không tìm thấy file schema.prisma!"' >> /app/start.sh
+RUN echo '  echo "Nội dung thư mục prisma:"' >> /app/start.sh
+RUN echo '  ls -la ./prisma || echo "Thư mục prisma không tồn tại"' >> /app/start.sh
+RUN echo '  exit 1' >> /app/start.sh
+RUN echo 'fi' >> /app/start.sh
+
+# Tạo Prisma client mới
+RUN echo 'echo "Tạo Prisma client mới..."' >> /app/start.sh
 RUN echo 'npx prisma generate --schema=./prisma/schema.prisma' >> /app/start.sh
-RUN echo 'echo "Đang kiểm tra thư mục Prisma client..."' >> /app/start.sh
+
+# Kiểm tra xem Prisma client đã được tạo chưa
+RUN echo 'if [ ! -d "./node_modules/.prisma/client" ]; then' >> /app/start.sh
+RUN echo '  echo "Lỗi: Prisma client không được tạo thành công!"' >> /app/start.sh
+RUN echo '  exit 1' >> /app/start.sh
+RUN echo 'fi' >> /app/start.sh
 
 # Đảm bảo thư mục dist/generated/prisma tồn tại
-RUN echo 'if [ ! -d "./dist/generated/prisma" ]; then' >> /app/start.sh
-RUN echo '  echo "Thư mục dist/generated/prisma không tồn tại, đang tạo..."' >> /app/start.sh
-RUN echo '  mkdir -p ./dist/generated/prisma' >> /app/start.sh
-RUN echo 'fi' >> /app/start.sh
+RUN echo 'echo "Đảm bảo thư mục dist/generated/prisma tồn tại..."' >> /app/start.sh
+RUN echo 'mkdir -p ./dist/generated/prisma' >> /app/start.sh
 
 # Sao chép Prisma client vào thư mục dist/generated/prisma
 RUN echo 'echo "Sao chép Prisma client vào thư mục dist/generated/prisma..."' >> /app/start.sh
@@ -422,6 +443,10 @@ RUN echo 'echo "Tạo file index.d.ts trong thư mục dist/generated/prisma..."
 RUN echo 'echo "export * from \"@prisma/client\";" > ./dist/generated/prisma/index.d.ts' >> /app/start.sh
 
 # Hiển thị cấu trúc thư mục để debug
+RUN echo 'echo "Cấu trúc thư mục node_modules/.prisma:"' >> /app/start.sh
+RUN echo 'ls -la ./node_modules/.prisma || echo "Thư mục không tồn tại"' >> /app/start.sh
+RUN echo 'echo "Cấu trúc thư mục node_modules/.prisma/client:"' >> /app/start.sh
+RUN echo 'ls -la ./node_modules/.prisma/client || echo "Thư mục không tồn tại"' >> /app/start.sh
 RUN echo 'echo "Cấu trúc thư mục dist/generated/prisma:"' >> /app/start.sh
 RUN echo 'ls -la ./dist/generated/prisma' >> /app/start.sh
 
