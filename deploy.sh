@@ -44,7 +44,7 @@ check_requirements() {
   else
     print_message "Docker Compose đã được cài đặt."
   fi
-  
+
   # Kiểm tra htpasswd (cần thiết cho Traefik)
   if ! command -v htpasswd &> /dev/null; then
     print_error "htpasswd chưa được cài đặt. Đang cài đặt apache2-utils..."
@@ -77,35 +77,44 @@ get_config() {
   # Subdomain cho API
   read -p "Nhập subdomain cho API (mặc định: api): " API_SUBDOMAIN
   API_SUBDOMAIN=${API_SUBDOMAIN:-api}
-  
+
   # Subdomain cho phpMyAdmin
   read -p "Nhập subdomain cho phpMyAdmin (mặc định: db): " PMA_SUBDOMAIN
   PMA_SUBDOMAIN=${PMA_SUBDOMAIN:-db}
-  
+
   # Email cho Let's Encrypt
   read -p "Nhập email cho Let's Encrypt: " EMAIL
   if [ -z "$EMAIL" ]; then
     print_error "Email không được để trống!"
     exit 1
   fi
-  
+
+  # Hỏi người dùng có muốn bắt buộc chuyển hướng HTTPS không
+  read -p "Bắt buộc chuyển hướng HTTP sang HTTPS? (y/n, mặc định: y): " FORCE_HTTPS
+  FORCE_HTTPS=${FORCE_HTTPS:-y}
+  if [[ "$FORCE_HTTPS" =~ ^[Yy]$ ]]; then
+    FORCE_HTTPS="true"
+  else
+    FORCE_HTTPS="false"
+  fi
+
   # Thông tin cơ sở dữ liệu
   read -p "Nhập mật khẩu cho MySQL root (mặc định: vnsm_password): " MYSQL_ROOT_PASSWORD
   MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-vnsm_password}
-  
+
   read -p "Nhập tên database (mặc định: vnsm_db): " MYSQL_DATABASE
   MYSQL_DATABASE=${MYSQL_DATABASE:-vnsm_db}
-  
+
   read -p "Nhập tên người dùng database (mặc định: vnsm_user): " MYSQL_USER
   MYSQL_USER=${MYSQL_USER:-vnsm_user}
-  
+
   read -p "Nhập mật khẩu người dùng database (mặc định: vnsm_password): " MYSQL_PASSWORD
   MYSQL_PASSWORD=${MYSQL_PASSWORD:-vnsm_password}
-  
+
   # JWT Secret
   read -p "Nhập JWT secret (mặc định: random string): " JWT_SECRET
   JWT_SECRET=${JWT_SECRET:-$(openssl rand -hex 32)}
-  
+
   # Môi trường
   read -p "Môi trường triển khai (production/staging, mặc định: production): " ENVIRONMENT
   ENVIRONMENT=${ENVIRONMENT:-production}
@@ -114,19 +123,19 @@ get_config() {
 # Tạo thư mục cần thiết
 create_directories() {
   print_message "Tạo thư mục cần thiết..."
-  
+
   mkdir -p ./docker/traefik/config
   mkdir -p ./docker/traefik/letsencrypt
   mkdir -p ./docker/mysql/data
   mkdir -p ./docker/mysql/init
-  
+
   print_message "Đã tạo thư mục thành công!"
 }
 
 # Tạo file docker-compose.yml
 create_docker_compose() {
   print_message "Tạo file docker-compose.yml..."
-  
+
   cat > docker-compose.yml << EOL
 # Cấu hình Docker Compose cho VNSM
 # Lưu ý: Không sử dụng thuộc tính 'version' vì nó đã lỗi thời trong Docker Compose v2+
@@ -167,8 +176,13 @@ services:
       - "--providers.file.watch=true"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      # Chỉ chuyển hướng HTTP sang HTTPS nếu người dùng chọn
+      if [ "$FORCE_HTTPS" = "true" ]; then
+        cat >> docker-compose.yml << EOL_HTTPS_REDIRECT
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+EOL_HTTPS_REDIRECT
+      fi
       - "--certificatesresolvers.letsencrypt.acme.email=${EMAIL}"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
@@ -177,6 +191,15 @@ services:
       - "traefik.http.routers.traefik.rule=Host(\`traefik.${DOMAIN}\`)"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.entrypoints=websecure"
+      # Thêm router cho HTTP nếu không bắt buộc HTTPS
+      if [ "$FORCE_HTTPS" = "false" ]; then
+        cat >> docker-compose.yml << EOL_HTTP_TRAEFIK
+      - "traefik.http.routers.traefik-http.rule=Host(\`traefik.${DOMAIN}\`)"
+      - "traefik.http.routers.traefik-http.entrypoints=web"
+      - "traefik.http.routers.traefik-http.service=api@internal"
+      - "traefik.http.routers.traefik-http.middlewares=traefik-auth"
+EOL_HTTP_TRAEFIK
+      fi
       - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik.middlewares=traefik-auth"
       - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$(htpasswd -nb admin admin | sed -e s/\\$/\\$\\$/g)"
@@ -217,6 +240,14 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.phpmyadmin.rule=Host(\`${PMA_SUBDOMAIN}.${DOMAIN}\`)"
       - "traefik.http.routers.phpmyadmin.entrypoints=websecure"
+      # Thêm router cho HTTP nếu không bắt buộc HTTPS
+      if [ "$FORCE_HTTPS" = "false" ]; then
+        cat >> docker-compose.yml << EOL_HTTP_PMA
+      - "traefik.http.routers.phpmyadmin-http.rule=Host(\`${PMA_SUBDOMAIN}.${DOMAIN}\`)"
+      - "traefik.http.routers.phpmyadmin-http.entrypoints=web"
+      - "traefik.http.services.phpmyadmin-http.loadbalancer.server.port=80"
+EOL_HTTP_PMA
+      fi
       - "traefik.http.routers.phpmyadmin.tls.certresolver=letsencrypt"
       - "traefik.http.services.phpmyadmin.loadbalancer.server.port=80"
 
@@ -249,6 +280,14 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(\`${API_SUBDOMAIN}.${DOMAIN}\`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
+      # Thêm router cho HTTP nếu không bắt buộc HTTPS
+      if [ "$FORCE_HTTPS" = "false" ]; then
+        cat >> docker-compose.yml << EOL_HTTP_BACKEND
+      - "traefik.http.routers.backend-http.rule=Host(\`${API_SUBDOMAIN}.${DOMAIN}\`)"
+      - "traefik.http.routers.backend-http.entrypoints=web"
+      - "traefik.http.services.backend-http.loadbalancer.server.port=3001"
+EOL_HTTP_BACKEND
+      fi
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend.loadbalancer.server.port=3001"
 
@@ -258,12 +297,12 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: https://${API_SUBDOMAIN}.${DOMAIN}
+        NEXT_PUBLIC_API_URL: ${FORCE_HTTPS:+https://}${FORCE_HTTPS:-http://}${API_SUBDOMAIN}.${DOMAIN}
     container_name: vnsm-frontend
     restart: unless-stopped
     environment:
       NODE_ENV: ${ENVIRONMENT}
-      NEXT_PUBLIC_API_URL: https://${API_SUBDOMAIN}.${DOMAIN}
+      NEXT_PUBLIC_API_URL: ${FORCE_HTTPS:+https://}${FORCE_HTTPS:-http://}${API_SUBDOMAIN}.${DOMAIN}
     networks:
       - traefik-network
     depends_on:
@@ -272,6 +311,14 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(\`${DOMAIN}\`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
+      # Thêm router cho HTTP nếu không bắt buộc HTTPS
+      if [ "$FORCE_HTTPS" = "false" ]; then
+        cat >> docker-compose.yml << EOL_HTTP_FRONTEND
+      - "traefik.http.routers.frontend-http.rule=Host(\`${DOMAIN}\`)"
+      - "traefik.http.routers.frontend-http.entrypoints=web"
+      - "traefik.http.services.frontend-http.loadbalancer.server.port=3000"
+EOL_HTTP_FRONTEND
+      fi
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
 EOL
@@ -282,7 +329,7 @@ EOL
 # Tạo Dockerfile cho backend
 create_backend_dockerfile() {
   print_message "Tạo Dockerfile cho backend..."
-  
+
   cat > ./backend/Dockerfile << EOL
 FROM node:18-alpine
 
@@ -393,7 +440,7 @@ EOL
 # Tạo Dockerfile cho frontend
 create_frontend_dockerfile() {
   print_message "Tạo Dockerfile cho frontend..."
-  
+
   cat > ./frontend/Dockerfile << EOL
 FROM node:18-alpine AS builder
 
@@ -451,8 +498,11 @@ EOL
 # Tạo file cấu hình Traefik
 create_traefik_config() {
   print_message "Tạo file cấu hình Traefik..."
-  
-  cat > ./docker/traefik/config/traefik.yml << EOL
+
+  # Tạo file cấu hình Traefik dựa trên lựa chọn của người dùng
+  if [ "$FORCE_HTTPS" = "true" ]; then
+    # Cấu hình với chuyển hướng HTTP sang HTTPS
+    cat > ./docker/traefik/config/traefik.yml << EOL
 # Traefik Static Configuration
 global:
   checkNewVersion: true
@@ -486,6 +536,38 @@ certificatesResolvers:
       httpChallenge:
         entryPoint: web
 EOL
+  else
+    # Cấu hình không chuyển hướng HTTP sang HTTPS
+    cat > ./docker/traefik/config/traefik.yml << EOL
+# Traefik Static Configuration
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+
+api:
+  dashboard: true
+  insecure: false
+
+log:
+  level: INFO
+
+accessLog: {}
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: ${EMAIL}
+      storage: /letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: web
+EOL
+  fi
 
   print_message "Đã tạo file cấu hình Traefik thành công!"
 }
@@ -493,23 +575,23 @@ EOL
 # Triển khai ứng dụng
 deploy_application() {
   print_message "Bắt đầu triển khai ứng dụng..."
-  
+
   # Kiểm tra xem docker-compose.yml có tồn tại không
   if [ ! -f "docker-compose.yml" ]; then
     print_error "Không tìm thấy file docker-compose.yml. Vui lòng kiểm tra lại."
     exit 1
   fi
-  
+
   # Kiểm tra cấu trúc của docker-compose.yml
   docker-compose config > /dev/null 2>&1
   if [ $? -ne 0 ]; then
     print_error "File docker-compose.yml không hợp lệ. Vui lòng kiểm tra lại."
     exit 1
   fi
-  
+
   # Xử lý mạng Docker
   print_message "Kiểm tra và chuẩn bị mạng Docker..."
-  
+
   # Xử lý mạng traefik-network
   if ! docker network inspect traefik-network &>/dev/null; then
     print_message "Tạo mạng traefik-network mới..."
@@ -517,7 +599,7 @@ deploy_application() {
   else
     print_message "Mạng traefik-network đã tồn tại, sẽ sử dụng mạng hiện có..."
   fi
-  
+
   # Xử lý mạng backend-network
   if ! docker network inspect backend-network &>/dev/null; then
     print_message "Tạo mạng backend-network mới..."
@@ -525,13 +607,13 @@ deploy_application() {
   else
     print_message "Mạng backend-network đã tồn tại, sẽ sử dụng mạng hiện có..."
   fi
-  
+
   print_message "Đang pull các image cần thiết..."
   docker-compose pull
-  
+
   # Kiểm tra và dừng các container đang chạy có thể xung đột
   print_message "Kiểm tra các container đang chạy..."
-  
+
   # Kiểm tra các container có thể xung đột
   for service in traefik mysql phpmyadmin; do
     running_containers=$(docker ps --filter "name=$service" --format "{{.Names}}")
@@ -543,13 +625,13 @@ deploy_application() {
       done
     fi
   done
-  
+
   print_message "Đang build và khởi động các container..."
-  
+
   # Build trước để tránh lỗi khi khởi động
   print_message "Đang build các container..."
   docker-compose build
-  
+
   # Khởi động các container với retry
   print_message "Đang khởi động các container..."
   for i in {1..5}; do
@@ -564,11 +646,11 @@ deploy_application() {
       sleep 10
     }
   done
-  
+
   # Kiểm tra xem các container đã chạy chưa
   running_containers=$(docker-compose ps -q | wc -l)
   expected_containers=4  # traefik, mysql, phpmyadmin, backend, frontend
-  
+
   if [ $running_containers -lt $expected_containers ]; then
     print_warning "Một số container không khởi động được ($running_containers/$expected_containers). Đang kiểm tra logs..."
     docker-compose ps
@@ -578,29 +660,45 @@ deploy_application() {
   else
     print_message "Tất cả các container đã được khởi động thành công!"
   fi
-  
+
   # Kiểm tra trạng thái
   docker-compose ps
-  
+
   print_message "Ứng dụng đã được triển khai thành công!"
-  print_message "Frontend: https://${DOMAIN}"
-  print_message "Backend API: https://${API_SUBDOMAIN}.${DOMAIN}"
-  print_message "phpMyAdmin: https://${PMA_SUBDOMAIN}.${DOMAIN}"
-  print_message "Traefik Dashboard: https://traefik.${DOMAIN} (username: admin, password: admin)"
-  
+  if [ "$FORCE_HTTPS" = "true" ]; then
+    print_message "Frontend: https://${DOMAIN}"
+  else
+    print_message "Frontend: http://${DOMAIN} hoặc https://${DOMAIN}"
+  fi
+  if [ "$FORCE_HTTPS" = "true" ]; then
+    print_message "Backend API: https://${API_SUBDOMAIN}.${DOMAIN}"
+  else
+    print_message "Backend API: http://${API_SUBDOMAIN}.${DOMAIN} hoặc https://${API_SUBDOMAIN}.${DOMAIN}"
+  fi
+  if [ "$FORCE_HTTPS" = "true" ]; then
+    print_message "phpMyAdmin: https://${PMA_SUBDOMAIN}.${DOMAIN}"
+  else
+    print_message "phpMyAdmin: http://${PMA_SUBDOMAIN}.${DOMAIN} hoặc https://${PMA_SUBDOMAIN}.${DOMAIN}"
+  fi
+  if [ "$FORCE_HTTPS" = "true" ]; then
+    print_message "Traefik Dashboard: https://traefik.${DOMAIN} (username: admin, password: admin)"
+  else
+    print_message "Traefik Dashboard: http://traefik.${DOMAIN} hoặc https://traefik.${DOMAIN} (username: admin, password: admin)"
+  fi
+
   print_message "Lưu ý: Có thể mất vài phút để Let's Encrypt cấp chứng chỉ SSL."
 }
 
 # Kiểm tra logs của các container
 check_logs() {
   local service=$1
-  
+
   if [ -z "$service" ]; then
     print_message "Hiển thị logs của tất cả các dịch vụ..."
     docker-compose logs
     return
   fi
-  
+
   # Kiểm tra xem service có tồn tại không
   if ! docker-compose ps "$service" &>/dev/null; then
     print_error "Dịch vụ '$service' không tồn tại hoặc không chạy."
@@ -608,7 +706,7 @@ check_logs() {
     docker-compose ps --services
     return 1
   fi
-  
+
   print_message "Hiển thị logs của dịch vụ $service..."
   docker-compose logs "$service"
 }
@@ -616,13 +714,13 @@ check_logs() {
 # Theo dõi logs theo thời gian thực
 follow_logs() {
   local service=$1
-  
+
   if [ -z "$service" ]; then
     print_message "Theo dõi logs của tất cả các dịch vụ..."
     docker-compose logs -f
     return
   fi
-  
+
   # Kiểm tra xem service có tồn tại không
   if ! docker-compose ps "$service" &>/dev/null; then
     print_error "Dịch vụ '$service' không tồn tại hoặc không chạy."
@@ -630,7 +728,7 @@ follow_logs() {
     docker-compose ps --services
     return 1
   fi
-  
+
   print_message "Theo dõi logs của dịch vụ $service..."
   docker-compose logs -f "$service"
 }
@@ -638,20 +736,20 @@ follow_logs() {
 # Dọn dẹp môi trường
 cleanup() {
   print_message "Bắt đầu dọn dẹp môi trường..."
-  
+
   # Dừng và xóa tất cả các container
   if docker-compose ps -q &>/dev/null; then
     print_message "Dừng và xóa các container hiện tại..."
     docker-compose down -v
   fi
-  
+
   # Tìm và dừng tất cả các container liên quan đến dự án
   for container in $(docker ps -a --filter "name=vnsm" -q); do
     print_message "Dừng và xóa container $container..."
     docker stop $container 2>/dev/null || true
     docker rm $container 2>/dev/null || true
   done
-  
+
   # Xử lý mạng traefik-network - chỉ ngắt kết nối các container, không xóa mạng
   if docker network inspect traefik-network &>/dev/null; then
     print_message "Ngắt kết nối các container khỏi mạng traefik-network..."
@@ -663,7 +761,7 @@ cleanup() {
     # Không xóa mạng vì nó được đánh dấu là external trong docker-compose.yml
     print_message "Giữ lại mạng traefik-network vì nó được đánh dấu là external"
   fi
-  
+
   # Xử lý mạng backend-network - chỉ ngắt kết nối các container, không xóa mạng
   if docker network inspect backend-network &>/dev/null; then
     print_message "Ngắt kết nối các container khỏi mạng backend-network..."
@@ -675,15 +773,15 @@ cleanup() {
     # Không xóa mạng vì nó được đánh dấu là external trong docker-compose.yml
     print_message "Giữ lại mạng backend-network vì nó được đánh dấu là external"
   fi
-  
+
   # Xóa các volume không sử dụng
   print_message "Xóa các volume không sử dụng..."
   docker volume prune -f
-  
+
   # Xóa các image dangling
   print_message "Xóa các image không sử dụng..."
   docker image prune -f
-  
+
   print_message "Môi trường đã được dọn dẹp!"
 }
 
@@ -712,13 +810,13 @@ show_help() {
 # Khởi động lại dịch vụ
 restart_service() {
   local service=$1
-  
+
   if [ -z "$service" ]; then
     print_message "Khởi động lại tất cả các dịch vụ..."
     docker-compose restart
     return
   fi
-  
+
   # Kiểm tra xem service có tồn tại không
   if ! docker-compose ps "$service" &>/dev/null; then
     print_error "Dịch vụ '$service' không tồn tại hoặc không chạy."
@@ -726,7 +824,7 @@ restart_service() {
     docker-compose ps --services
     return 1
   fi
-  
+
   print_message "Khởi động lại dịch vụ $service..."
   docker-compose restart "$service"
 }
@@ -741,7 +839,7 @@ show_status() {
 main() {
   local command=$1
   local service=$2
-  
+
   case "$command" in
     logs)
       check_logs "$service"
@@ -760,28 +858,28 @@ main() {
       ;;
     redeploy)
       print_message "=== Bắt đầu quá trình triển khai lại VNSM ==="
-      
+
       # Dọn dẹp môi trường trước
       cleanup
-      
+
       # Kiểm tra các yêu cầu cần thiết
       check_requirements
-      
+
       # Lấy thông tin cấu hình
       get_config
-      
+
       # Tạo thư mục cần thiết
       create_directories
-      
+
       # Tạo các file cấu hình
       create_docker_compose
       create_backend_dockerfile
       create_frontend_dockerfile
       create_traefik_config
-      
+
       # Triển khai ứng dụng
       deploy_application
-      
+
       print_message "=== Quá trình triển khai lại VNSM hoàn tất ==="
       print_message "Để kiểm tra logs, sử dụng: $0 logs [SERVICE]"
       print_message "Để theo dõi logs theo thời gian thực, sử dụng: $0 follow [SERVICE]"
@@ -792,25 +890,25 @@ main() {
       ;;
     deploy|"")
       print_message "=== Bắt đầu quá trình triển khai VNSM ==="
-      
+
       # Kiểm tra các yêu cầu cần thiết
       check_requirements
-      
+
       # Lấy thông tin cấu hình
       get_config
-      
+
       # Tạo thư mục cần thiết
       create_directories
-      
+
       # Tạo các file cấu hình
       create_docker_compose
       create_backend_dockerfile
       create_frontend_dockerfile
       create_traefik_config
-      
+
       # Triển khai ứng dụng
       deploy_application
-      
+
       print_message "=== Quá trình triển khai VNSM hoàn tất ==="
       print_message "Để kiểm tra logs, sử dụng: $0 logs [SERVICE]"
       print_message "Để theo dõi logs theo thời gian thực, sử dụng: $0 follow [SERVICE]"
