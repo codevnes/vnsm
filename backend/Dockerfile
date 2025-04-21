@@ -14,7 +14,7 @@ COPY . .
 # Tạo thư mục uploads nếu chưa tồn tại
 RUN mkdir -p public/uploads
 
-# Generate Prisma client
+# Generate Prisma client với binaryTargets cho linux-musl-openssl-3.0.x
 RUN npx prisma generate
 
 # Thêm script để chạy Prisma migrate khi container khởi động
