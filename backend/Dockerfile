@@ -2,7 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Cài đặt các dependencies cần thiết
+# Cài đặt các dependencies cần thiết và MySQL client
+RUN apk add --no-cache mysql-client
+
 COPY package*.json ./
 RUN npm install
 

@@ -13,13 +13,17 @@ echo "Xóa các image..."
 docker rmi $(docker images -q vnsm-backend) || true
 docker rmi $(docker images -q vnsm-frontend) || true
 
+# Tạo Prisma client với binaryTargets đúng
+echo "Tạo Prisma client..."
+cd backend && npx prisma generate && cd ..
+
 # Khởi động lại các container
 echo "Khởi động lại các container..."
 docker-compose up -d --build
 
 # Đợi MySQL khởi động
 echo "Đợi MySQL khởi động..."
-sleep 10
+sleep 15
 
 # Hiển thị logs của container backend
 echo "Hiển thị logs của container backend..."

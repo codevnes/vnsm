@@ -2,7 +2,14 @@
 
 # Đợi MySQL khởi động
 echo "Đợi MySQL khởi động..."
-sleep 10
+for i in {1..30}; do
+  if mysqladmin ping -h mysql -u root -proot --silent; then
+    echo "MySQL đã sẵn sàng!"
+    break
+  fi
+  echo "Đang đợi MySQL khởi động... ($i/30)"
+  sleep 2
+done
 
 # Chạy Prisma migrate để đảm bảo cơ sở dữ liệu được tạo đúng cách
 echo "Chạy Prisma migrate..."

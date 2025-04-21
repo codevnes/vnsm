@@ -19,6 +19,11 @@ services:
     networks:
       - vnsm-network
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   # Backend API
   backend:
@@ -44,7 +49,8 @@ services:
     networks:
       - vnsm-network
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
 
   # Frontend
   frontend:
