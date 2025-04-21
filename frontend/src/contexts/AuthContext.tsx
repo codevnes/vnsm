@@ -81,8 +81,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Try to fetch user from API, use token data as fallback
         try {
           // Call your API endpoint to get user data
-          console.log('Making request to /auth/me endpoint');
-          const response = await api.get('/auth/me');
+          console.log('Making request to /api/auth/me endpoint');
+          const response = await api.get('/api/auth/me');
           if (response.data) {
             console.log('User data fetched from API:', response.data);
             setUserState(response.data);

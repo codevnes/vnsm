@@ -39,7 +39,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=https://api.vsmi.vn
+      - NEXT_PUBLIC_API_URL=https://api.vsmi.vn/api
       - NODE_ENV=production
     networks:
       - vnsm-network
