@@ -4,8 +4,7 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 import { User, Role } from '@/types/user';
 import { api } from '@/lib/api';
 import { jwtDecode } from 'jwt-decode';
-import Cookies from 'js-cookie';
-
+import Cookies from 'js-cookie'; 
 // Interface for JWT payload
 interface JwtPayload {
   userId: string;

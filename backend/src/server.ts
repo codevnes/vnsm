@@ -27,9 +27,9 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // Configure CORS
 const corsOptions = {
-  origin: ['http://localhost:3000', ],
+  origin: ['http://localhost:3000', 'https://vsmi.vn', 'https://www.vsmi.vn'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   credentials: true,
   optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
