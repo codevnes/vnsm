@@ -352,16 +352,30 @@ COPY . .
 # Thêm cấu hình TypeScript để bỏ qua lỗi kiểu dữ liệu
 RUN echo '{ "compilerOptions": { "noImplicitAny": false } }' > ./tsconfig.build.json
 
+# Đảm bảo thư mục prisma tồn tại và có schema.prisma
+RUN if [ ! -f "./prisma/schema.prisma" ]; then \
+    echo "Lỗi: Không tìm thấy file schema.prisma!" && \
+    exit 1; \
+  fi
+
+# Xóa thư mục node_modules/.prisma nếu tồn tại để đảm bảo tạo mới hoàn toàn
+RUN rm -rf ./node_modules/.prisma
+
 # Tạo Prisma client trước khi build
+RUN echo "Tạo Prisma client trước khi build..."
 RUN npx prisma generate --schema=./prisma/schema.prisma
+
+# Kiểm tra xem Prisma client đã được tạo chưa
+RUN if [ ! -d "./node_modules/.prisma/client" ]; then \
+    echo "Lỗi: Prisma client không được tạo thành công!" && \
+    exit 1; \
+  fi
 
 # Build ứng dụng với cấu hình mở rộng
 RUN npm run build || (echo "Đang thử build lại với cấu hình khác..." && npx tsc --skipLibCheck)
 
-# Đảm bảo thư mục prisma tồn tại và có schema.prisma
-RUN ls -la ./prisma || echo "Thư mục prisma không tồn tại"
-
 # Tạo Prisma client sau khi build để đảm bảo đúng đường dẫn
+RUN echo "Tạo lại Prisma client sau khi build..."
 RUN npx prisma generate --schema=./prisma/schema.prisma
 
 # Đảm bảo thư mục generated/prisma tồn tại trong cả src và dist
