@@ -1,96 +1,22 @@
-# Cấu hình Docker Compose cho VNSM
-# Lưu ý: Không sử dụng thuộc tính 'version' vì nó đã lỗi thời trong Docker Compose v2+
-
-networks:
-  traefik-network:
-    external: true
-  backend-network:
-    external: true
-
-volumes:
-  mysql_data:
-    name: mysql_data
-  traefik_letsencrypt:
-    name: traefik_letsencrypt
+version: '3.8'
 
 services:
-  # Traefik - Reverse Proxy và SSL
-  traefik:
-    image: traefik:v2.10
-    container_name: traefik
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    networks:
-      - traefik-network
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./docker/traefik/config:/etc/traefik
-      - traefik_letsencrypt:/letsencrypt
-    command:
-      - "--api.dashboard=true"
-      - "--api.insecure=false"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.file.directory=/etc/traefik"
-      - "--providers.file.watch=true"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--certificatesresolvers.letsencrypt.acme.email=codevnes@gmail.com"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.vsmi.io`)"
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.entrypoints=websecure"
-
-      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.traefik.middlewares=traefik-auth"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:admin:$$apr1$$32lt.0Ss$$Pg5GZ499SXCBu/Ys8yzED1"
-
   # MySQL Database
-  mysql:
+  db:
     image: mysql:8.0
     container_name: vnsm-mysql
-    restart: unless-stopped
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: vnsm_password
-      MYSQL_DATABASE: vnsm_db
-      MYSQL_USER: vnsm_user
-      MYSQL_PASSWORD: vnsm_password
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-your_db_password}
+      MYSQL_DATABASE: ${DB_NAME:-vnsm_db}
+      MYSQL_USER: ${DB_USER:-vnsm_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-your_db_password}
+    ports:
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./docker/mysql/init:/docker-entrypoint-initdb.d
     networks:
-      - backend-network
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-
-  # phpMyAdmin
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: vnsm-phpmyadmin
-    restart: unless-stopped
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: vnsm_password
-      UPLOAD_LIMIT: 64M
-    networks:
-      - backend-network
-      - traefik-network
-    depends_on:
-      - mysql
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.phpmyadmin.rule=Host(`db.vsmi.io`)"
-      - "traefik.http.routers.phpmyadmin.entrypoints=websecure"
-
-      - "traefik.http.routers.phpmyadmin.tls.certresolver=letsencrypt"
-      - "traefik.http.services.phpmyadmin.loadbalancer.server.port=80"
+      - vnsm-network
 
   # Backend API
   backend:
@@ -98,53 +24,45 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: vnsm-backend
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 3001
-      DB_HOST: mysql
-      DB_USER: vnsm_user
-      DB_PASSWORD: vnsm_password
-      DB_NAME: vnsm_db
-      DB_PORT: 3306
-      JWT_SECRET: d5db37ceaf68271bd5304f8963f9a7f0562ee11f25600e6adb93eb8517be98a2
-      JWT_EXPIRES_IN: 1d
-      DATABASE_URL: mysql://vnsm_user:vnsm_password@mysql:3306/vnsm_db
-    volumes:
-      - ./backend/public:/app/public
-      - ./backend/prisma:/app/prisma
-    networks:
-      - backend-network
-      - traefik-network
+    restart: always
     depends_on:
-      - mysql
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.vsmi.io`)"
-      - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.backend.loadbalancer.server.port=3001"
+      - db
+    environment:
+      - PORT=3001
+      - DATABASE_URL=mysql://${DB_USER:-vnsm_user}:${DB_PASSWORD:-your_db_password}@db:3306/${DB_NAME:-vnsm_db}
+      - DB_HOST=db
+      - DB_USER=${DB_USER:-vnsm_user}
+      - DB_PASSWORD=${DB_PASSWORD:-your_db_password}
+      - DB_NAME=${DB_NAME:-vnsm_db}
+      - DB_PORT=3306
+      - JWT_SECRET=${JWT_SECRET:-your_jwt_secret_key}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-1d}
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend/public/uploads:/app/public/uploads
+    networks:
+      - vnsm-network
 
   # Frontend
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_API_URL: https://trueapi.vsmi.io
     container_name: vnsm-frontend
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      NEXT_PUBLIC_API_URL: https://trueapi.vsmi.io
-    networks:
-      - traefik-network
+    restart: always
     depends_on:
       - backend
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`vsmi.io`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:3001/api
+    networks:
+      - vnsm-network
 
-      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+networks:
+  vnsm-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
