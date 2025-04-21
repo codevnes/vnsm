@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   /* config options here */
+  output: 'standalone', // Thêm cấu hình này để tạo thư mục standalone
   images: {
     domains: [
       'localhost',
