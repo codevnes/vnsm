@@ -2,37 +2,26 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Tạo thư mục prisma trước nếu chưa tồn tại
-RUN mkdir -p ./prisma
-
 # Cài đặt các dependencies
 COPY package*.json ./
-# Attempt to copy prisma directory if it exists
-RUN mkdir -p ./prisma
-COPY ./prisma/*.prisma ./prisma/ 2>/dev/null || echo "No prisma files to copy - will create placeholder"
 
-# Kiểm tra nếu schema.prisma không tồn tại, tạo một file tạm
-RUN if [ ! -f "./prisma/schema.prisma" ]; then \
-    echo "// This is a placeholder schema file" > ./prisma/schema.prisma; \
-    echo "datasource db {" >> ./prisma/schema.prisma; \
-    echo "  provider = \"mysql\"" >> ./prisma/schema.prisma; \
-    echo "  url      = env(\"DATABASE_URL\")" >> ./prisma/schema.prisma; \
-    echo "}" >> ./prisma/schema.prisma; \
-    echo "generator client {" >> ./prisma/schema.prisma; \
-    echo "  provider = \"prisma-client-js\"" >> ./prisma/schema.prisma; \
-    echo "}" >> ./prisma/schema.prisma; \
-    echo "// Define your models below" >> ./prisma/schema.prisma; \
-fi
+# Tạo thư mục prisma và schema.prisma
+RUN mkdir -p ./prisma
+RUN echo "// This is a placeholder schema file" > ./prisma/schema.prisma && \
+    echo "datasource db {" >> ./prisma/schema.prisma && \
+    echo "  provider = \"mysql\"" >> ./prisma/schema.prisma && \
+    echo "  url      = env(\"DATABASE_URL\")" >> ./prisma/schema.prisma && \
+    echo "}" >> ./prisma/schema.prisma && \
+    echo "generator client {" >> ./prisma/schema.prisma && \
+    echo "  provider = \"prisma-client-js\"" >> ./prisma/schema.prisma && \
+    echo "}" >> ./prisma/schema.prisma && \
+    echo "// Define your models below" >> ./prisma/schema.prisma
 
 RUN npm install
 # Cài đặt thêm module csv-parse và đảm bảo prisma được cài đặt
 RUN npm install csv-parse @types/csv-parse @prisma/client prisma
 
-# Kiểm tra thư mục prisma
-RUN ls -la ./prisma || echo "Thư mục prisma không tồn tại"
-RUN cat ./prisma/schema.prisma || echo "File schema.prisma không tồn tại"
-
-# Copy source code
+# Copy source code (sẽ ghi đè lên schema.prisma tạm nếu có file thật)
 COPY . .
 
 # Thêm cấu hình TypeScript để bỏ qua lỗi kiểu dữ liệu
@@ -44,12 +33,6 @@ RUN rm -rf ./node_modules/.prisma
 # Tạo Prisma client và bỏ qua kiểm tra
 RUN echo "Tạo Prisma client trước khi build..."
 RUN npx prisma generate --schema=./prisma/schema.prisma || true
-
-# Không kiểm tra chặt chẽ thư mục Prisma client
-# RUN if [ ! -d "./node_modules/.prisma/client" ]; then \
-#     echo "Lỗi: Prisma client không được tạo thành công!" && \
-#     exit 1; \
-#   fi
 
 # Build ứng dụng với cấu hình mở rộng
 RUN npm run build || (echo "Đang thử build lại với cấu hình khác..." && npx tsc --skipLibCheck)
@@ -99,19 +82,8 @@ RUN echo '  echo "Xóa thư mục node_modules/.prisma cũ để tạo mới..."
 RUN echo '  rm -rf ./node_modules/.prisma' >> /app/start.sh
 RUN echo 'fi' >> /app/start.sh
 
-# Đảm bảo thư mục prisma tồn tại và tạo schema.prisma nếu không có
-RUN echo 'if [ ! -f "./prisma/schema.prisma" ]; then' >> /app/start.sh
-RUN echo '  echo "Tạo file schema.prisma tạm thời..."' >> /app/start.sh
-RUN echo '  mkdir -p ./prisma' >> /app/start.sh
-RUN echo '  echo "// This is a placeholder schema file" > ./prisma/schema.prisma' >> /app/start.sh
-RUN echo '  echo "datasource db {" >> ./prisma/schema.prisma' >> /app/start.sh
-RUN echo '  echo "  provider = \"mysql\"" >> ./prisma/schema.prisma' >> /app/start.sh
-RUN echo '  echo "  url      = env(\"DATABASE_URL\")" >> ./prisma/schema.prisma' >> /app/start.sh
-RUN echo '  echo "}" >> ./prisma/schema.prisma' >> /app/start.sh
-RUN echo '  echo "generator client {" >> ./prisma/schema.prisma' >> /app/start.sh
-RUN echo '  echo "  provider = \"prisma-client-js\"" >> ./prisma/schema.prisma' >> /app/start.sh
-RUN echo '  echo "}" >> ./prisma/schema.prisma' >> /app/start.sh
-RUN echo 'fi' >> /app/start.sh
+# Đảm bảo thư mục prisma tồn tại
+RUN echo 'mkdir -p ./prisma' >> /app/start.sh
 
 # Tạo Prisma client mới và bỏ qua lỗi
 RUN echo 'echo "Tạo Prisma client mới..."' >> /app/start.sh
