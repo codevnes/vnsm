@@ -3,12 +3,12 @@
 # Đợi MySQL khởi động
 echo "Đợi MySQL khởi động..."
 i=1
-while [ $i -le 60 ]; do
+while [ $i -le 10 ]; do
   if mysql -h mysql -u root -pTimem.2302 -e "SELECT 1" >/dev/null 2>&1; then
     echo "MySQL đã sẵn sàng!"
     break
   fi
-  echo "Đang đợi MySQL khởi động... ($i/60)"
+  echo "Đang đợi MySQL khởi động... ($i/10)"
   i=$((i+1))
   sleep 5
 done
@@ -31,9 +31,8 @@ else
   npx prisma migrate deploy
 fi
 
-# Chạy Prisma seed để tạo dữ liệu mẫu
-echo "Chạy Prisma seed..."
-npx prisma db seed
+# Bỏ qua phần seed dữ liệu
+echo "Bỏ qua phần seed dữ liệu..."
 
 # Khởi động ứng dụng
 echo "Khởi động ứng dụng..."
