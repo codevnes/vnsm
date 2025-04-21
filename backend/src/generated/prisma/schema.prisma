@@ -115,7 +115,7 @@ model StockQIndex {
   band_up   Decimal? @db.Decimal(15, 5)
   stock     Stock    @relation(fields: [stock_id], references: [id])
 
-  @@unique([stock_id, date]) // ✅ THÊM DÒNG NÀY
+  @@unique([stock_id, date])
   @@index([stock_id])
   @@index([date])
   @@map("stock_qindex")
