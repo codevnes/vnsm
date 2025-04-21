@@ -136,6 +136,48 @@ create_directories() {
 create_docker_compose() {
   print_message "Tạo file docker-compose.yml..."
 
+  # Xác định các biến dựa trên chọn lựa người dùng
+  local https_redirect=""
+  local traefik_http=""
+  local phpmyadmin_http=""
+  local backend_http=""
+  local frontend_http=""
+
+  if [ "$FORCE_HTTPS" = "true" ]; then
+    https_redirect=$(cat << EOF
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+EOF
+    )
+  else
+    traefik_http=$(cat << EOF
+      - "traefik.http.routers.traefik-http.rule=Host(\`traefik.${DOMAIN}\`)"
+      - "traefik.http.routers.traefik-http.entrypoints=web"
+      - "traefik.http.routers.traefik-http.service=api@internal"
+      - "traefik.http.routers.traefik-http.middlewares=traefik-auth"
+EOF
+    )
+    phpmyadmin_http=$(cat << EOF
+      - "traefik.http.routers.phpmyadmin-http.rule=Host(\`${PMA_SUBDOMAIN}.${DOMAIN}\`)"
+      - "traefik.http.routers.phpmyadmin-http.entrypoints=web"
+      - "traefik.http.services.phpmyadmin-http.loadbalancer.server.port=80"
+EOF
+    )
+    backend_http=$(cat << EOF
+      - "traefik.http.routers.backend-http.rule=Host(\`${API_SUBDOMAIN}.${DOMAIN}\`)"
+      - "traefik.http.routers.backend-http.entrypoints=web"
+      - "traefik.http.services.backend-http.loadbalancer.server.port=3001"
+EOF
+    )
+    frontend_http=$(cat << EOF
+      - "traefik.http.routers.frontend-http.rule=Host(\`${DOMAIN}\`)"
+      - "traefik.http.routers.frontend-http.entrypoints=web"
+      - "traefik.http.services.frontend-http.loadbalancer.server.port=3000"
+EOF
+    )
+  fi
+
+  # Bây giờ tạo file docker-compose.yml
   cat > docker-compose.yml << EOL
 # Cấu hình Docker Compose cho VNSM
 # Lưu ý: Không sử dụng thuộc tính 'version' vì nó đã lỗi thời trong Docker Compose v2+
@@ -176,13 +218,7 @@ services:
       - "--providers.file.watch=true"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      # Chỉ chuyển hướng HTTP sang HTTPS nếu người dùng chọn
-      if [ "$FORCE_HTTPS" = "true" ]; then
-        cat >> docker-compose.yml << EOL_HTTPS_REDIRECT
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-EOL_HTTPS_REDIRECT
-      fi
+${https_redirect}
       - "--certificatesresolvers.letsencrypt.acme.email=${EMAIL}"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
@@ -191,15 +227,7 @@ EOL_HTTPS_REDIRECT
       - "traefik.http.routers.traefik.rule=Host(\`traefik.${DOMAIN}\`)"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.entrypoints=websecure"
-      # Thêm router cho HTTP nếu không bắt buộc HTTPS
-      if [ "$FORCE_HTTPS" = "false" ]; then
-        cat >> docker-compose.yml << EOL_HTTP_TRAEFIK
-      - "traefik.http.routers.traefik-http.rule=Host(\`traefik.${DOMAIN}\`)"
-      - "traefik.http.routers.traefik-http.entrypoints=web"
-      - "traefik.http.routers.traefik-http.service=api@internal"
-      - "traefik.http.routers.traefik-http.middlewares=traefik-auth"
-EOL_HTTP_TRAEFIK
-      fi
+${traefik_http}
       - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik.middlewares=traefik-auth"
       - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$(htpasswd -nb admin admin | sed -e s/\\$/\\$\\$/g)"
@@ -240,14 +268,7 @@ EOL_HTTP_TRAEFIK
       - "traefik.enable=true"
       - "traefik.http.routers.phpmyadmin.rule=Host(\`${PMA_SUBDOMAIN}.${DOMAIN}\`)"
       - "traefik.http.routers.phpmyadmin.entrypoints=websecure"
-      # Thêm router cho HTTP nếu không bắt buộc HTTPS
-      if [ "$FORCE_HTTPS" = "false" ]; then
-        cat >> docker-compose.yml << EOL_HTTP_PMA
-      - "traefik.http.routers.phpmyadmin-http.rule=Host(\`${PMA_SUBDOMAIN}.${DOMAIN}\`)"
-      - "traefik.http.routers.phpmyadmin-http.entrypoints=web"
-      - "traefik.http.services.phpmyadmin-http.loadbalancer.server.port=80"
-EOL_HTTP_PMA
-      fi
+${phpmyadmin_http}
       - "traefik.http.routers.phpmyadmin.tls.certresolver=letsencrypt"
       - "traefik.http.services.phpmyadmin.loadbalancer.server.port=80"
 
@@ -280,14 +301,7 @@ EOL_HTTP_PMA
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(\`${API_SUBDOMAIN}.${DOMAIN}\`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
-      # Thêm router cho HTTP nếu không bắt buộc HTTPS
-      if [ "$FORCE_HTTPS" = "false" ]; then
-        cat >> docker-compose.yml << EOL_HTTP_BACKEND
-      - "traefik.http.routers.backend-http.rule=Host(\`${API_SUBDOMAIN}.${DOMAIN}\`)"
-      - "traefik.http.routers.backend-http.entrypoints=web"
-      - "traefik.http.services.backend-http.loadbalancer.server.port=3001"
-EOL_HTTP_BACKEND
-      fi
+${backend_http}
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend.loadbalancer.server.port=3001"
 
@@ -311,14 +325,7 @@ EOL_HTTP_BACKEND
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(\`${DOMAIN}\`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
-      # Thêm router cho HTTP nếu không bắt buộc HTTPS
-      if [ "$FORCE_HTTPS" = "false" ]; then
-        cat >> docker-compose.yml << EOL_HTTP_FRONTEND
-      - "traefik.http.routers.frontend-http.rule=Host(\`${DOMAIN}\`)"
-      - "traefik.http.routers.frontend-http.entrypoints=web"
-      - "traefik.http.services.frontend-http.loadbalancer.server.port=3000"
-EOL_HTTP_FRONTEND
-      fi
+${frontend_http}
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
 EOL
