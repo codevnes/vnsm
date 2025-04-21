@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -14,26 +8,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// MODELS based on db.sql
-
 model User {
   id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
   email     String   @unique @db.VarChar(255)
   full_name String   @db.VarChar(255)
   phone     String?  @db.VarChar(20)
-  password  String   @db.VarChar(255) // Store hashed password
+  password  String   @db.VarChar(255)
   role      Role     @default(user)
   thumbnail String?  @db.VarChar(255)
   verified  Boolean? @default(false)
-  posts     Post[]   // Relation to Post model
+  posts     Post[]
 
-  @@map("users") // Map to the existing 'users' table name
-}
-
-enum Role {
-  admin
-  editor
-  user
+  @@map("users")
 }
 
 model Category {
@@ -43,82 +29,87 @@ model Category {
   thumbnail   String?    @db.VarChar(255)
   description String?    @db.Text
   parent_id   BigInt?    @map("parent") @db.UnsignedBigInt
-  parent      Category?  @relation("SubCategories", fields: [parent_id], references: [id], onDelete: SetNull)
+  parent      Category?  @relation("SubCategories", fields: [parent_id], references: [id])
   children    Category[] @relation("SubCategories")
-  posts       Post[]     // Relation to Post model
+  posts       Post[]
 
+  @@index([parent_id], map: "categories_parent_fkey")
   @@map("categories")
 }
 
 model Stock {
-  id        BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
-  symbol    String       @unique @db.VarChar(20)
-  name      String       @db.VarChar(255)
-  exchange  String?      @db.VarChar(100)
-  industry  String?      @db.VarChar(100)
-  posts     Post[]       // Relation to Post model
-  qindexes  StockQIndex[] // Relation to StockQIndex model
+  id       BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
+  symbol   String        @unique @db.VarChar(20)
+  name     String        @db.VarChar(255)
+  exchange String?       @db.VarChar(100)
+  industry String?       @db.VarChar(100)
+  posts    Post[]
+  qindexes StockQIndex[]
 
   @@map("stocks")
 }
 
 model Post {
-  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
-  title       String    @db.VarChar(255)
-  slug        String    @unique @db.VarChar(255)
-  description String?   @db.Text
-  content     String?   @db.LongText
-  thumbnail   String?   @db.VarChar(255)
-  category_id BigInt    @db.UnsignedBigInt
-  stock_id    BigInt?   @db.UnsignedBigInt
-  user_id     BigInt    @db.UnsignedBigInt
+  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  title       String   @db.VarChar(255)
+  slug        String   @unique @db.VarChar(255)
+  description String?  @db.Text
+  content     String?  @db.LongText
+  thumbnail   String?  @db.VarChar(255)
+  category_id BigInt   @db.UnsignedBigInt
+  stock_id    BigInt?  @db.UnsignedBigInt
+  user_id     BigInt   @db.UnsignedBigInt
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  category    Category @relation(fields: [category_id], references: [id])
+  stock       Stock?   @relation(fields: [stock_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
 
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-
-  category    Category  @relation(fields: [category_id], references: [id])
-  stock       Stock?    @relation(fields: [stock_id], references: [id])
-  user        User      @relation(fields: [user_id], references: [id])
-
+  @@index([category_id], map: "posts_category_id_fkey")
+  @@index([stock_id], map: "posts_stock_id_fkey")
+  @@index([user_id], map: "posts_user_id_fkey")
   @@map("posts")
 }
 
-// --- NEW IMAGE MODEL ---
 model Image {
-  id               Int      @id @default(autoincrement())
-  filename         String   @db.VarChar(191)
-  processedFilename String   @db.VarChar(191)
-  path             String   @db.VarChar(191)
-  url              String   @unique @db.VarChar(191)
-  altText          String?  @db.VarChar(191)
-  mimetype         String?  @db.VarChar(191)
-  size             Int?
-  width            Int?
-  height           Int?
-  createdAt        DateTime @default(now()) @db.DateTime(3)
+  id                Int      @id @default(autoincrement())
+  filename          String
+  processedFilename String
+  path              String
+  url               String   @unique
+  altText           String?
+  mimetype          String?
+  size              Int?
+  width             Int?
+  height            Int?
+  createdAt         DateTime @default(now())
 
   @@map("Image")
 }
 
-
 model StockQIndex {
-  id        BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
-  stock_id  BigInt    @db.UnsignedBigInt
-  date      DateTime  @db.Date
-  open      Decimal?  @db.Decimal(15, 5)
-  low       Decimal?  @db.Decimal(15, 5)
-  high      Decimal?  @db.Decimal(15, 5)
-  close     Decimal?  @db.Decimal(15, 5)
-  trend_q   Decimal?  @db.Decimal(15, 5)
-  fq        Decimal?  @db.Decimal(15, 5)
-  qv1       BigInt? 
-  band_down Decimal?  @db.Decimal(15, 5)
-  band_up   Decimal?  @db.Decimal(15, 5)
-  stock     Stock     @relation(fields: [stock_id], references: [id])
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  stock_id  BigInt   @db.UnsignedBigInt
+  date      DateTime @db.Date
+  open      Decimal? @db.Decimal(15, 5)
+  low       Decimal? @db.Decimal(15, 5)
+  high      Decimal? @db.Decimal(15, 5)
+  close     Decimal? @db.Decimal(15, 5)
+  trend_q   Decimal? @db.Decimal(15, 5)
+  fq        Decimal? @db.Decimal(15, 5)
+  qv1       BigInt?
+  band_down Decimal? @db.Decimal(15, 5)
+  band_up   Decimal? @db.Decimal(15, 5)
+  stock     Stock    @relation(fields: [stock_id], references: [id])
 
-  @@map("stock_qindex")
+  @@unique([stock_id, date])
   @@index([stock_id])
   @@index([date])
-  @@unique([stock_id, date]) 
+  @@map("stock_qindex")
 }
 
+enum Role {
+  admin
+  editor
+  user
+}
