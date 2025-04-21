@@ -57,10 +57,10 @@ services:
     container_name: vnsm-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: "Timem.2302"
+      MYSQL_ROOT_PASSWORD: "vnsm_password"
       MYSQL_DATABASE: "vnsm_db"
       MYSQL_USER: "vnsm_user"
-      MYSQL_PASSWORD: "Timem.2302"
+      MYSQL_PASSWORD: "vnsm_password"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d
@@ -76,7 +76,7 @@ services:
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: "Timem.2302"
+      MYSQL_ROOT_PASSWORD: "vnsm_password"
       UPLOAD_LIMIT: 64M
     networks:
       - backend-network
@@ -102,12 +102,12 @@ services:
       PORT: 3001
       DB_HOST: mysql
       DB_USER: "vnsm_user"
-      DB_PASSWORD: "Timem.2302"
+      DB_PASSWORD: "vnsm_password"
       DB_NAME: "vnsm_db"
       DB_PORT: 3306
-      JWT_SECRET: "1c2b2bbfd37f3c4efd61dcee37ef10c11c55db5f0b5e7b32faaee61d0ca85e14"
+      JWT_SECRET: "random_jwt_secret"
       JWT_EXPIRES_IN: 1d
-      DATABASE_URL: mysql://vnsm_user:Timem.2302@mysql:3306/vnsm_db
+      DATABASE_URL: mysql://vnsm_user:vnsm_password@mysql:3306/vnsm_db
     volumes:
       - ./backend/public:/app/public
     networks:
