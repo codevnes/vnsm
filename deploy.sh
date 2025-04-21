@@ -342,6 +342,10 @@ RUN npm install
 # Cài đặt thêm module csv-parse và đảm bảo prisma được cài đặt
 RUN npm install csv-parse @types/csv-parse @prisma/client prisma
 
+# Kiểm tra thư mục prisma
+RUN ls -la ./prisma || echo "Thư mục prisma không tồn tại"
+RUN cat ./prisma/schema.prisma || echo "File schema.prisma không tồn tại"
+
 # Copy source code
 COPY . .
 
