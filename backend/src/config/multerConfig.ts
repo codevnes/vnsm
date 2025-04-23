@@ -61,16 +61,24 @@ export const uploadImageMulter = multer({
 const csvStorage = multer.memoryStorage(); // Store CSV in memory for parsing
 
 const csvFileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-    if (file.mimetype === 'text/csv' || file.originalname.toLowerCase().endsWith('.csv')) {
+    // Accept CSV and Excel files (.xlsx, .xls)
+    if (
+        file.mimetype === 'text/csv' || 
+        file.originalname.toLowerCase().endsWith('.csv') ||
+        file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+        file.mimetype === 'application/vnd.ms-excel' ||
+        file.originalname.toLowerCase().endsWith('.xlsx') ||
+        file.originalname.toLowerCase().endsWith('.xls')
+    ) {
         cb(null, true);
     } else {
-        cb(new Error('Error: Only .csv files are allowed for bulk import.'));
+        cb(new Error('Error: Only CSV and Excel files (.csv, .xlsx, .xls) are allowed for bulk import.'));
     }
 };
 
 export const uploadCsvMulter = multer({
     storage: csvStorage,
-    limits: { fileSize: 20 * 1024 * 1024 }, // Limit CSV size (e.g., 20MB)
+    limits: { fileSize: 20 * 1024 * 1024 }, // Limit file size (e.g., 20MB)
     fileFilter: csvFileFilter
 });
 

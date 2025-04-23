@@ -64,7 +64,7 @@ const CreateCategoryPage = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-6">Create New Category</h1>
+            <h1 className="text-3xl font-bold mb-6">Tạo danh mục mới</h1>
 
             {loadingCategories && <p>Loading form data...</p>}
             {errorFetching && <p className="text-red-500">Error: {errorFetching}</p>}
@@ -74,7 +74,7 @@ const CreateCategoryPage = () => {
                     onSubmit={onSubmit}
                     allCategories={allCategories}
                     isLoading={isSubmitting} // Pass submission loading state
-                    submitButtonText="Create Category"
+                    submitButtonText="Tạo danh mục"
                 />
             )}
         </div>

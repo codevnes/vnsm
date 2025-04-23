@@ -2,22 +2,21 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { PostForm } from '@/components/posts/post-form';
+import { ModernPostForm } from '@/components/posts/modern-post-form';
 import { PostFormValues } from '@/lib/schemas/postSchema';
 import { postService } from '@/services/postService';
-import { categoryService } from '@/services/categoryService'; // To fetch categories
-// import { stockService } from '@/services/stockService'; // Assuming this exists - Temporarily commented out
+import { categoryService } from '@/services/categoryService';
 import { Category } from '@/types/category';
 import { Stock } from '@/types/stock';
 import { toast } from 'sonner';
 
-// --- TODO: Replace with actual authenticated user ID --- 
+// --- Placeholder for actual auth ---
 const MOCK_USER_ID = "1"; // Replace with ID from auth context
 
 const CreatePostPage = () => {
     const router = useRouter();
     const [allCategories, setAllCategories] = useState<Category[]>([]);
-    const [allStocks, setAllStocks] = useState<Stock[]>([]); // Keep state, but fetching is commented
+    const [allStocks, setAllStocks] = useState<Stock[]>([]);
     const [loadingData, setLoadingData] = useState<boolean>(true);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [errorFetching, setErrorFetching] = useState<string | null>(null);
@@ -27,20 +26,19 @@ const CreatePostPage = () => {
         setLoadingData(true);
         setErrorFetching(null);
         try {
-            // Fetch concurrently - Only fetch categories for now
-            const [catData/*, stockData */] = await Promise.all([
+            // In a real app, we'd fetch stocks too
+            const [catData] = await Promise.all([
                 categoryService.getAllCategories(),
-                // stockService.getAllStocks() // Fetch stocks - Temporarily commented out
-                Promise.resolve([]) // Placeholder for stocks fetch
+                // Replace with actual stocks API call
+                Promise.resolve([])
             ]);
             setAllCategories(catData);
-            // setAllStocks(stockData); // Assuming stockService returns Stock[] - Temporarily commented out
-            setAllStocks([]); // Set to empty array for now
+            // Placeholder - replace with actual stock data
+            setAllStocks([]);
         } catch (err: any) {
-            // Adjust error message if only fetching categories
-            const message = err.message || 'Failed to load form prerequisites (categories).'; 
+            const message = err.message || 'Không thể tải dữ liệu danh mục.';
             setErrorFetching(message);
-            toast.error('Error loading data', { description: message });
+            toast.error('Lỗi tải dữ liệu', { description: message });
         } finally {
             setLoadingData(false);
         }
@@ -51,12 +49,12 @@ const CreatePostPage = () => {
     }, [fetchPrerequisites]);
 
     // Handle form submission
-    const onSubmit = async (values: PostFormValues) => {
+    const handleSubmit = async (values: PostFormValues) => {
         setIsSubmitting(true);
         try {
             const dataToSend = {
                 ...values,
-                user_id: MOCK_USER_ID, 
+                user_id: MOCK_USER_ID,
                 description: values.description || null,
                 content: values.content || null,
                 thumbnail: values.thumbnail || null,
@@ -65,32 +63,56 @@ const CreatePostPage = () => {
             };
             
             await postService.createPost(dataToSend);
-            toast.success('Post created successfully!');
-            router.push('/dashboard/posts'); 
+            toast.success('Tạo bài viết thành công!', {
+                description: 'Bài viết của bạn đã được đăng thành công.'
+            });
+            router.push('/dashboard/posts');
         } catch (error: any) {
-             toast.error('Failed to create post', {
-                 description: error.message || 'An unexpected error occurred.',
-             });
-             setIsSubmitting(false); 
-        } 
+            toast.error('Tạo bài viết thất bại', {
+                description: error.message || 'Đã xảy ra lỗi không xác định.',
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
+
+    if (loadingData) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <div className="bg-gray-800 rounded-xl p-8 flex flex-col items-center justify-center min-h-[400px]">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+                    <p className="text-gray-300 text-lg">Đang tải dữ liệu...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (errorFetching) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <div className="bg-gray-800 rounded-xl p-8 border border-red-500/30">
+                    <h1 className="text-2xl font-bold text-white mb-4">Không thể tải dữ liệu</h1>
+                    <p className="text-red-400 mb-6">{errorFetching}</p>
+                    <button 
+                        onClick={() => fetchPrerequisites()}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+                    >
+                        Thử lại
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-6">Create New Post</h1>
-            
-            {loadingData && <p>Loading form data...</p>}
-            {errorFetching && <p className="text-red-500">Error: {errorFetching}</p>}
-
-            {!loadingData && !errorFetching && (
-                <PostForm 
-                    onSubmit={onSubmit} 
-                    allCategories={allCategories}
-                    allStocks={allStocks} // Pass stocks (currently empty array)
-                    isLoading={isSubmitting}
-                    submitButtonText="Create Post"
-                />
-            )}
+            <ModernPostForm
+                onSubmit={handleSubmit}
+                allCategories={allCategories}
+                allStocks={allStocks}
+                isLoading={isSubmitting}
+                submitButtonText="Tạo bài viết mới"
+            />
         </div>
     );
 };

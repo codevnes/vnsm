@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { PostForm } from '@/components/posts/post-form';
 import { PostFormValues } from '@/lib/schemas/postSchema';
 import { postService } from '@/services/postService';
 import { categoryService } from '@/services/categoryService';
@@ -11,6 +10,7 @@ import { Post } from '@/types/post';
 import { Category } from '@/types/category';
 import { Stock } from '@/types/stock';
 import { toast } from 'sonner';
+import ModernPostForm from '@/components/posts/modern-post-form';
 
 const EditPostPage = () => {
     const router = useRouter();
@@ -112,7 +112,7 @@ const EditPostPage = () => {
 
             {/* Render form only when initialData is ready (derived from postData) */} 
             {!loading && !error && initialDataForForm && (
-                <PostForm 
+                <ModernPostForm 
                     onSubmit={onSubmit} 
                     initialData={initialDataForForm} 
                     allCategories={allCategories} 

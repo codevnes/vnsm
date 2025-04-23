@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Menu, X, ChevronDown, User, Bell, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { stockService } from '@/services/stockService';
@@ -90,7 +89,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     <span className="text-white font-bold text-xl">VN</span>
                   </div>
                 </div>
-                <span className="text-xl font-bold text-gray-900 dark:text-white">VNSM</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">VSMI</span>
               </Link>
             </div>
 
@@ -128,9 +127,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   </Link>
                 </div>
               </div>
-              <Link href="/news" className="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium">
-                Tin tức
-              </Link>
+              <div className="relative group">
+                <button className="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium flex items-center">
+                  Tin tức <ChevronDown className="ml-1 h-4 w-4" />
+                </button>
+                <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 z-50">
+                  <Link href="/tin-tuc" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Tất cả tin tức
+                  </Link>
+                  <Link href="/danh-muc/phan-tich-co-phieu" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Phân tích cổ phiếu
+                  </Link>
+                  <Link href="/danh-muc/tin-thi-truong" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Tin thị trường
+                  </Link>
+                </div>
+              </div>
               <Link href="/education" className="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium">
                 Kiến thức
               </Link>
@@ -256,9 +268,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 </Link>
               </div>
             </div>
-            <Link href="/news" className="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium">
-              Tin tức
-            </Link>
+            <div>
+              <button className="w-full text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium">
+                Tin tức
+              </button>
+              <div className="pl-4">
+                <Link href="/tin-tuc" className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-sm">
+                  Tất cả tin tức
+                </Link>
+                <Link href="/danh-muc/phan-tich-co-phieu" className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-sm">
+                  Phân tích cổ phiếu
+                </Link>
+                <Link href="/danh-muc/tin-thi-truong" className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-sm">
+                  Tin thị trường
+                </Link>
+              </div>
+            </div>
             <Link href="/education" className="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium">
               Kiến thức
             </Link>
@@ -284,7 +309,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     <span className="text-white font-bold text-xl">VN</span>
                   </div>
                 </div>
-                <span className="text-xl font-bold text-white">VNSM</span>
+                <span className="text-xl font-bold text-white">VSMI</span>
               </div>
               <p className="mb-4 text-gray-400">
                 Nền tảng phân tích chứng khoán hàng đầu Việt Nam, cung cấp thông tin và công cụ phân tích đa chiều, giúp nhà đầu tư ra quyết định chính xác.
@@ -335,7 +360,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   <Link href="/education/courses" className="text-gray-400 hover:text-white">Khóa học cho người mới</Link>
                 </li>
                 <li>
-                  <Link href="/news" className="text-gray-400 hover:text-white">Tin tức mới nhất</Link>
+                  <Link href="/tin-tuc" className="text-gray-400 hover:text-white">Tin tức mới nhất</Link>
                 </li>
                 <li>
                   <Link href="/calendar" className="text-gray-400 hover:text-white">Lịch sự kiện</Link>

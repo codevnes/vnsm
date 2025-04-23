@@ -65,9 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Fetch user data if token exists
   useEffect(() => {
     const fetchUserData = async () => {
-      console.log('Fetching user data, token exists:', !!token);
       if (!token) {
-        console.log('No token, clearing user state');
         setUserState(null);
         setLoading(false);
         return;
@@ -76,7 +74,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         // Extract user from token for fallback
         const userFromToken = getUserFromToken(token);
-        console.log('User from token:', userFromToken ? `ID: ${userFromToken.id}, Role: ${userFromToken.role}` : 'Failed to decode');
 
         // Try to fetch user from API, use token data as fallback
         try {

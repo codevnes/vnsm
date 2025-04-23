@@ -57,10 +57,10 @@ export default function DashboardLayout({
 
             {/* Main Content Area */}
             <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-72"> {/* Adjust pl to match sidebar width */}
-                {/* Mobile Header (Optional) - Shows on small screens */}
+                {/* Mobile Header - Shows on small screens */}
                 <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-                    {/* Mobile Sidebar Toggle (Needs state management if implemented) */}
-                    {/* <Sheet> ... </Sheet> */}
+                    {/* Space for mobile menu button */}
+                    <div className="w-8 sm:hidden"></div>
 
                     <div className="flex-1">
                         {/* Can add Breadcrumbs or search here */}
@@ -72,12 +72,12 @@ export default function DashboardLayout({
 
                 {/* Render the specific page content */}
                 <main className="flex-1 p-4 sm:px-6 sm:py-0 md:gap-8">
-                     {children}
+                    {children}
                 </main>
 
                 {/* Optional Footer within main content area */}
                 <footer className="text-center text-sm text-muted-foreground p-4">
-                     Your App &copy; {new Date().getFullYear()}
+                    Your App &copy; {new Date().getFullYear()}
                 </footer>
             </div>
         </div>

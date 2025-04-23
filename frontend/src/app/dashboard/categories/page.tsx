@@ -124,7 +124,7 @@ const CategoriesPage = () => {
                 <h1 className="text-3xl font-bold">Categories</h1>
                 <Link href="/dashboard/categories/create" passHref>
                     <Button>
-                        <PlusCircle className="mr-2 h-4 w-4" /> Create Category
+                        <PlusCircle className="mr-2 h-4 w-4" /> Tạo Danh Mục
                     </Button>
                 </Link>
             </div>

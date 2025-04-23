@@ -39,13 +39,17 @@ model Category {
 }
 
 model Stock {
-  id       BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
-  symbol   String        @unique @db.VarChar(20)
-  name     String        @db.VarChar(255)
-  exchange String?       @db.VarChar(100)
-  industry String?       @db.VarChar(100)
-  posts    Post[]
-  qindexes StockQIndex[]
+  id                  BigInt                 @id @default(autoincrement()) @db.UnsignedBigInt
+  symbol              String                 @unique @db.VarChar(20)
+  name                String                 @db.VarChar(255)
+  exchange            String?                @db.VarChar(100)
+  industry            String?                @db.VarChar(100)
+  posts               Post[]
+  qindexes            StockQIndex[]
+  epsRecords          EpsRecord[]
+  peRecords           PeRecord[]
+  roaRoeRecords       RoaRoeRecord[]
+  financialRatioRecords FinancialRatioRecord[]
 
   @@map("stocks")
 }
@@ -107,6 +111,94 @@ model StockQIndex {
   @@index([stock_id])
   @@index([date])
   @@map("stock_qindex")
+}
+
+model CurrencyPrice {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  symbol    String   @db.VarChar(20)
+  date      DateTime @db.Date
+  open      Decimal  @db.Decimal(15, 5)
+  high      Decimal  @db.Decimal(15, 5)
+  low       Decimal  @db.Decimal(15, 5)
+  close     Decimal  @db.Decimal(15, 5)
+  trend_q   Decimal  @db.Decimal(15, 10)
+  fq        Decimal  @db.Decimal(15, 10)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([symbol, date])
+  @@index([symbol])
+  @@index([date])
+  @@map("currency_prices")
+}
+
+model EpsRecord {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  symbol     String   @db.VarChar(20)
+  reportDate DateTime @db.Date @map("report_date")
+  eps        Float?
+  epsNganh   Float?   @map("eps_nganh")
+  epsRate    Float?   @map("eps_rate")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  stock      Stock?   @relation(fields: [symbol], references: [symbol])
+
+  @@unique([symbol, reportDate])
+  @@index([symbol])
+  @@index([reportDate])
+  @@map("eps_records")
+}
+
+model PeRecord {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  symbol     String   @db.VarChar(20)
+  reportDate DateTime @db.Date @map("report_date")
+  pe         Float?
+  peNganh    Float?   @map("pe_nganh")
+  peRate     Float?   @map("pe_rate")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  stock      Stock?   @relation(fields: [symbol], references: [symbol])
+
+  @@unique([symbol, reportDate])
+  @@index([symbol])
+  @@index([reportDate])
+  @@map("pe_records")
+}
+
+model RoaRoeRecord {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  symbol     String   @db.VarChar(20)
+  reportDate DateTime @db.Date @map("report_date")
+  roa        Float?
+  roe        Float?
+  roeNganh   Float?   @map("roe_nganh")
+  roaNganh   Float?   @map("roa_nganh")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  stock      Stock?   @relation(fields: [symbol], references: [symbol])
+
+  @@unique([symbol, reportDate])
+  @@index([symbol])
+  @@index([reportDate])
+  @@map("roa_roe_records")
+}
+
+model FinancialRatioRecord {
+  id           BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  symbol       String   @db.VarChar(20)
+  reportDate   DateTime @db.Date @map("report_date")
+  debtEquity   Float?   @map("debt_equity")
+  assetsEquity Float?   @map("assets_equity")
+  debtEquityPct Float?  @map("debt_equity_pct")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  stock        Stock?   @relation(fields: [symbol], references: [symbol])
+
+  @@unique([symbol, reportDate])
+  @@index([symbol])
+  @@index([reportDate])
+  @@map("financial_ratio_records")
 }
 
 enum Role {

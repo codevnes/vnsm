@@ -135,22 +135,17 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
                     full_name: email.split('@')[0], // Use part of email as name
                     role: role as any, // Cast role from token
                 });
-                
-                console.log(`Created placeholder user with ID: ${newUser.id}`);
                 user = newUser;
             } catch (createError) {
-                console.error('Error creating placeholder user:', createError);
                 res.status(404).json({ message: 'User not found and could not be created' });
                 return;
             }
         } else {
-            console.log('User found, returning data for ID:', user.id);
         }
         
         // Return user data
         res.status(200).json(user);
     } catch (error) {
-        console.error('Get current user error:', error);
         res.status(500).json({ message: 'Server error retrieving user data' });
     }
 };

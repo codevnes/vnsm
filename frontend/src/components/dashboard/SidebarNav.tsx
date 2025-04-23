@@ -4,7 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { Home, Image as ImageIcon, Settings, CandlestickChart, BarChart2, Folder, FileText } from "lucide-react"; // Example icons
+import { 
+    Home, 
+    Image as ImageIcon, 
+    Settings, 
+    CandlestickChart, 
+    BarChart2, 
+    Folder, 
+    FileText, 
+    BarChart3, 
+    BarChart4, 
+    LineChart, 
+    PieChart 
+} from "lucide-react";
 
 // Define navigation items
 const sidebarNavItems = [
@@ -44,6 +56,31 @@ const sidebarNavItems = [
         icon: BarChart2,
     },
     {
+        title: "EPS Records",
+        href: "/dashboard/eps-records",
+        icon: BarChart3,
+    },
+    {
+        title: "PE Records",
+        href: "/dashboard/pe-records",
+        icon: LineChart,
+    },
+    {
+        title: "ROA/ROE Records",
+        href: "/dashboard/roa-roe-records",
+        icon: BarChart4,
+    },
+    {
+        title: "Financial Ratio",
+        href: "/dashboard/financial-ratio-records",
+        icon: PieChart,
+    },
+    {
+        title: "Currency Prices",
+        href: "/dashboard/currency-prices",
+        icon: CandlestickChart,
+    },
+    {
         title: "Settings",
         href: "/dashboard/settings", // Example link
         icon: Settings,
@@ -58,7 +95,7 @@ export function SidebarNav({ className, ...props }: SidebarNavProps) {
     return (
         <nav
             className={cn(
-                "flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1",
+                "flex flex-col space-x-2 lg:space-x-0 lg:space-y-1",
                 className
             )}
             {...props}

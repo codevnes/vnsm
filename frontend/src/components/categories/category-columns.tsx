@@ -33,7 +33,7 @@ export const getCategoryColumns = ({
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            Title
+            Tiêu đề
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -41,11 +41,11 @@ export const getCategoryColumns = ({
     },
     {
       accessorKey: 'slug',
-      header: 'Slug',
+      header: 'Đường dẫn',
     },
     {
         accessorKey: 'description',
-        header: 'Description',
+        header: 'Mô tả',
         cell: ({ row }: { row: Row<Category> }) => {
             const description = row.original.description;
             return description 
@@ -55,8 +55,8 @@ export const getCategoryColumns = ({
     },
     {
       accessorKey: 'parent_id',
-      header: 'Parent ID',
-      cell: ({ row }: { row: Row<Category> }) => row.original.parent_id ?? <span className="text-muted-foreground">None</span>,
+      header: 'Danh mục cha',
+      cell: ({ row }: { row: Row<Category> }) => row.original.parent_id ?? <span className="text-muted-foreground">Không có</span>,
     },
     {
       id: 'actions',
@@ -68,19 +68,19 @@ export const getCategoryColumns = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
+                <span className="sr-only">Mở menu</span>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => onEdit(category.id)}> 
                 <Pencil className="mr-2 h-4 w-4" />
-                Edit
+                Chỉnh sửa
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onDeleteRequest(category)} className="text-destructive focus:text-destructive focus:bg-destructive/10">
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  Xóa
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

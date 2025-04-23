@@ -59,7 +59,7 @@ const formatDateForChart = (dateString: string): UTCTimestamp | null => {
 
 interface StockChartProps {
   data: StockDataPoint[];
-  chartType: 'candlestick' | 'line' | 'histogram';
+  chartType: 'candlestick' | 'line' | 'histogram' | 'mixed';
   lineOptions?: {
     fields: Array<'trend_q' | 'fq'>;
     colors: string[];
@@ -69,6 +69,10 @@ interface StockChartProps {
       lineStyle?: number; // 0 = solid, 1 = dashed, 2 = dotted, etc.
     }>;
     smooth?: boolean;
+  };
+  histogramOptions?: {
+    fields: Array<'trend_q' | 'fq'>;
+    colors: string[];
   };
   height?: number;
   width?: number;
@@ -95,6 +99,7 @@ const StockChart: React.FC<StockChartProps> = ({
   data,
   chartType,
   lineOptions,
+  histogramOptions,
   height = 300,
   width = 600,
   title = '',
@@ -164,7 +169,9 @@ const StockChart: React.FC<StockChartProps> = ({
 
     // Format number function
     const formatCompactNumber = (price: number): string => {
-      if (Math.abs(price) >= 1_000_000_000) {
+      if (Math.abs(price) >= 1_000_000_000_000) {
+        return (price / 1_000_000_000_000).toFixed(1).replace(/\.0$/, '') + 't';
+      } else if (Math.abs(price) >= 1_000_000_000) {
         return (price / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'b';
       } else if (Math.abs(price) >= 1_000_000) {
         // Format millions to include a decimal place even with exact millions
@@ -289,7 +296,7 @@ const StockChart: React.FC<StockChartProps> = ({
               candlestickSeries.setData(candlestickData);
               seriesRef.current.push(candlestickSeries);
           }
-       } else if (chartType === 'line' && lineOptions) {
+       } else if ((chartType === 'line' || chartType === 'mixed') && lineOptions) {
           lineOptions.fields.forEach((field, index) => {
               // Get style options if available
               const style = lineOptions.styles?.[index] || {};
@@ -329,6 +336,37 @@ const StockChart: React.FC<StockChartProps> = ({
                   seriesRef.current.push(lineSeries);
               }
           });
+          
+          // Handle histogram part of mixed chart
+          if (chartType === 'mixed' && histogramOptions) {
+             histogramOptions.fields.forEach((field, index) => {
+                const histogramSeries = chart.addSeries(HistogramSeries, {
+                    color: histogramOptions.colors[index] || '#FF0000',
+                    priceFormat: { type: 'price' },
+                    title: field === 'trend_q' ? 'Trend Q' : field === 'fq' ? 'FQ' : field
+                });
+                
+                const histogramData = processedData
+                   .map(item => {
+                       const value = safeParseFloat(item[field]);
+                       if (value !== undefined) {
+                           return {
+                               time: item.time,
+                               value,
+                               color: histogramOptions.colors[index] || '#FF0000'
+                           };
+                       }
+                       return null;
+                   })
+                   .filter((item): item is HistogramData<UTCTimestamp> & { color: string } => 
+                      item !== null && item.color !== undefined);
+                
+                if (histogramData.length > 0) {
+                   histogramSeries.setData(histogramData);
+                   seriesRef.current.push(histogramSeries);
+                }
+             });
+          }
        } else if (chartType === 'histogram') {
            // v5 API: Use addSeries with Series Constructor
            const histogramSeries = chart.addSeries(HistogramSeries, {
@@ -526,7 +564,7 @@ const StockChart: React.FC<StockChartProps> = ({
         titleRef.current = null;
       }
     };
-  }, [data, chartType, lineOptions, height, width, title, showTimeScale, syncGroup, rightPriceScaleMinimumWidth, margin, hideXAxis]);
+  }, [data, chartType, lineOptions, histogramOptions, height, width, title, showTimeScale, syncGroup, rightPriceScaleMinimumWidth, margin, hideXAxis]);
 
   // --- Resize Handler --- 
   useEffect(() => {

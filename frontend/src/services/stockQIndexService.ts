@@ -8,6 +8,24 @@ import {
   StockQIndexBulkImportResponse
 } from "@/types/stockQIndex";
 
+// Define QIndicesResponse type similar to homeService
+interface QIndicesResponse {
+  data: StockQIndex[];
+  meta?: {
+    currentPage?: number;
+    totalPages?: number;
+    totalItems?: number;
+    itemsPerPage?: number;
+  };
+  pagination?: {
+    totalItems: number;
+    itemCount: number;
+    itemsPerPage: number;
+    totalPages: number;
+    currentPage: number;
+  };
+}
+
 export const stockQIndexService = {
   /**
    * Fetch all stock Q-indices with optional filters and pagination
@@ -32,10 +50,10 @@ export const stockQIndexService = {
         params.append('stock_id', filters.stock_id.toString());
       }
       if (filters.date_from) {
-        params.append('date_from', filters.date_from);
+        params.append('startDate', filters.date_from);
       }
       if (filters.date_to) {
-        params.append('date_to', filters.date_to);
+        params.append('endDate', filters.date_to);
       }
 
       const response = await api.get(`/qindices?${params.toString()}`);
@@ -79,10 +97,10 @@ export const stockQIndexService = {
       params.append('sortOrder', sortOrder);
 
       if (dateFrom) {
-        params.append('date_from', dateFrom);
+        params.append('startDate', dateFrom);
       }
       if (dateTo) {
-        params.append('date_to', dateTo);
+        params.append('endDate', dateTo);
       }
 
       const response = await api.get(`/stocks/${stockId}/qindices?${params.toString()}`);
@@ -157,22 +175,81 @@ export const stockQIndexService = {
     file: File
   ): Promise<StockQIndexBulkImportResponse> => {
     try {
-      console.log('Uploading file:', file.name, file.size, file.type);
 
       const formData = new FormData();
       formData.append('file', file);
 
-      console.log('Making API call to /qindices/bulk-import-by-symbol');
       const response = await api.post(`/qindices/bulk-import-by-symbol`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      console.log('API response:', response.data);
+      ('API response:', response.data);
       return response.data;
     } catch (error) {
       console.error(`Error bulk importing Q-indices by symbol:`, error);
       throw error;
+    }
+  },
+
+  /**
+   * Improved method to fetch Q-indices data for a specific stock ID
+   * Uses object param approach and better error handling
+   */
+  fetchQIndicesByStockId: async (
+    stockId: number | string,
+    sortBy: string = 'date',
+    sortOrder: 'asc' | 'desc' = 'asc',
+    startDate?: string | null,
+    endDate?: string | null
+  ): Promise<QIndicesResponse> => {
+    try {
+      // Build params with all needed fields
+      const params: Record<string, unknown> = {
+        page: 1,
+        limit: 1000, // Use a large limit for chart data
+        sortBy,
+        sortOrder
+      };
+
+      // Add date filters if provided
+      if (startDate) {
+        params.startDate = startDate;
+      }
+      if (endDate) {
+        params.endDate = endDate;
+      }
+
+      // Use object params approach instead of URLSearchParams
+      const response = await api.get(`/qindices`, { 
+        params: {
+          ...params,
+          stock_id: stockId
+        }
+      });
+
+      // Handle different response structures
+      const responseData = response.data;
+      if (responseData.pagination && !responseData.meta) {
+        return {
+          data: responseData.data,
+          meta: responseData.pagination
+        };
+      }
+
+      return responseData;
+    } catch (error) {
+      console.error(`Error fetching Q-indices for stock ${stockId}:`, error);
+      // Return empty data instead of throwing to prevent UI errors
+      return {
+        data: [],
+        meta: {
+          currentPage: 1,
+          totalPages: 0,
+          totalItems: 0,
+          itemsPerPage: 0
+        }
+      };
     }
   }
 };
