@@ -7,6 +7,16 @@ DB_PASSWORD="Timem.2302"
 DB_NAME="vsmi_db"
 BACKUP_DIR="./database/backups"
 
+# Thông tin cơ sở dữ liệu local
+LOCAL_DB_HOST="localhost"
+LOCAL_DB_PORT="3306"
+LOCAL_DB_USER="root"
+LOCAL_DB_PASSWORD="Timem.2302"
+LOCAL_DB_NAME="vsmi_db"
+
+# Mặc định sử dụng Docker
+USE_LOCAL=false
+
 # Màu sắc cho output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -30,14 +40,23 @@ show_banner() {
 
 # Hiển thị menu
 show_menu() {
+    # Hiển thị chế độ hiện tại
+    if [ "$USE_LOCAL" = true ]; then
+        echo -e "${GREEN}Chế độ: Local MySQL${NC}"
+    else
+        echo -e "${GREEN}Chế độ: Docker Container${NC}"
+    fi
+    
     echo -e "${YELLOW}Chọn một tùy chọn:${NC}"
     echo "1) Export database (sao lưu)"
     echo "2) Import database (khôi phục)"
     echo "3) Liệt kê các bản sao lưu"
     echo "4) Xóa bản sao lưu"
-    echo "5) Thoát"
+    echo "5) Chuyển đổi chế độ (Local/Docker)"
+    echo "6) Cấu hình kết nối"
+    echo "7) Thoát"
     echo
-    echo -n "Nhập lựa chọn của bạn [1-5]: "
+    echo -n "Nhập lựa chọn của bạn [1-7]: "
 }
 
 # Kiểm tra container MySQL có đang chạy không
@@ -51,16 +70,35 @@ check_mysql_container() {
 
 # Export database
 export_database() {
-    check_mysql_container
-    
     # Tạo tên file backup với timestamp
     TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-    BACKUP_FILE="$BACKUP_DIR/${DB_NAME}_${TIMESTAMP}.sql"
     
-    echo -e "${YELLOW}Đang export database ${DB_NAME}...${NC}"
-    
-    # Thực hiện lệnh export
-    docker exec "$DB_CONTAINER" mysqldump -u"$DB_USER" -p"$DB_PASSWORD" --databases "$DB_NAME" > "$BACKUP_FILE"
+    if [ "$USE_LOCAL" = true ]; then
+        # Sử dụng MySQL local
+        BACKUP_FILE="$BACKUP_DIR/${LOCAL_DB_NAME}_local_${TIMESTAMP}.sql"
+        
+        echo -e "${YELLOW}Đang export database ${LOCAL_DB_NAME} từ MySQL local...${NC}"
+        
+        # Kiểm tra xem mysqldump có sẵn không
+        if ! command -v mysqldump &> /dev/null; then
+            echo -e "${RED}Lỗi: Lệnh mysqldump không tìm thấy.${NC}"
+            echo -e "${YELLOW}Vui lòng cài đặt MySQL client hoặc chuyển sang chế độ Docker.${NC}"
+            return 1
+        fi
+        
+        # Thực hiện lệnh export
+        mysqldump -h"$LOCAL_DB_HOST" -P"$LOCAL_DB_PORT" -u"$LOCAL_DB_USER" -p"$LOCAL_DB_PASSWORD" --databases "$LOCAL_DB_NAME" > "$BACKUP_FILE"
+    else
+        # Sử dụng Docker container
+        check_mysql_container
+        
+        BACKUP_FILE="$BACKUP_DIR/${DB_NAME}_docker_${TIMESTAMP}.sql"
+        
+        echo -e "${YELLOW}Đang export database ${DB_NAME} từ Docker container...${NC}"
+        
+        # Thực hiện lệnh export
+        docker exec "$DB_CONTAINER" mysqldump -u"$DB_USER" -p"$DB_PASSWORD" --databases "$DB_NAME" > "$BACKUP_FILE"
+    fi
     
     # Kiểm tra kết quả
     if [ $? -eq 0 ]; then
@@ -78,8 +116,6 @@ export_database() {
 
 # Import database
 import_database() {
-    check_mysql_container
-    
     # Liệt kê các file backup
     echo -e "${YELLOW}Các bản sao lưu có sẵn:${NC}"
     list_backups
@@ -122,15 +158,39 @@ import_database() {
         return
     fi
     
-    echo -e "${YELLOW}Đang import database từ ${selected_file}...${NC}"
-    
-    # Kiểm tra xem file có phải là file nén không
-    if [[ "$selected_file" == *.gz ]]; then
-        # Giải nén file và import
-        gunzip -c "$selected_file" | docker exec -i "$DB_CONTAINER" mysql -u"$DB_USER" -p"$DB_PASSWORD"
+    if [ "$USE_LOCAL" = true ]; then
+        # Sử dụng MySQL local
+        echo -e "${YELLOW}Đang import database vào MySQL local từ ${selected_file}...${NC}"
+        
+        # Kiểm tra xem mysql có sẵn không
+        if ! command -v mysql &> /dev/null; then
+            echo -e "${RED}Lỗi: Lệnh mysql không tìm thấy.${NC}"
+            echo -e "${YELLOW}Vui lòng cài đặt MySQL client hoặc chuyển sang chế độ Docker.${NC}"
+            return 1
+        fi
+        
+        # Kiểm tra xem file có phải là file nén không
+        if [[ "$selected_file" == *.gz ]]; then
+            # Giải nén file và import
+            gunzip -c "$selected_file" | mysql -h"$LOCAL_DB_HOST" -P"$LOCAL_DB_PORT" -u"$LOCAL_DB_USER" -p"$LOCAL_DB_PASSWORD"
+        else
+            # Import trực tiếp
+            mysql -h"$LOCAL_DB_HOST" -P"$LOCAL_DB_PORT" -u"$LOCAL_DB_USER" -p"$LOCAL_DB_PASSWORD" < "$selected_file"
+        fi
     else
-        # Import trực tiếp
-        docker exec -i "$DB_CONTAINER" mysql -u"$DB_USER" -p"$DB_PASSWORD" < "$selected_file"
+        # Sử dụng Docker container
+        check_mysql_container
+        
+        echo -e "${YELLOW}Đang import database vào Docker container từ ${selected_file}...${NC}"
+        
+        # Kiểm tra xem file có phải là file nén không
+        if [[ "$selected_file" == *.gz ]]; then
+            # Giải nén file và import
+            gunzip -c "$selected_file" | docker exec -i "$DB_CONTAINER" mysql -u"$DB_USER" -p"$DB_PASSWORD"
+        else
+            # Import trực tiếp
+            docker exec -i "$DB_CONTAINER" mysql -u"$DB_USER" -p"$DB_PASSWORD" < "$selected_file"
+        fi
     fi
     
     # Kiểm tra kết quả
@@ -156,6 +216,14 @@ list_backups() {
         # Lấy kích thước file
         size=$(du -h "$file" | cut -f1)
         
+        # Xác định nguồn (local hay docker)
+        source_type=""
+        if [[ "$(basename "$file")" == *"_local_"* ]]; then
+            source_type="${GREEN}[Local]${NC}"
+        elif [[ "$(basename "$file")" == *"_docker_"* ]]; then
+            source_type="${BLUE}[Docker]${NC}"
+        fi
+        
         # Lấy thời gian tạo file
         if [[ "$file" == *.gz ]]; then
             # Trích xuất timestamp từ tên file
@@ -167,7 +235,7 @@ list_backups() {
             formatted_time=$(echo "$timestamp" | sed -E 's/([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2})([0-9]{2})/\1-\2-\3 \4:\5:\6/')
         fi
         
-        echo -e "${BLUE}$count)${NC} $(basename "$file") ${YELLOW}[$size]${NC} ${GREEN}[$formatted_time]${NC}"
+        echo -e "${BLUE}$count)${NC} $(basename "$file") ${YELLOW}[$size]${NC} ${source_type} ${GREEN}[$formatted_time]${NC}"
         ((count++))
     done
     echo
@@ -227,6 +295,68 @@ delete_backup() {
     fi
 }
 
+# Chuyển đổi chế độ
+toggle_mode() {
+    if [ "$USE_LOCAL" = true ]; then
+        USE_LOCAL=false
+        echo -e "${GREEN}Đã chuyển sang chế độ Docker Container.${NC}"
+    else
+        USE_LOCAL=true
+        echo -e "${GREEN}Đã chuyển sang chế độ Local MySQL.${NC}"
+    fi
+}
+
+# Cấu hình kết nối
+configure_connection() {
+    if [ "$USE_LOCAL" = true ]; then
+        echo -e "${YELLOW}Cấu hình kết nối MySQL Local:${NC}"
+        
+        echo -n "Host [$LOCAL_DB_HOST]: "
+        read -r input
+        [ -n "$input" ] && LOCAL_DB_HOST="$input"
+        
+        echo -n "Port [$LOCAL_DB_PORT]: "
+        read -r input
+        [ -n "$input" ] && LOCAL_DB_PORT="$input"
+        
+        echo -n "User [$LOCAL_DB_USER]: "
+        read -r input
+        [ -n "$input" ] && LOCAL_DB_USER="$input"
+        
+        echo -n "Password [$LOCAL_DB_PASSWORD]: "
+        read -r -s input
+        echo
+        [ -n "$input" ] && LOCAL_DB_PASSWORD="$input"
+        
+        echo -n "Database [$LOCAL_DB_NAME]: "
+        read -r input
+        [ -n "$input" ] && LOCAL_DB_NAME="$input"
+        
+        echo -e "${GREEN}Đã cập nhật cấu hình kết nối MySQL Local.${NC}"
+    else
+        echo -e "${YELLOW}Cấu hình kết nối Docker:${NC}"
+        
+        echo -n "Container [$DB_CONTAINER]: "
+        read -r input
+        [ -n "$input" ] && DB_CONTAINER="$input"
+        
+        echo -n "User [$DB_USER]: "
+        read -r input
+        [ -n "$input" ] && DB_USER="$input"
+        
+        echo -n "Password [$DB_PASSWORD]: "
+        read -r -s input
+        echo
+        [ -n "$input" ] && DB_PASSWORD="$input"
+        
+        echo -n "Database [$DB_NAME]: "
+        read -r input
+        [ -n "$input" ] && DB_NAME="$input"
+        
+        echo -e "${GREEN}Đã cập nhật cấu hình kết nối Docker.${NC}"
+    fi
+}
+
 # Main program
 main() {
     show_banner
@@ -240,7 +370,9 @@ main() {
             2) import_database ;;
             3) list_backups ;;
             4) delete_backup ;;
-            5) echo -e "${GREEN}Cảm ơn bạn đã sử dụng công cụ!${NC}"; exit 0 ;;
+            5) toggle_mode ;;
+            6) configure_connection ;;
+            7) echo -e "${GREEN}Cảm ơn bạn đã sử dụng công cụ!${NC}"; exit 0 ;;
             *) echo -e "${RED}Lựa chọn không hợp lệ. Vui lòng thử lại.${NC}" ;;
         esac
         
