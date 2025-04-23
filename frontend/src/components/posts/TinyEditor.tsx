@@ -103,9 +103,9 @@ const TinyEditor: React.FC<TinyEditorProps> = ({
 
   return (
     <div className="w-full">
-      <small>{process.env.NEXT_PUBLIC_TINYMCE_API_KEY}</small>
+      
       <Editor
-        apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
+        apiKey="gqcpkc0yu6t37vrh6jaiwx7ugf0nn5o2rc106o1ugk1gwz2v"
         onInit={(evt, editor) => {
           editorRef.current = editor;
           
