@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { StockQIndex } from '@/types/stockQIndex';
 import { homeService } from '@/services/homeService';
+import { settingsService } from '@/services/settingsService';
 import StockChart from '@/components/charts/StockChart';
 import TimePeriodSelector from '@/components/charts/TimePeriodSelector';
 import LatestPosts from '@/components/home/LatestPosts';
@@ -12,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CurrencyPrice } from '@/types/currencyPrice';
 import { currencyPriceService } from '@/services/currencyPriceService';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 // Helper function to format date as YYYY-MM-DD
 const formatDate = (date: Date): string => {
@@ -29,7 +31,9 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('3m');
   const [posts, setPosts] = useState<Post[]>([]);
+  const [featuredPosts, setFeaturedPosts] = useState<Post[]>([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+  const [isLoadingFeaturedPosts, setIsLoadingFeaturedPosts] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Currency data states
@@ -172,6 +176,35 @@ export default function Home() {
     fetchPosts();
   }, []);
 
+  // Fetch featured posts from settings
+  useEffect(() => {
+    const fetchFeaturedPosts = async () => {
+      setIsLoadingFeaturedPosts(true);
+      try {
+        // Get featured post IDs from settings
+        const featuredPostsSetting = await settingsService.getSettingByKey('featured_posts');
+        const featuredPostIds = JSON.parse(featuredPostsSetting.value) as number[];
+        
+        // Fetch the featured posts
+        if (featuredPostIds && featuredPostIds.length > 0) {
+          const postsData = await Promise.all(
+            featuredPostIds.map(id => homeService.fetchPostById(id))
+          );
+          setFeaturedPosts(postsData.filter((post): post is Post => post !== null));
+        } else {
+          setFeaturedPosts([]);
+        }
+      } catch (err) {
+        console.error('Error fetching featured posts:', err);
+        setFeaturedPosts([]);
+      } finally {
+        setIsLoadingFeaturedPosts(false);
+      }
+    };
+
+    fetchFeaturedPosts();
+  }, []);
+
   // Handle time period change - simply updates state, useEffect handles refetch
   const handleTimePeriodChange = (period: TimePeriod) => {
     setTimePeriod(period);
@@ -223,29 +256,39 @@ export default function Home() {
   ];
 
   return (
-    <div className="py-6">
-      <div className="container mx-auto px-4">
+    <div className="py-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen text-gray-100">
+      <div className="container mx-auto px-4 transition-all duration-300 ease-in-out">
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+          <div className="bg-red-900/60 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-6 shadow-lg backdrop-blur-sm">
             {error}
           </div>
         )}
         
-        <section className="mb-12">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Biểu đồ phân tích VNINDEX</h2>
+        <section className="mb-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <div>
+              <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-200 pb-1">Biểu đồ phân tích VNINDEX</h2>
+              {latestData && (
+                <div className="flex items-center mt-2">
+                  <span className="text-3xl font-semibold mr-2 text-white">{latestData.close}</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${priceChange >= 0 ? 'bg-green-500/30 text-green-300 border border-green-500/50' : 'bg-red-500/30 text-red-300 border border-red-500/50'}`}>
+                    {priceChange >= 0 ? '+' : ''}{priceChange.toFixed(2)}%
+                  </span>
+                </div>
+              )}
+            </div>
             <TimePeriodSelector selectedPeriod={timePeriod} onChange={handleTimePeriodChange} />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div className="lg:col-span-3">
-              <Card className="bg-white dark:bg-gray-800 shadow-sm">
-                <CardContent className="p-6 py-0">
+              <Card className="bg-gray-800/50 shadow-xl rounded-xl overflow-hidden border border-gray-700/50 backdrop-blur-sm transition-all duration-300 hover:shadow-blue-900/20 hover:shadow-2xl">
+                <CardContent className="p-6 py-4">
                   {isLoading ? (
                     <div className="space-y-4">
-                      <Skeleton className="h-[300px] w-full" />
-                      <Skeleton className="h-[250px] w-full" />
-                      <Skeleton className="h-[200px] w-full" />
+                      <Skeleton className="h-[300px] w-full bg-gray-700/50" />
+                      <Skeleton className="h-[250px] w-full bg-gray-700/50" />
+                      <Skeleton className="h-[200px] w-full bg-gray-700/50" />
                     </div>
                   ) : qIndices.length > 0 ? (
                     <div className="space-y-6 py-0">
@@ -262,7 +305,7 @@ export default function Home() {
                       </div>
 
                       {/* Trend Q & FQ */}
-                      <div className="relative -mt-6">
+                      <div className="relative">
                         <StockChart
                           chartType="mixed"
                           data={qIndices}
@@ -283,7 +326,7 @@ export default function Home() {
                       </div>
 
                       {/* QV1 Values */}
-                      <div className="relative -mt-6">
+                      <div className="relative">
                         <StockChart
                           chartType="histogram"
                           data={qIndices}
@@ -294,7 +337,7 @@ export default function Home() {
                       </div>
                     </div>
                   ) : (
-                    <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                    <div className="h-[300px] flex items-center justify-center text-gray-400">
                       Không có dữ liệu cho giai đoạn đã chọn.
                     </div>
                   )}
@@ -304,17 +347,255 @@ export default function Home() {
 
             {/* Latest Posts */}
             <div className="lg:col-span-1">
-              <LatestPosts posts={posts} isLoading={isLoadingPosts} />
+              <Card className="bg-gray-800/50 shadow-xl rounded-xl overflow-hidden border border-gray-700/50 backdrop-blur-sm h-full transition-all duration-300 hover:shadow-teal-900/20 hover:shadow-2xl">
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-200 pb-1">Tin tức thị trường</h3>
+                  
+                  {isLoadingFeaturedPosts ? (
+                    <div className="space-y-4">
+                      <Skeleton className="h-32 w-full bg-gray-700/50 rounded-lg" />
+                      <Skeleton className="h-32 w-full bg-gray-700/50 rounded-lg" />
+                      <Skeleton className="h-32 w-full bg-gray-700/50 rounded-lg" />
+                    </div>
+                  ) : featuredPosts.length > 0 ? (
+                    <div className="space-y-5 mt-4">
+                      {featuredPosts.map((post) => (
+                        <Link 
+                          key={post.id} 
+                          href={`/bai-viet/${post.slug || post.id}`} 
+                          className="block group relative overflow-hidden rounded-lg hover:shadow-md hover:shadow-teal-900/20 transition-all duration-300"
+                        >
+                          <div className="relative w-full aspect-[16/9] overflow-hidden rounded-t-lg">
+                            {post.thumbnail ? (
+                              <img 
+                                src={post.thumbnail} 
+                                alt={post.title} 
+                                className="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-500"
+                              />
+                            ) : (
+                              <div className="bg-gradient-to-br from-gray-700 to-gray-800 w-full h-full flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent opacity-70"></div>
+                          </div>
+                          <div className="p-3 bg-gray-800/80 rounded-b-lg border-t border-gray-700/30">
+                            <h4 className="font-medium text-sm mb-1 text-white group-hover:text-teal-300 transition-colors duration-300">{post.title}</h4>
+                            <p className="text-xs text-gray-400 mb-2">
+                              {new Date(post.createdAt).toLocaleDateString('en-US')}
+                            </p>
+                            {post.description && (
+                              <p className="text-xs text-gray-300 line-clamp-2 group-hover:text-gray-200 transition-colors duration-300">{post.description}</p>
+                            )}
+                            <div className="flex justify-end mt-2">
+                              <span className="text-xs text-teal-400 group-hover:text-teal-300 transition-colors duration-300 flex items-center">
+                                Đọc tiếp
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                              </span>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                      <div className="pt-2 text-center">
+                        <Link href="/bai-viet" className="inline-block">
+                          <Button variant="outline" size="sm" className="text-teal-400 border-teal-800 hover:bg-teal-950 hover:text-teal-300 transition-all duration-300">
+                            Xem thêm tin tức
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-gray-400 text-center py-8">
+                      Không có tin tức nổi bật.
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
+          </div>
+        </section>
+        
+        {/* Market Movers Section */}
+        <section className="mb-10">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-200 pb-1">Cổ phiếu biến động mạnh</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Top Gainers */}
+            <Card className="bg-gray-800/50 shadow-xl rounded-xl overflow-hidden border border-gray-700/50 backdrop-blur-sm transition-all duration-300 hover:shadow-green-900/30 hover:shadow-2xl group">
+              <CardContent className="p-0">
+                <div className="bg-gradient-to-r from-green-900/40 to-green-800/20 p-4 border-b border-green-700/30 group-hover:from-green-800/50 group-hover:to-green-700/30 transition-all duration-300">
+                  <h3 className="font-semibold text-green-400 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" />
+                    </svg>
+                    Top Tăng
+                  </h3>
+                </div>
+                <div className="divide-y divide-gray-700/30">
+                  {/* Sample data - in a real app, this would be dynamic */}
+                  {[
+                    { symbol: 'VHM', price: 49.95, change: 6.83 },
+                    { symbol: 'VIC', price: 44.25, change: 6.12 },
+                    { symbol: 'GVR', price: 27.40, change: 5.39 },
+                    { symbol: 'MSN', price: 73.30, change: 5.17 },
+                    { symbol: 'TPB', price: 16.95, change: 4.95 },
+                  ].map((stock) => (
+                    <div key={stock.symbol} className="p-4 hover:bg-green-900/20 transition-all duration-300 flex justify-between items-center">
+                      <div className="flex flex-col space-y-1">
+                        <div className="text-sm font-medium text-gray-400">{stock.symbol}</div>
+                        <div className="font-semibold text-white">{typeof stock.price === 'number' ? stock.price.toFixed(2) : stock.price}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-green-400 flex items-center justify-end">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                          </svg>
+                          +{stock.change}%
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Top Losers */}
+            <Card className="bg-gray-800/50 shadow-xl rounded-xl overflow-hidden border border-gray-700/50 backdrop-blur-sm transition-all duration-300 hover:shadow-red-900/30 hover:shadow-2xl group">
+              <CardContent className="p-0">
+                <div className="bg-gradient-to-r from-red-900/40 to-red-800/20 p-4 border-b border-red-700/30 group-hover:from-red-800/50 group-hover:to-red-700/30 transition-all duration-300">
+                  <h3 className="font-semibold text-red-400 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M12 13a1 1 0 110 2H7a1 1 0 011-1v-5a1 1 0 112 0v2.586l4.293-4.293a1 1 0 011.414 0L19 10.586 19.707 9.293a1 1 0 011.414 1.414l-7 7a1 1 0 01-1.414 0L8 14.414l-1.293 1.293a1 1 0 01-1.414-1.414l2-2a1 1 0 011.414 0L10 13.586l3.293-3.293L12 8.414V13z" clipRule="evenodd" />
+                    </svg>
+                    Top Giảm
+                  </h3>
+                </div>
+                <div className="divide-y divide-gray-700/30">
+                  {[
+                    { symbol: 'SSI', price: 28.60, change: -5.75 },
+                    { symbol: 'VND', price: 22.15, change: -4.95 },
+                    { symbol: 'HPG', price: 25.80, change: -4.44 },
+                    { symbol: 'TCB', price: 35.60, change: -3.92 },
+                    { symbol: 'CTG', price: 32.45, change: -3.56 },
+                  ].map((stock) => (
+                    <div key={stock.symbol} className="p-4 hover:bg-red-900/20 transition-all duration-300 flex justify-between items-center">
+                      <div className="flex flex-col space-y-1">
+                        <div className="text-sm font-medium text-gray-400">{stock.symbol}</div>
+                        <div className="font-semibold text-white">{typeof stock.price === 'number' ? stock.price.toFixed(2) : stock.price}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-red-400 flex items-center justify-end">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          {stock.change}%
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Volume Leaders */}
+            <Card className="bg-gray-800/50 shadow-xl rounded-xl overflow-hidden border border-gray-700/50 backdrop-blur-sm transition-all duration-300 hover:shadow-blue-900/30 hover:shadow-2xl group">
+              <CardContent className="p-0">
+                <div className="bg-gradient-to-r from-blue-900/40 to-blue-800/20 p-4 border-b border-blue-700/30 group-hover:from-blue-800/50 group-hover:to-blue-700/30 transition-all duration-300">
+                  <h3 className="font-semibold text-blue-400 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                    </svg>
+                    Khối lượng lớn
+                  </h3>
+                </div>
+                <div className="divide-y divide-gray-700/30">
+                  {[
+                    { symbol: 'HPG', price: 25.80, volume: 16543200 },
+                    { symbol: 'MBB', price: 22.15, volume: 12758300 },
+                    { symbol: 'STB', price: 27.90, volume: 10589600 },
+                    { symbol: 'SSI', price: 28.60, volume: 9856400 },
+                    { symbol: 'VND', price: 22.15, volume: 8742100 },
+                  ].map((stock) => (
+                    <div key={stock.symbol} className="p-4 hover:bg-blue-900/20 transition-all duration-300 flex justify-between items-center">
+                      <div className="flex flex-col space-y-1">
+                        <div className="text-sm font-medium text-gray-400">{stock.symbol}</div>
+                        <div className="font-semibold text-white">{typeof stock.price === 'number' ? stock.price.toFixed(2) : stock.price}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-blue-300">{(stock.volume / 1000000).toFixed(1)}M CP</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Value Leaders */}
+            <Card className="bg-gray-800/50 shadow-xl rounded-xl overflow-hidden border border-gray-700/50 backdrop-blur-sm transition-all duration-300 hover:shadow-purple-900/30 hover:shadow-2xl group">
+              <CardContent className="p-0">
+                <div className="bg-gradient-to-r from-purple-900/40 to-purple-800/20 p-4 border-b border-purple-700/30 group-hover:from-purple-800/50 group-hover:to-purple-700/30 transition-all duration-300">
+                  <h3 className="font-semibold text-purple-400 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    Giá trị giao dịch
+                  </h3>
+                </div>
+                <div className="divide-y divide-gray-700/30">
+                  {[
+                    { symbol: 'VHM', price: 49.95, value: 825.7 },
+                    { symbol: 'HPG', price: 25.80, value: 415.8 },
+                    { symbol: 'VNM', price: 72.3, value: 352.9 },
+                    { symbol: 'VIC', price: 44.25, value: 344.6 },
+                    { symbol: 'MSN', price: 73.30, value: 325.4 },
+                  ].map((stock) => (
+                    <div key={stock.symbol} className="p-4 hover:bg-purple-900/20 transition-all duration-300 flex justify-between items-center">
+                      <div className="flex flex-col space-y-1">
+                        <div className="text-sm font-medium text-gray-400">{stock.symbol}</div>
+                        <div className="font-semibold text-white">{typeof stock.price === 'number' ? stock.price.toFixed(2) : stock.price}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-purple-300">{stock.value} tỷ</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
 
         {/* Currency Section */}
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Thị trường Tiền tệ</h2>
+        <section className="mb-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-200 pb-1">Thị trường Tiền tệ</h2>
+            {selectedCurrency && !isCurrencyLoading && currencyData.length > 0 && (
+              <div className="flex items-center mt-2 md:mt-0">
+                <span className="font-semibold mr-2 text-white">{selectedCurrency}</span>
+                {currencyData.length > 1 && (
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    currencyData[currencyData.length-1].close >= currencyData[currencyData.length-2].close 
+                    ? 'bg-green-500/30 text-green-300 border border-green-500/50' 
+                    : 'bg-red-500/30 text-red-300 border border-red-500/50'
+                  }`}>
+                    {currencyData[currencyData.length-1].close >= currencyData[currencyData.length-2].close ? '+' : ''}
+                    {((currencyData[currencyData.length-1].close - currencyData[currencyData.length-2].close) / 
+                      currencyData[currencyData.length-2].close * 100).toFixed(2)}%
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
           
           {currencyError && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <div className="bg-red-900/60 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-6 shadow-lg backdrop-blur-sm">
               {currencyError}
             </div>
           )}
@@ -322,8 +603,8 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div className="lg:col-span-3">
               {/* Currency Symbol Selector */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
-                <h3 className="text-md font-medium mb-3">Chọn cặp tiền tệ</h3>
+              <div className="bg-gray-800/60 rounded-xl shadow-xl p-6 mb-6 border border-gray-700/50 backdrop-blur-sm hover:shadow-amber-900/20 hover:shadow-2xl transition-all duration-300">
+                <h3 className="text-md font-medium mb-4 text-white">Chọn cặp tiền tệ</h3>
                 <div className="flex flex-wrap gap-2">
                   {currencySymbols.length > 0 ? (
                     currencySymbols.map((symbol) => (
@@ -331,63 +612,89 @@ export default function Home() {
                         key={symbol}
                         variant={selectedCurrency === symbol ? "default" : "outline"}
                         onClick={() => setSelectedCurrency(symbol)}
-                        className="text-sm"
+                        className={`text-sm transition-all duration-300 transform hover:scale-105 ${
+                          selectedCurrency === symbol
+                            ? 'bg-gradient-to-r from-amber-600 to-yellow-700 border-0 text-white shadow-lg hover:shadow-amber-600/30'
+                            : 'border border-amber-800 text-amber-300 hover:border-amber-600 hover:text-amber-200 hover:bg-amber-950/50'
+                        }`}
                       >
                         {symbol}
                       </Button>
                     ))
                   ) : (
-                    <div className="text-muted-foreground">Đang tải danh sách tiền tệ...</div>
+                    <div className="text-gray-400">Đang tải danh sách tiền tệ...</div>
                   )}
                 </div>
               </div>
               
               {/* Currency Charts */}
-              <Card className="bg-white dark:bg-gray-800 shadow-sm">
-                <CardContent className="p-6 py-0">
+              <Card className="bg-gray-800/50 shadow-xl rounded-xl overflow-hidden border border-gray-700/50 backdrop-blur-sm hover:shadow-amber-900/20 hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
                   {isCurrencyLoading ? (
                     <div className="space-y-4">
-                      <Skeleton className="h-[300px] w-full" />
-                      <Skeleton className="h-[200px] w-full" />
+                      <Skeleton className="h-[300px] w-full bg-gray-700/50" />
+                      <Skeleton className="h-[200px] w-full bg-gray-700/50" />
                     </div>
                   ) : currencyData.length > 0 ? (
-                    <div className="space-y-6 py-0">
+                    <div className="space-y-6">
                       {/* Currency Price Chart */}
                       <div>
-                        <h3 className="text-lg font-medium my-3">{selectedCurrency} Price Chart</h3>
-                        <StockChart
-                          chartType="candlestick"
-                          data={currencyData}
-                          height={300}
-                          hideXAxis={true}
-                          rightPriceScaleMinimumWidth={50}
-                          syncGroup="currency-charts"
-                        />
+                        <h3 className="text-lg font-medium my-3 text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-200 flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092c-.514.12-1 .287-1.342.507C7.07 6.25 7 6.7 7 7a1 1 0 001 1h1.73v5.1c-.076.07-.256.17-.423.315-.167.078-.41.17-.72.295-.315.125-.547.137-.764.137-.348 0-.655-.128-.832-.4a1 1 0 00-1.8.8c.168.657.658 1.144 1.359 1.337.463.13 1.105.19 1.937.19.265 0 .526-.007.786-.02.273.195.573.385.874.552.53.286 1.003.552 1.472.745.192.077.4.144.615.205a1.002 1.002 0 001.27-.613 1 1 0 00-.613-1.27 5.478 5.478 0 01-.415-.14c-.34-.14-.718-.353-1.133-.59-.19-.11-.393-.225-.603-.35V8h1.73a1 1 0 001-1c0-.3-.07-.75-.66-1.400C14.1 5.287 13.614 5.12 13.1 5v-.092A1 1 0 0010 5z" clipRule="evenodd" />
+                          </svg>
+                          {selectedCurrency} Price Chart
+                        </h3>
+                        <div className="mt-4 relative">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 rounded-lg blur opacity-75"></div>
+                          <div className="relative">
+                            <StockChart
+                              chartType="candlestick"
+                              data={currencyData}
+                              height={300}
+                              hideXAxis={true}
+                              rightPriceScaleMinimumWidth={50}
+                              syncGroup="currency-charts"
+                            />
+                          </div>
+                        </div>
                       </div>
 
                       {/* Currency Trend Q & FQ */}
-                      <div className="relative -mt-6">
-                        <h3 className="text-lg font-medium my-3 z-10">{selectedCurrency} Trend Q & FQ</h3>
-                        <StockChart
-                          chartType="mixed"
-                          data={currencyData}
-                          lineOptions={{
-                            fields: ['trend_q'],
-                            colors: ['#2962FF'],
-                            smooth: true
-                          }}
-                          histogramOptions={{
-                            fields: ['fq'],
-                            colors: ['#FF6D0080']
-                          }}
-                          height={250}
-                          rightPriceScaleMinimumWidth={50}
-                          syncGroup="currency-charts"
-                        />
+                      <div className="relative">
+                        <h3 className="text-lg font-medium my-3 text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-200 flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
+                            <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
+                          </svg>
+                          {selectedCurrency} Trend Q & FQ
+                        </h3>
+                        <div className="mt-4 relative">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg blur opacity-75"></div>
+                          <div className="relative">
+                            <StockChart
+                              chartType="mixed"
+                              data={currencyData}
+                              lineOptions={{
+                                fields: ['trend_q'],
+                                colors: ['#60A5FA'],
+                                smooth: true
+                              }}
+                              histogramOptions={{
+                                fields: ['fq'],
+                                colors: ['#FF6D0080']
+                              }}
+                              height={250}
+                              rightPriceScaleMinimumWidth={50}
+                              syncGroup="currency-charts"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                    <div className="h-[300px] flex items-center justify-center text-gray-400">
                       {selectedCurrency ? 
                         `Không có dữ liệu cho ${selectedCurrency}` : 
                         'Vui lòng chọn một loại tiền tệ'
@@ -400,21 +707,278 @@ export default function Home() {
 
             {/* Currency News */}
             <div className="lg:col-span-1">
-              <Card className="bg-white dark:bg-gray-800 shadow-sm">
+              <Card className="bg-gray-800/50 shadow-xl rounded-xl overflow-hidden border border-gray-700/50 backdrop-blur-sm hover:shadow-amber-900/20 hover:shadow-2xl transition-all duration-300 h-full">
                 <CardContent className="p-4">
-                  <h3 className="text-lg font-medium mb-4">Tin tức Tiền tệ</h3>
-                  <div className="space-y-4">
+                  <h3 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-200 pb-1 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z" clipRule="evenodd" />
+                      <path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z" />
+                    </svg>
+                    Tin tức Tiền tệ
+                  </h3>
+                  <div className="space-y-4 mt-4">
                     {currencyNews.map(news => (
-                      <div key={news.id} className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0 last:pb-0">
-                        <h4 className="font-medium text-sm mb-1">{news.title}</h4>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{news.date}</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300">{news.summary}</p>
+                      <div key={news.id} className="border-b border-gray-700 pb-4 last:border-0 last:pb-0 hover:bg-gray-700/30 transition-all duration-300 rounded-lg p-3 group">
+                        <h4 className="font-medium text-sm mb-1 text-white group-hover:text-amber-300 transition-colors duration-300">{news.title}</h4>
+                        <p className="text-xs text-gray-400 mb-2 flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                          </svg>
+                          {news.date}
+                        </p>
+                        <p className="text-sm text-gray-300 group-hover:text-gray-200 transition-colors duration-300">{news.summary}</p>
                       </div>
                     ))}
+                    <div className="pt-2 text-center">
+                      <Link href="/bai-viet" className="inline-block">
+                        <Button variant="outline" size="sm" className="text-amber-400 border-amber-800 hover:bg-amber-950/50 hover:text-amber-300 transition-all duration-300">
+                          Xem thêm tin tức
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
+          </div>
+        </section>
+
+        {/* Market Analysis & Economic Calendar Section */}
+        <section className="mb-10">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-violet-200 pb-1">Phân tích & Sự kiện kinh tế</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Technical Analysis */}
+            <Card className="bg-gray-800/50 shadow-xl rounded-xl overflow-hidden border border-gray-700/50 backdrop-blur-sm transition-all duration-300 hover:shadow-indigo-900/30 hover:shadow-2xl group">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-blue-200 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                  </svg>
+                  Phân tích kỹ thuật
+                </h3>
+                <div className="space-y-4">
+                  <div className="bg-gray-700/40 p-4 rounded-lg border border-gray-600/30 hover:bg-gray-700/60 transition-all duration-300 group-hover:border-indigo-800/50 hover:shadow-indigo-900/10 hover:shadow-lg">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-medium text-white">VNINDEX</span>
+                      <span className="text-sm bg-green-500/30 text-green-300 border border-green-500/50 px-3 py-0.5 rounded-full flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
+                        </svg>
+                        Mua
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-sm">
+                      <div>
+                        <div className="text-gray-400">RSI(14)</div>
+                        <div className="font-medium text-white">58.6</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400">MACD</div>
+                        <div className="font-medium text-green-400">+3.21</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400">SMA(20)</div>
+                        <div className="font-medium text-white">1,254.8</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-700/40 p-4 rounded-lg border border-gray-600/30 hover:bg-gray-700/60 transition-all duration-300 group-hover:border-indigo-800/50 hover:shadow-indigo-900/10 hover:shadow-lg">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-medium text-white">VN30</span>
+                      <span className="text-sm bg-yellow-500/30 text-yellow-300 border border-yellow-500/50 px-3 py-0.5 rounded-full flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        Trung lập
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-sm">
+                      <div>
+                        <div className="text-gray-400">RSI(14)</div>
+                        <div className="font-medium text-white">52.1</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400">MACD</div>
+                        <div className="font-medium text-red-400">-1.45</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400">SMA(20)</div>
+                        <div className="font-medium text-white">1,275.3</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-700/40 p-4 rounded-lg border border-gray-600/30 hover:bg-gray-700/60 transition-all duration-300 group-hover:border-indigo-800/50 hover:shadow-indigo-900/10 hover:shadow-lg">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-medium text-white">HNX-INDEX</span>
+                      <span className="text-sm bg-red-500/30 text-red-300 border border-red-500/50 px-3 py-0.5 rounded-full flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 9.586V7z" clipRule="evenodd" />
+                        </svg>
+                        Bán
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-sm">
+                      <div>
+                        <div className="text-gray-400">RSI(14)</div>
+                        <div className="font-medium text-white">45.3</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400">MACD</div>
+                        <div className="font-medium text-red-400">-2.78</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400">SMA(20)</div>
+                        <div className="font-medium text-white">235.6</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Market Sentiment */}
+            <Card className="bg-gray-800/50 shadow-xl rounded-xl overflow-hidden border border-gray-700/50 backdrop-blur-sm transition-all duration-300 hover:shadow-pink-900/30 hover:shadow-2xl group">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-purple-200 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-pink-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1zm-5 8.274l-.818 2.552c.25.112.526.174.818.174.292 0 .569-.062.818-.174L5 10.274zm10 0l-.818 2.552c.25.112.526.174.818.174.292 0 .569-.062.818-.174L15 10.274z" clipRule="evenodd" />
+                  </svg>
+                  Tâm lý thị trường
+                </h3>
+                
+                <div className="mb-6 bg-gray-700/40 p-4 rounded-lg border border-gray-600/30 hover:bg-gray-700/60 transition-all duration-300 group-hover:border-pink-800/50 hover:shadow-pink-900/10 hover:shadow-lg">
+                  <div className="mb-2 flex justify-between">
+                    <span className="text-sm font-medium text-gray-300">Tâm lý nhà đầu tư</span>
+                    <span className="text-sm font-medium text-orange-400">Lo sợ (32/100)</span>
+                  </div>
+                  <div className="w-full bg-gray-600/50 rounded-full h-3">
+                    <div className="bg-gradient-to-r from-red-500 via-orange-500 to-green-500 h-3 rounded-full" style={{ width: '32%' }}></div>
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-400 mt-2">
+                    <span>Cực độ sợ hãi</span>
+                    <span>Trung lập</span>
+                    <span>Cực độ tham lam</span>
+                  </div>
+                </div>
+                
+                <div className="space-y-4 bg-gray-700/40 p-4 rounded-lg border border-gray-600/30 hover:bg-gray-700/60 transition-all duration-300 group-hover:border-pink-800/50 hover:shadow-pink-900/10 hover:shadow-lg">
+                  <div className="flex justify-between">
+                    <span className="text-sm flex items-center text-gray-300">
+                      <span className="h-2 w-2 rounded-full bg-pink-400 mr-2"></span>
+                      Chỉ số put/call
+                    </span>
+                    <span className="font-medium text-white">1.15</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm flex items-center text-gray-300">
+                      <span className="h-2 w-2 rounded-full bg-purple-400 mr-2"></span>
+                      Tỷ lệ tăng/giảm
+                    </span>
+                    <span className="font-medium text-white">0.86</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm flex items-center text-gray-300">
+                      <span className="h-2 w-2 rounded-full bg-indigo-400 mr-2"></span>
+                      Khối lượng giao dịch (sv TB)
+                    </span>
+                    <span className="font-medium text-green-400">+28.5%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm flex items-center text-gray-300">
+                      <span className="h-2 w-2 rounded-full bg-blue-400 mr-2"></span>
+                      Khối ngoại (tuần)
+                    </span>
+                    <span className="font-medium text-red-400">-1,254 tỷ</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm flex items-center text-gray-300">
+                      <span className="h-2 w-2 rounded-full bg-teal-400 mr-2"></span>
+                      Tỷ lệ cổ phiếu trên MA(50)
+                    </span>
+                    <span className="font-medium text-white">48.6%</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Economic Calendar */}
+            <Card className="bg-gray-800/50 shadow-xl rounded-xl overflow-hidden border border-gray-700/50 backdrop-blur-sm transition-all duration-300 hover:shadow-cyan-900/30 hover:shadow-2xl group">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-teal-200 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                  </svg>
+                  Lịch kinh tế
+                </h3>
+                
+                <div className="space-y-4">
+                  <div className="text-sm font-medium text-gray-300 mb-2 bg-gray-700/20 px-3 py-2 rounded-md flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    Hôm nay
+                  </div>
+                  
+                  <div className="border-l-4 border-yellow-500 pl-3 py-2 bg-yellow-900/10 rounded-r-lg hover:bg-yellow-900/20 transition-all duration-300 hover:translate-x-1">
+                    <div className="text-sm font-medium text-white">08:30 - PMI Sản xuất (Việt Nam)</div>
+                    <div className="text-xs text-gray-400 flex items-center">
+                      <span className="text-yellow-400 mr-2">Trung bình</span>
+                      Dự báo: 50.2 | Trước đó: 49.8
+                    </div>
+                  </div>
+                  
+                  <div className="border-l-4 border-red-500 pl-3 py-2 bg-red-900/10 rounded-r-lg hover:bg-red-900/20 transition-all duration-300 hover:translate-x-1">
+                    <div className="text-sm font-medium text-white">14:00 - CPI Eurozone (YoY)</div>
+                    <div className="text-xs text-gray-400 flex items-center">
+                      <span className="text-red-400 mr-2">Cao</span>
+                      Dự báo: 2.8% | Trước đó: 2.6%
+                    </div>
+                  </div>
+                  
+                  <div className="border-l-4 border-green-500 pl-3 py-2 bg-green-900/10 rounded-r-lg hover:bg-green-900/20 transition-all duration-300 hover:translate-x-1">
+                    <div className="text-sm font-medium text-white">19:30 - Đơn xin trợ cấp thất nghiệp Mỹ</div>
+                    <div className="text-xs text-gray-400 flex items-center">
+                      <span className="text-green-400 mr-2">Thấp</span>
+                      Dự báo: 238K | Trước đó: 242K
+                    </div>
+                  </div>
+                  
+                  <div className="text-sm font-medium text-gray-300 mt-6 mb-2 bg-gray-700/20 px-3 py-2 rounded-md flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    Ngày mai
+                  </div>
+                  
+                  <div className="border-l-4 border-red-500 pl-3 py-2 bg-red-900/10 rounded-r-lg hover:bg-red-900/20 transition-all duration-300 hover:translate-x-1">
+                    <div className="text-sm font-medium text-white">07:30 - Doanh số bán lẻ (Việt Nam)</div>
+                    <div className="text-xs text-gray-400 flex items-center">
+                      <span className="text-red-400 mr-2">Cao</span>
+                      Dự báo: +5.4% | Trước đó: +5.2%
+                    </div>
+                  </div>
+                  
+                  <div className="border-l-4 border-green-500 pl-3 py-2 bg-green-900/10 rounded-r-lg hover:bg-green-900/20 transition-all duration-300 hover:translate-x-1">
+                    <div className="text-sm font-medium text-white">19:30 - Báo cáo việc làm phi nông nghiệp Mỹ</div>
+                    <div className="text-xs text-gray-400 flex items-center">
+                      <span className="text-green-400 mr-2">Thấp</span>
+                      Dự báo: 185K | Trước đó: 175K
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 text-center">
+                    <Button variant="outline" size="sm" className="text-cyan-400 border-cyan-800 hover:bg-cyan-950/50 hover:text-cyan-300 transition-all duration-300">
+                      Xem lịch đầy đủ
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
       </div>

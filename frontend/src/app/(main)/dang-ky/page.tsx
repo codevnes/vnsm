@@ -77,7 +77,7 @@ export default function RegisterPage() {
 
             console.log("Registration successful:", data);
             // Redirect to login page on successful registration
-            router.push('/login');
+            router.push('/dang-nhap');
 
         } catch (err: any) {
             console.error("Registration error:", err);
@@ -161,7 +161,7 @@ export default function RegisterPage() {
                  <CardFooter className="flex flex-col items-center space-y-2">
                      <p className="text-sm text-muted-foreground">
                         Already have an account?{' '}
-                        <Link href="/login" className="underline underline-offset-4 hover:text-primary">
+                        <Link href="/dang-nhap" className="underline underline-offset-4 hover:text-primary">
                             Login
                         </Link>
                     </p>

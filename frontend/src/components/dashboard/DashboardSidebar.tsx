@@ -14,10 +14,7 @@ import {
 import { 
     Sheet, 
     SheetContent, 
-    SheetHeader, 
-    SheetTitle, 
     SheetTrigger,
-    SheetClose
 } from "@/components/ui/sheet";
 
 export function DashboardSidebar() {
@@ -26,9 +23,8 @@ export function DashboardSidebar() {
     const [open, setOpen] = useState(false);
 
     const handleLogout = () => {
-        logout(); // Use the logout function from context
-        router.push('/login'); // Redirect to login page without redirect param (since it's an explicit logout)
-        // Optionally add a notification here
+        logout(); 
+        router.push('/dang-nhap'); 
     };
 
     // Sidebar content component to reuse in both desktop and mobile views

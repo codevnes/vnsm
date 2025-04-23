@@ -9,7 +9,7 @@ import { postService } from '@/services/postService';
 import { DataTable } from '@/components/ui/data-table';
 import { getPostColumns } from '@/components/posts/post-columns';
 import { toast } from 'sonner';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, RefreshCw, ArrowDownUp, Moon, Sun } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -20,6 +20,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle
 } from '@/components/ui/alert-dialog';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTheme } from 'next-themes';
 
 // Reusable Delete Dialog (Could be moved to a common ui component)
 interface DeleteConfirmationDialogProps {
@@ -39,16 +41,16 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
         <AlertDialog open={open} onOpenChange={onOpenChange}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete the post
-                        &quot;<strong>{postTitle}</strong>&quot;.
+                        Hành động này không thể hoàn tác. Bài viết
+                        &quot;<strong>{postTitle}</strong>&quot; sẽ bị xóa vĩnh viễn.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>Hủy</AlertDialogCancel>
                     <AlertDialogAction onClick={onConfirm} className="bg-destructive hover:bg-destructive/90">
-                        Delete
+                        Xóa
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
@@ -62,11 +64,13 @@ const PostsPage = () => {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const { theme, setTheme } = useTheme();
 
     const [posts, setPosts] = useState<Post[]>([]);
     const [totalItems, setTotalItems] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [isSortDesc, setIsSortDesc] = useState<boolean>(true);
 
     // State for Delete Dialog
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -86,9 +90,9 @@ const PostsPage = () => {
             setPosts(response.data);
             setTotalItems(response.pagination.totalItems);
         } catch (err: any) {
-            const message = err.message || 'Failed to fetch posts';
+            const message = err.message || 'Không thể tải danh sách bài viết';
             setError(message);
-            toast.error('Error fetching posts', { description: message });
+            toast.error('Lỗi tải dữ liệu', { description: message });
         } finally {
             setLoading(false);
         }
@@ -112,18 +116,29 @@ const PostsPage = () => {
         if (!postToDelete) return;
         try {
             await postService.deletePost(postToDelete.id);
-            toast.success(`Post "${postToDelete.title}" deleted.`);
+            toast.success(`Đã xóa bài viết "${postToDelete.title}".`);
             // Refetch posts for the current page after deletion
             fetchPosts(currentPage);
         } catch (error: any) {
-            toast.error('Error deleting post', {
-                description: error.message || 'Could not delete post.',
+            toast.error('Lỗi khi xóa bài viết', {
+                description: error.message || 'Không thể xóa bài viết.',
             });
             // Close dialog even on error
             setIsDeleteDialogOpen(false);
             setPostToDelete(null);
         }
     }, [postToDelete, fetchPosts, currentPage]);
+
+    // Toggle sort order
+    const toggleSortOrder = useCallback(() => {
+        setIsSortDesc(!isSortDesc);
+        // Would normally update API call with sort order parameter
+    }, [isSortDesc]);
+
+    // Toggle theme
+    const toggleTheme = useCallback(() => {
+        setTheme(theme === 'dark' ? 'light' : 'dark');
+    }, [theme, setTheme]);
 
     // Define columns using useMemo
     const columns = useMemo(() => getPostColumns({
@@ -144,52 +159,92 @@ const PostsPage = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Posts</h1>
-                <Link href="/dashboard/posts/create" passHref>
-                    <Button>
-                        <PlusCircle className="mr-2 h-4 w-4" /> Create Post
-                    </Button>
-                </Link>
-            </div>
-
-            {loading && <p>Loading posts...</p>}
-            {error && !loading && <p className="text-red-500">Error: {error}. Please try refreshing.</p>}
-            {!loading && !error && (
-                <>
-                    <DataTable
-                        columns={columns}
-                        data={posts}
-                        filterColumnId="title" // Allow filtering by title
-                        filterInputPlaceholder="Filter posts by title..."
-                    />
-                    {/* Custom Pagination Controls */}
-                    {totalPages > 1 && (
-                        <div className="flex items-center justify-end space-x-2 py-4">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handlePageChange(currentPage - 1)}
-                                disabled={currentPage <= 1}
-                            >
-                                Previous
-                            </Button>
-                            <span className="text-sm text-muted-foreground">
-                                Page {currentPage} of {totalPages}
-                            </span>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handlePageChange(currentPage + 1)}
-                                disabled={currentPage >= totalPages}
-                            >
-                                Next
-                            </Button>
+        <div className="container mx-auto px-4 py-6">
+            <Card className="border-0 shadow-sm bg-gradient-to-r from-slate-50 to-white dark:from-gray-900 dark:to-gray-800 dark:text-gray-100">
+                <CardHeader className="border-b dark:border-gray-700 pb-4">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <CardTitle className="text-2xl font-bold text-slate-800 dark:text-gray-100">Quản lý bài viết</CardTitle>
+                            <p className="text-slate-500 dark:text-gray-400 text-sm mt-1">Tổng số: {totalItems} bài viết</p>
                         </div>
+                        <div className="flex gap-2">
+                            <Button 
+                                variant="outline" 
+                                size="icon" 
+                                onClick={toggleTheme}
+                                className="h-9 w-9 dark:border-gray-700 dark:text-gray-100"
+                            >
+                                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                            </Button>
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => fetchPosts(currentPage)} 
+                                className="flex items-center gap-1 dark:border-gray-700 dark:text-gray-100"
+                            >
+                                <RefreshCw className="h-4 w-4" />
+                                <span>Làm mới</span>
+                            </Button>
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={toggleSortOrder} 
+                                className="flex items-center gap-1 dark:border-gray-700 dark:text-gray-100"
+                            >
+                                <ArrowDownUp className="h-4 w-4" />
+                                <span>{isSortDesc ? 'Mới nhất' : 'Cũ nhất'}</span>
+                            </Button>
+                            <Link href="/dashboard/posts/create" passHref>
+                                <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800">
+                                    <PlusCircle className="mr-2 h-4 w-4" /> Tạo bài viết
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent className="pt-4">
+                    {loading && <div className="flex justify-center py-8"><p>Đang tải dữ liệu...</p></div>}
+                    {error && !loading && <p className="text-red-500 py-4">Lỗi: {error}. Vui lòng làm mới trang.</p>}
+                    {!loading && !error && (
+                        <>
+                            <div className="rounded-lg border dark:border-gray-700 overflow-hidden">
+                                <DataTable
+                                    columns={columns}
+                                    data={posts}
+                                    filterColumnId="title"
+                                    filterInputPlaceholder="Tìm kiếm bài viết theo tiêu đề..."
+                                />
+                            </div>
+                            {/* Custom Pagination Controls */}
+                            {totalPages > 1 && (
+                                <div className="flex items-center justify-end space-x-2 py-4 mt-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage <= 1}
+                                        className="dark:border-gray-700 dark:text-gray-300"
+                                    >
+                                        Trang trước
+                                    </Button>
+                                    <span className="text-sm text-muted-foreground dark:text-gray-400">
+                                        Trang {currentPage}/{totalPages}
+                                    </span>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage >= totalPages}
+                                        className="dark:border-gray-700 dark:text-gray-300"
+                                    >
+                                        Trang sau
+                                    </Button>
+                                </div>
+                            )}
+                        </>
                     )}
-                 </>
-            )}
+                </CardContent>
+            </Card>
 
             {/* Render Delete Confirmation Dialog */}
             {postToDelete && (

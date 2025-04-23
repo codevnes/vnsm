@@ -40,7 +40,11 @@ export const StockTable: React.FC<StockTableProps> = ({
     const formatDate = (dateString?: string) => {
         if (!dateString) return 'N/A';
         try {
-            return new Date(dateString).toLocaleDateString();
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
         } catch (error) {
             return 'Invalid Date';
         }

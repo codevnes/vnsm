@@ -108,5 +108,18 @@ export const homeService = {
       // Return empty array if API is not available yet
       return [];
     }
+  },
+
+  /**
+   * Fetch post by id
+   */
+  fetchPostById: async (id: number): Promise<Post | null> => {
+    try {
+      const response = await publicApi.get(`/posts/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching post by id:`, error);
+      return null;
+    }
   }
 };

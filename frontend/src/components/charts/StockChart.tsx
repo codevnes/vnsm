@@ -222,11 +222,24 @@ const StockChart: React.FC<StockChartProps> = ({
             const d = new Date(time * 1000);
             switch (tickMarkType) {
                 case TickMarkType.Year: return d.getFullYear().toString();
-                case TickMarkType.Month: return d.toLocaleDateString(locale, { month: 'short' });
+                case TickMarkType.Month: {
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    return months[d.getMonth()];
+                }
                 case TickMarkType.DayOfMonth: return d.getDate().toString();
-                case TickMarkType.Time: return d.toLocaleTimeString(locale);
-                case TickMarkType.TimeWithSeconds: return d.toLocaleTimeString(locale, { hour12: false });
-                default: return `${d.getDate()}/${d.getMonth() + 1}`; }
+                case TickMarkType.Time: {
+                    const hours = d.getHours().toString().padStart(2, '0');
+                    const minutes = d.getMinutes().toString().padStart(2, '0');
+                    return `${hours}:${minutes}`;
+                }
+                case TickMarkType.TimeWithSeconds: {
+                    const hours = d.getHours().toString().padStart(2, '0');
+                    const minutes = d.getMinutes().toString().padStart(2, '0');
+                    const seconds = d.getSeconds().toString().padStart(2, '0');
+                    return `${hours}:${minutes}:${seconds}`;
+                }
+                default: return `${d.getMonth() + 1}/${d.getDate()}`;
+            }
         },
       },
       rightPriceScale: { 
@@ -240,8 +253,8 @@ const StockChart: React.FC<StockChartProps> = ({
       },
       crosshair: { mode: CrosshairMode.Magnet, vertLine: { color: 'rgba(255, 255, 255, 0.4)', width: 1, style: LineStyle.Dashed, visible: true, labelVisible: true }, horzLine: { color: 'rgba(255, 255, 255, 0.4)', width: 1, style: LineStyle.Dashed, visible: true, labelVisible: true } },
       localization: { 
-        locale: 'vi-VN', 
-        dateFormat: 'dd/MM/yyyy',
+        locale: 'en-US', 
+        dateFormat: 'MM/dd/yyyy',
         priceFormatter: (price: number) => formatCompactNumber(price),
       },
     });
@@ -421,10 +434,26 @@ const StockChart: React.FC<StockChartProps> = ({
           return;
       }
 
-      const formattedDate = new Date(dataPoint.date).toLocaleDateString('vi-VN');
+      const date = new Date(dataPoint.date);
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const year = date.getFullYear();
+      const formattedDate = `${month}/${day}/${year}`;
+      
       const formatNumber = (num: any): string => {
         const numberValue = safeParseFloat(num);
-        return numberValue === undefined ? 'N/A' : numberValue.toLocaleString('vi-VN', { maximumFractionDigits: 2 });
+        if (numberValue === undefined) return 'N/A';
+        
+        // Use fixed decimal formatting instead of locale-specific
+        if (Math.abs(numberValue) < 0.01 && numberValue !== 0) {
+          return numberValue.toExponential(1);
+        } else if (Math.abs(numberValue) < 1) {
+          return numberValue.toFixed(2);
+        } else if (numberValue % 1 === 0) {
+          return numberValue.toFixed(0);
+        } else {
+          return numberValue.toFixed(2);
+        }
       };
 
       let tooltipContent = `<div style="font-weight: bold; margin-bottom: 4px;">${formattedDate}</div>`;

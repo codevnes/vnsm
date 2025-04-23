@@ -66,7 +66,27 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=https://api.vsmi.vn/
       - NEXT_PUBLIC_API_BASE_URL=https://api.vsmi.vn/
+      - NEXT_PUBLIC_TINYMCE_API_KEY=gqcpkc0yu6t37vrh6jaiwx7ugf0nn5o2rc106o1ugk1gwz2v
       - NODE_ENV=production
+    networks:
+      - vnsm-network
+      
+  # phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: vnsm-phpmyadmin
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - MYSQL_ROOT_PASSWORD=Timem.2302
+      - PMA_USER=root
+      - PMA_PASSWORD=Timem.2302
     networks:
       - vnsm-network
 

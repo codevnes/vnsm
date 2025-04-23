@@ -205,7 +205,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   3
                 </span>
               </button>
-              <Link href="/tai-khoan" className="flex items-center text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">
+              <Link href="/dashboard" className="flex items-center text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">
                 <User className="h-5 w-5 mr-1" />
                 <span className="text-sm font-medium">Tài khoản</span>
               </Link>

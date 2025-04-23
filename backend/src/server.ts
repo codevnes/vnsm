@@ -17,6 +17,7 @@ import peRecordRoutes from './routes/peRecord';
 import roaRoeRecordRoutes from './routes/roaRoeRecord';
 import financialRatioRecordRoutes from './routes/financialRatioRecord';
 import profileRoutes from './routes/profile'; // Import profile routes
+import settingsRoutes from './routes/settings'; // Import settings routes
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -68,6 +69,7 @@ app.use('/pe-records', peRecordRoutes);
 app.use('/roa-roe-records', roaRoeRecordRoutes);
 app.use('/financial-ratio-records', financialRatioRecordRoutes);
 app.use('/profile', profileRoutes); // Thêm route profile
+app.use('/settings', settingsRoutes); // Add settings routes
 
 // --- Swagger Setup ---
 setupSwagger(app);

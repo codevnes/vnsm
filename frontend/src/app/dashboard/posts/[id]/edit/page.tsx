@@ -12,10 +12,17 @@ import { Stock } from '@/types/stock';
 import { toast } from 'sonner';
 import ModernPostForm from '@/components/posts/modern-post-form';
 
-const EditPostPage = () => {
+interface EditPostPageProps {
+  params: {
+    id: string;
+  };
+}
+
+const EditPostPage = ({ params }: EditPostPageProps) => {
     const router = useRouter();
-    const params = useParams();
-    const postId = params.id as string; 
+    // Unwrap params using React.use()
+    const unwrappedParams = React.use(params as unknown as Promise<EditPostPageProps['params']>);
+    const postId = unwrappedParams.id as string; 
 
     const [postData, setPostData] = useState<Post | null>(null);
     const [allCategories, setAllCategories] = useState<Category[]>([]);

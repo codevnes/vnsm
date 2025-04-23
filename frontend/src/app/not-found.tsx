@@ -82,10 +82,10 @@ export default function NotFound() {
           <Link href="/dashboard" className="hover:text-primary transition-colors">
             Bảng điều khiển
           </Link>
-          <Link href="/login" className="hover:text-primary transition-colors">
+          <Link href="/dang-nhap" className="hover:text-primary transition-colors">
             Đăng nhập
           </Link>
-          <Link href="/register" className="hover:text-primary transition-colors">
+          <Link href="/dang-ky" className="hover:text-primary transition-colors">
             Đăng ký
           </Link>
         </div>

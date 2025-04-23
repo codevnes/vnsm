@@ -9,10 +9,17 @@ import { Category } from '@/types/category';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/types/error';
 
-const EditCategoryPage = () => {
+interface EditCategoryPageProps {
+  params: {
+    id: string;
+  };
+}
+
+const EditCategoryPage = ({ params }: EditCategoryPageProps) => {
     const router = useRouter();
-    const params = useParams();
-    const categoryId = params.id as string;
+    // Unwrap params using React.use()
+    const unwrappedParams = React.use(params as unknown as Promise<EditCategoryPageProps['params']>);
+    const categoryId = unwrappedParams.id as string;
 
     const [categoryData, setCategoryData] = useState<Category | null>(null);
     const [allCategories, setAllCategories] = useState<Category[]>([]);

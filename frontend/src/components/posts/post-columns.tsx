@@ -34,8 +34,9 @@ export const getPostColumns = ({
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                    className="dark:text-gray-100"
                 >
-                    Title
+                    Tiêu đề
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             );
@@ -44,7 +45,7 @@ export const getPostColumns = ({
             // Make title clickable, linking to edit page for convenience
             const post = row.original;
             return (
-                <Link href={`/dashboard/posts/${post.id}/edit`} className="hover:underline font-medium">
+                <Link href={`/dashboard/posts/${post.id}/edit`} className="hover:underline font-medium dark:text-gray-100">
                     {post.title}
                 </Link>
             );
@@ -52,29 +53,23 @@ export const getPostColumns = ({
     },
     {
       accessorKey: 'category',
-      header: 'Category',
+      header: 'Danh mục',
       cell: ({ row }: { row: Row<Post> }) => {
         const category = row.original.category;
         return category ? (
-             <Link href={`/dashboard/categories/${category.id}/edit`} className="hover:underline text-sm">
+             <Link href={`/dashboard/categories/${category.id}/edit`} className="hover:underline text-sm dark:text-gray-300">
                  {category.title}
              </Link>
-         ) : <span className="text-muted-foreground">N/A</span>;
+         ) : <span className="text-muted-foreground dark:text-gray-500">N/A</span>;
       },
-      // Enable filtering by category title if needed (requires adjustments)
-      // filterFn: (row, id, value) => { ... }
     },
     {
         accessorKey: 'user',
-        header: 'Author',
+        header: 'Tác giả',
         cell: ({ row }: { row: Row<Post> }) => {
             const user = row.original.user;
-            return user ? user.full_name : <span className="text-muted-foreground">N/A</span>;
+            return user ? <span className="dark:text-gray-300">{user.full_name}</span> : <span className="text-muted-foreground dark:text-gray-500">N/A</span>;
         },
-    },
-    {
-      accessorKey: 'slug',
-      header: 'Slug',
     },
      {
         accessorKey: 'createdAt',
@@ -83,44 +78,45 @@ export const getPostColumns = ({
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                    className="dark:text-gray-100"
                 >
-                    Created At
+                    Ngày tạo
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
         cell: ({ row }: { row: Row<Post> }) => {
              const date = new Date(row.getValue('createdAt'));
-             return <div className="text-sm">{date.toLocaleDateString()}</div>;
+             return <div className="text-sm dark:text-gray-300">{date.toLocaleDateString()}</div>;
         },
     },
     {
       id: 'actions',
+      header: 'Hành động',
       cell: ({ row }: { row: Row<Post> }) => { 
         const post = row.original;
+        // Now returning direct buttons instead of dropdown for more modern look
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => onEdit(post.id)}>
-                <Pencil className="mr-2 h-4 w-4" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onDeleteRequest(post)} // Pass the whole post
-                className="text-destructive focus:text-destructive focus:bg-destructive/10"
-              >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8 bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200 dark:bg-blue-950/40 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-900"
+              onClick={() => onEdit(post.id)}
+            >
+              <Pencil className="mr-1 h-3 w-3" />
+              Sửa
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8 bg-red-50 text-red-600 hover:bg-red-100 border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/50 dark:border-red-900"
+              onClick={() => onDeleteRequest(post)}
+            >
+              <Trash2 className="mr-1 h-3 w-3" />
+              Xóa
+            </Button>
+          </div>
         );
       },
     },

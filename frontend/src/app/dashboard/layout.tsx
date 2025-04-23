@@ -30,7 +30,7 @@ export default function DashboardLayout({
             console.log('Redirecting to login with path:', currentPath);
 
             // Redirect to login with the current path as the redirect parameter
-            router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+            router.push(`/dang-nhap?redirect=${encodeURIComponent(currentPath)}`);
         }
     }, [isAuthenticated, loading, router]);
 

@@ -781,7 +781,7 @@ export default function StockDetailPage() {
                 </div>
                 <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-1.5 text-white/90 text-sm backdrop-blur-sm">
                   <span className="text-white/60">KLCP:</span>
-                  <span className="font-medium">{stockInfo?.outstandingShares?.toLocaleString() || '1,000,000,000'}</span>
+                  <span className="font-medium">{stockInfo?.outstandingShares ? stockInfo.outstandingShares.toString() : '1,000,000,000'}</span>
                 </div>
                 <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-1.5 text-white/90 text-sm backdrop-blur-sm">
                   <span className="text-white/60">Room NN:</span>
@@ -808,18 +808,18 @@ export default function StockDetailPage() {
               <div className="mt-3 flex flex-wrap gap-2">
                 <div className="bg-white/10 backdrop-blur-sm rounded-md px-3 py-1.5 text-white/80 text-xs flex items-center">
                   <span className="text-white/60 mr-2">Khối lượng:</span>
-                  <span className="font-medium">{stockInfo?.volume?.toLocaleString() || '1,240,300'}</span>
+                  <span className="font-medium">{stockInfo?.volume ? stockInfo.volume.toString() : '1,240,300'}</span>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-md px-3 py-1.5 text-white/80 text-xs flex items-center">
                   <span className="text-white/60 mr-2">GTGD:</span>
-                  <span className="font-medium">{stockInfo?.tradingValue?.toLocaleString() || '52.7'} tỷ</span>
+                  <span className="font-medium">{stockInfo?.tradingValue ? stockInfo.tradingValue.toString() : '52.7'} tỷ</span>
                 </div>
               </div>
               
               {/* Last Updated */}
               <div className="text-white/60 text-xs mt-3 flex items-center">
                 <div className="w-2 h-2 rounded-full bg-white/40 mr-2 animate-pulse"></div>
-                Cập nhật: {stockInfo?.lastUpdated ? new Date(stockInfo.lastUpdated).toLocaleString('vi-VN') : new Date().toLocaleString('vi-VN')}
+                Cập nhật gần đây
               </div>
             </div>
           </div>
