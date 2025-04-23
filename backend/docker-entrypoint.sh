@@ -8,7 +8,7 @@ while [ $i -le 10 ]; do
     echo "MySQL đã sẵn sàng!"
     break
   fi
-  echo "Đang đợi MySQL khởi động... ($i/10)"
+  echo "Đang đợi MySQL khởi động... ($i/3)"
   i=$((i+1))
   sleep 5
 done
